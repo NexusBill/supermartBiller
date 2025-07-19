@@ -1,0 +1,95 @@
+<div class="app-container">
+  <!-- Top Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+    <div class="container-fluid">
+      <!-- Mobile Menu Toggle -->
+      <button class="navbar-toggler me-3" type="button" data-bs-toggle="collapse" data-bs-target="#sideNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      
+      <!-- Brand/Logo -->
+      <a class="navbar-brand fw-bold">
+        <i class="fas fa-shopping-cart me-2"></i>
+        SuperMart
+      </a>
+      
+      <!-- Right side nav items -->
+      <div class="navbar-nav ms-auto">
+        <div class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown">
+            <i class="fas fa-user me-1"></i>Account
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item">Admin</a></li>
+            <li><a class="dropdown-item">Download sales</a></li>
+            <!-- <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item">Logout</a></li> -->
+          </ul>
+        </div>
+        <a class="nav-link">
+          <i class="fas fa-shopping-basket me-1"></i>
+          Dark mode <span class="badge bg-warning text-dark">uu</span>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Side Navigation -->
+  <div class="sidebar-wrapper">
+    <nav id="sideNav" class="sidebar collapse show">
+      <div class="sidebar-header">
+        <h5 class="text-white mb-0">Navigation</h5>
+      </div>
+      
+      <div class="sidebar-content">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link" [ngClass]="isDashboard ? 'active' : ''"   (click)="isDashboardActive()">
+              <i class="fas fa-tachometer"></i>
+
+              Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" [ngClass]="isProducts ? 'active':''" (click)="isProductsActive()" routerLink="/products">
+              <i class="fas fa-box me-2"></i>
+              Products
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link"  [ngClass]="isBilling ? 'active':''"  routerLink="/billing" (click)="isBillingActive()">
+              <i class="fas fa-tags me-2"></i>
+              Billing
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link"  [ngClass]="isOrders ? 'active':''"  routerLink="/orders" (click)="isOrdersActive()">
+              <i class="fas fa-shopping-bag me-2"></i>
+              Orders
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link"  [ngClass]="isCustomers ? 'active':''"   routerLink="/customers" (click)="isCustomersActive()">
+              <i class="fas fa-users me-2"></i>
+              Customers
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link"  [ngClass]="isCategories ? 'active':''"  routerLink="/Categories" (click)="isCategoriesActive()">
+              <i class="fas fa-users me-2"></i>
+              Categories
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+  <div class="col-12">
+    <div class="content-container" style="position: relative;margin-left: 1%;">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+  
+</div>
+
+
