@@ -52,8 +52,8 @@
             <div class="billing-section">
               <div class="head" style="display: flex;flex-direction: row;">
                <div class="title"><h2 class="section-title">Products</h2></div> 
-                <div class="add-products" style="
-            "><i class="fa-regular fa-circle-left"></i>show products</div>
+               <div class="add-products">Amount : {{totalAmount}}</div>
+                <div class="add-products"><i class="fa-regular fa-circle-left"></i>show products</div>
                 </div>  
 
                 <div id="cartItems">
@@ -134,7 +134,20 @@
                     <mat-chip printTitle="invoice" printSectionId="invoice-container"
                     ngxPrint (click)=" downloadPDF()">Print</mat-chip>
                   </mat-chip-set>
+                 
+                 
+                 <div class="discount">
+                    <label>Discount Applicable</label>
+                    <input type="number" value="0" placeholder="Enter Discount Amount" class="discount-input" style="    height: 50px;
+    width: 80px;">
+                    <mat-form-field style="    width: 60px;height: 65px;">
+                        <mat-select [(ngModel)]="discountMetrics">
+                        <mat-option value="1">%</mat-option>
+                        <mat-option value="2">Rs</mat-option>
+                    </mat-select>
+                </mat-form-field>
 
+                 </div>
                   <mat-form-field>
                     <mat-label>Payment Method</mat-label>
                     <mat-select>

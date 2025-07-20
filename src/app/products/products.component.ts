@@ -1,6 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { MatTableModule } from '@angular/material/table';
+import { ChangeDetectionStrategy } from '@angular/core';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatFormFieldModule } from '@angular/material/form-field';
 interface Product {
   id: number;
   name: string;
@@ -10,7 +14,8 @@ interface Product {
 }
 @Component({
   selector: 'app-products',
-  imports: [CommonModule,FormsModule],
+  imports: [CommonModule,FormsModule,MatTableModule, MatFormFieldModule,
+    MatExpansionModule],
   templateUrl: './products.component.html',
   styleUrl: './products.component.css'
 })
@@ -22,7 +27,7 @@ export class ProductsComponent {
   priceRange: string = '';
   stockFilter: string = '';
   sortBy: string = 'name';
-  
+  displayedColumns: string[] = ['id', 'name', 'category', 'price', 'quantity', 'Action'];
   products = [
     {
       id: 1,
@@ -66,6 +71,597 @@ export class ProductsComponent {
       image: 'https://via.placeholder.com/300x200/CD853F/000000?text=Premium+Beef'
     },
     {
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },
+    {
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },
+    {
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },
+    {
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },
+    {
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },
+    {
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },
+    {
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },{
       id: 5,
       name: 'Fresh Spinach',
       category: 'vegetables',

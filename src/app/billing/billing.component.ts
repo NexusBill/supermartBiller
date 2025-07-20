@@ -213,6 +213,17 @@ export class BillingComponent {
       phone: '9123456789'    }
   ];
   isPrinting: boolean = false;
+  isDiscountApplicable: boolean = false;
+  discountMetrics: any;
+  totalAmount: number = 0;
+  toggleDiscount() {
+    this.isDiscountApplicable = !this.isDiscountApplicable;
+    if (this.isDiscountApplicable) {
+      console.log('Discount is now applicable');
+    } else {
+      console.log('Discount is no longer applicable');
+    }
+  }
   downloadPDF(){
 this.isPrinting = true;
 this.loader = true;
