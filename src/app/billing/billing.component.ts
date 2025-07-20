@@ -130,6 +130,36 @@ export class BillingComponent {
       image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
     },
     {
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },
+    {
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },
+    {
+      id: 5,
+      name: 'Fresh Spinach',
+      category: 'vegetables',
+      price: 2.49,
+      stock: 30,
+      quantity: 1,
+      description: 'Fresh leafy spinach, packed with iron and vitamins',
+      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
+    },
+    {
       id: 6,
       name: 'Orange Juice',
       category: 'beverages',

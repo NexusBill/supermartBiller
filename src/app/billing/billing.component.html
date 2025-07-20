@@ -1,5 +1,6 @@
 <script src="https://kit.fontawesome.com/32f93e1582.js" crossorigin="anonymous"></script>
 
+
 <div class="main-content">
     <div class="main-content" style="display: flex; flex-direction: column;">
         <mat-expansion-panel>
@@ -47,9 +48,13 @@
         </mat-expansion-panel>
 
 
-        <div class="products" style="display: flex;flex-direction: row;">
+        <div class="products" style="display: flex;flex-direction: column;">
             <div class="billing-section">
-                <h2 class="section-title">Products</h2>
+              <div class="head" style="display: flex;flex-direction: row;">
+               <div class="title"><h2 class="section-title">Products</h2></div> 
+                <div class="add-products" style="
+            "><i class="fa-regular fa-circle-left"></i>show products</div>
+                </div>  
 
                 <div id="cartItems">
                     <div class="empty-cart" id="emptyCart" *ngIf="dataSource.length === 0">
@@ -160,8 +165,8 @@
 <footer class="bg-body-tertiary text-center text-lg-start" id="footer">
     <!-- Copyright -->
     <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
-      © 2020 Copyright:
-      <a class="text-body" href="https://mdbootstrap.com/">MDBootstrap.com</a>
+      © 2025-30 Copyright:
+      <a class="text-body" href="#">Nexusbills</a>
     </div>
     <!-- Copyright -->
   </footer>
