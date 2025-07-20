@@ -15,6 +15,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { trigger, state, style, transition, animate } from '@angular/animations';
+import {MatChipsModule} from '@angular/material/chips';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 export interface PeriodicElement {
   name: string;
@@ -40,7 +42,9 @@ const ELEMENT_DATA: PeriodicElement[] = [
   imports: [CommonModule, FormsModule,NgxPrintModule,MatTableModule,MatFormFieldModule,
     MatInputModule,
     MatIconModule,
+    MatChipsModule,
     MatOptionModule,
+    MatProgressSpinnerModule,
     MatSelectModule,
     MatCardModule,
     MatAutocompleteModule,
@@ -67,11 +71,12 @@ const ELEMENT_DATA: PeriodicElement[] = [
   styleUrl: './billing.component.css'
 })
 export class BillingComponent {
-  displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
+  displayedColumns: string[] = ['position', 'name', 'weight', 'symbol', 'Action'];
   dataSource = ELEMENT_DATA;
    panelOpenState = signal(false);
    showSidePanel:boolean = false;
    isPanelExpanded: boolean = false;
+   loader: boolean = false;
    products = [
     {
       id: 1,
@@ -139,6 +144,7 @@ export class BillingComponent {
   resetForm() {
     this.editingProduct = null;
   }
+  
   openAddPanel() {
     this.showSidePanel = true;
     this.editingProduct = null;
@@ -179,6 +185,7 @@ export class BillingComponent {
   isPrinting: boolean = false;
   downloadPDF(){
 this.isPrinting = true;
+this.loader = true;
   }
   currentDate: Date = new Date();
   selectedCustomer: any = null;

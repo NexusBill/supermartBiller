@@ -2,45 +2,6 @@
 
 <div class="main-content">
     <div class="main-content" style="display: flex; flex-direction: column;">
-        <!-- Products Section -->
-        <!-- <div class="head" style="display: flex;margin-left: 5px;flex-direction: row;gap:10px;justify-content: space-between;">
-            <div class="product-card" style="margin-left: 10px;">
-                <div class="product-info">
-                    <label for="customerDropdown" style="font-weight: 800;font-size: large;">Select Customer:</label>
-                    <select id="customerDropdown" class="form-select" (change)="onCustomerChange($event)">
-                        <option value="" disabled selected>Select Customer</option>
-                        <option *ngFor="let customer of customers" [value]="customer.id"
-                            style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">
-                            {{ customer.name }}
-                        </option>
-                    </select>
-                </div>
-
-                <div class="customer-deals" *ngIf="selectedCustomer">
-                    <p>Phone: {{ selectedCustomer.phone }}</p>
-                </div>
-            </div>
-            <div class="product-card">
-                <label for="customerDropdown" style="font-weight: 800;">Select Customer:</label>
-
-                5 Nos
-            </div>
-            <div class="product-card" style="justify-content: space-between;">
-                <button class="btn btn-primary d-flex justify-content-between align-items-center p-0" style="width: 240px; height: 54px; margin-bottom: 2.5px; padding: 0 12px;"  printTitle="invoice" printSectionId="invoice-container"
-                ngxPrint (click)=" downloadPDF()">
-                    <span style="margin:0px 4px">Print Bill</span>
-                    <img src="assets/printer-2-svgrepo-com.svg" alt="Print Icon" height="30px" width="40px" />
-                  </button>
-                <button class="btn btn-primary" style="width: 110px;height: 55px;margin-right: 15px;">
-                    <img src="assets/download-svgrepo-com.svg" alt="Download Icon" height="30px" width="25px" />
-                </button>
-                <button class="btn btn-primary" style="width: 112px;height: 55px;">
-                    <img src="assets/whatsapp-icon-logo-svgrepo-com.svg" alt="Whatsapp Icon" height="30px" width="20px" />
-                </button>
-            </div>
-        </div> -->
-        <!-- Billing Section -->
-
         <mat-expansion-panel>
             <mat-expansion-panel-header>
                 <mat-panel-title> Customer Details </mat-panel-title>
@@ -98,173 +59,114 @@
 
 
                     <div class="table-container">
-                        <table mat-table [dataSource]="dataSource" class="elite-table">
+                        <table mat-table [dataSource]="products" class="elite-table">
 
                             <!-- Position Column -->
                             <ng-container matColumnDef="position">
-                                <th mat-header-cell *matHeaderCellDef class="header-cell">
+                                <th mat-header-cell *matHeaderCellDef class="header-cell" style="width: 10%;">
                                     <span class="header-text">No.</span>
                                 </th>
-                                <td mat-cell *matCellDef="let element" class="data-cell">
-                                    <span class="position-badge">{{element.position}}</span>
+                                <td mat-cell *matCellDef="let element" class="data-cell" style="width: 10%;">
+                                    <span class="position-badge">{{element.name}}</span>
                                 </td>
                             </ng-container>
 
                             <!-- Name Column -->
-                            <ng-container matColumnDef="name">
-                                <th mat-header-cell *matHeaderCellDef class="header-cell">
+                            <ng-container matColumnDef="name" >
+                                <th mat-header-cell *matHeaderCellDef class="header-cell" style="width: 40% !important;">
                                     <span class="header-text">Name</span>
                                 </th>
-                                <td mat-cell *matCellDef="let element" class="data-cell name-cell">
+                                <td mat-cell *matCellDef="let element" class="data-cell name-cell" style="width: 40% !important;">
                                     <span class="name-text">{{element.name}}</span>
                                 </td>
                             </ng-container>
 
                             <!-- Weight Column -->
-                            <ng-container matColumnDef="weight">
-                                <th mat-header-cell *matHeaderCellDef class="header-cell">
-                                    <span class="header-text">Weight</span>
+                            <ng-container matColumnDef="weight" >
+                                <th mat-header-cell *matHeaderCellDef class="header-cell" style="width: 20% !important;">
+                                    <span class="header-text">Quantity</span>
                                 </th>
-                                <td mat-cell *matCellDef="let element" class="data-cell">
-                                    <span class="weight-value">{{element.weight}}</span>
+                                <td mat-cell *matCellDef="let element" class="data-cell" style="width: 20% !important;">
+                                    <span class="weight-value">{{element.quantity}}</span>
                                     <span class="weight-unit">kg</span>
                                 </td>
                             </ng-container>
 
                             <!-- Symbol Column -->
-                            <ng-container matColumnDef="symbol">
-                                <th mat-header-cell *matHeaderCellDef class="header-cell">
-                                    <span class="header-text">Symbol</span>
+                            <ng-container matColumnDef="symbol" >
+                                <th mat-header-cell *matHeaderCellDef class="header-cell" style="width: 20% !important;">
+                                    <span class="header-text">Price</span>
                                 </th>
-                                <td mat-cell *matCellDef="let element" class="data-cell">
-                                    <span class="symbol-badge">{{element.symbol}}</span>
+                                <td mat-cell *matCellDef="let element" class="data-cell" style="width: 20% !important;">
+                                    <span class="symbol-badge">{{element.price}}</span>
                                 </td>
                             </ng-container>
+                            <ng-container matColumnDef="Action" sticky >
+                                <th mat-header-cell *matHeaderCellDef class="header-cell sticky-action" style="width: 10% !important;">
+                                  <span class="header-text">Action</span>
+                                </th>
+                                <td mat-cell *matCellDef="let element" class="data-cell sticky-action" style="width: 10% !important;">
+                                    <div class="action-buttons">
+                                       
+                                        <button class="btn-delete">
+                                          <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                      </div>
+                                </td>
+                              </ng-container>
 
                             <tr mat-header-row *matHeaderRowDef="displayedColumns" class="header-row"></tr>
                             <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="data-row"></tr>
                         </table>
                     </div>
                 </div>
+                <div class="table-footer">
+                <mat-chip-set aria-label="Fish selection" style="justify-content: space-between;">
+                    <mat-chip>Number Of Products {{'10'}}</mat-chip>
+                    <mat-chip>Total Price {{''}}</mat-chip>
+                    <mat-chip>Download Bill</mat-chip>
+                    <mat-chip>Whatsapp</mat-chip>
+                    <mat-chip printTitle="invoice" printSectionId="invoice-container"
+                    ngxPrint (click)=" downloadPDF()">Print</mat-chip>
+                  </mat-chip-set>
 
+                  <mat-form-field>
+                    <mat-label>Payment Method</mat-label>
+                    <mat-select>
+                     
+                        <mat-option  value=cash >{{'Cash'}}</mat-option>
+                        <mat-option value=card>{{'Card'}}</mat-option>
+                        <mat-option  value=upi>{{'UPI'}}</mat-option>
+                    
+                    </mat-select>
+                  </mat-form-field>
+                </div>
                 <div class="total-section" id="totalSection" style="display: none;">
                     <div class="total-amount">Total: ₹<span id="totalAmount">0.00</span></div>
                     <div>Items: <span id="totalItems">0</span></div>
                     <button class="checkout-btn" onclick="checkout()">Proceed to Checkout</button>
                 </div>
             </div>
-             <div class="add-product-section" style="margin:10px 0px">
-      <button class="add-btn" (click)="openAddPanel()">
-        <i class="fas fa-plus"></i> Add Product
-      </button>
-    </div>
-            <mat-expansion-panel (opened)="isPanelExpanded = true" (closed)="isPanelExpanded = false">
-                <mat-expansion-panel-header>
-                    <mat-panel-title> Products Catalog </mat-panel-title>
-                    <mat-panel-description>
-                        Browse and add products to your cart
-                    </mat-panel-description>
-                </mat-expansion-panel-header>
-                <div class="products-section" *ngIf="isPanelExpanded">
-
-               
-                    <h2 class="section-title">Products Catalog</h2>
-    
-                    <div class="search-bar">
-                        <input type="text" placeholder="Search products..." id="searchInput">
-                    </div>
-    
-                    <div class="category-filters">
-                        <div class="dropdown">
-                            <select id="categoryFilter">
-                                <option value="">All Categories</option>
-                                <option value="fruits">Fruits</option>
-                                <option value="vegetables">Vegetables</option>
-                                <option value="dairy">Dairy</option>
-                                <option value="snacks">Snacks</option>
-                                <option value="beverages">Beverages</option>
-                            </select>
-                        </div>
-                        <div class="dropdown">
-                            <select id="brandFilter">
-                                <option value="">All Brands</option>
-                                <option value="fresh">Fresh</option>
-                                <option value="organic">Organic</option>
-                                <option value="premium">Premium</option>
-                            </select>
-                        </div>
-                        <div class="dropdown">
-                            <select id="priceFilter">
-                                <option value="">All Prices</option>
-                                <option value="low">Under ₹50</option>
-                                <option value="medium">₹50 - ₹200</option>
-                                <option value="high">Above ₹200</option>
-                            </select>
-                        </div>
-                    </div>
-    
-                    <div class="products-grid" id="productsGrid" >
-                        <!-- Sample Products -->
-                        <div class="product-card" data-category="fruits" data-brand="fresh" data-price="60">
-                            <div class="product-info">
-                                <div class="product-name">Fresh Apples</div>
-                                <div class="product-category">Fruits • Fresh</div>
-                                <div class="product-price">₹60.00 /kg</div>
-                            </div>
-                            <button class="add-btn" onclick="addToCart('Fresh Apples', 60)">Add to Cart</button>
-                        </div>
-    
-                        <div class="product-card" data-category="vegetables" data-brand="organic" data-price="40">
-                            <div class="product-info">
-                                <div class="product-name">Organic Tomatoes</div>
-                                <div class="product-category">Vegetables • Organic</div>
-                                <div class="product-price">₹40.00 /kg</div>
-                            </div>
-                            <button class="add-btn" onclick="addToCart('Organic Tomatoes', 40)">Add to Cart</button>
-                        </div>
-    
-                        <div class="product-card" data-category="dairy" data-brand="premium" data-price="80">
-                            <div class="product-info">
-                                <div class="product-name">Premium Milk</div>
-                                <div class="product-category">Dairy • Premium</div>
-                                <div class="product-price">₹80.00 /liter</div>
-                            </div>
-                            <button class="add-btn" onclick="addToCart('Premium Milk', 80)">Add to Cart</button>
-                        </div>
-    
-                        <div class="product-card" data-category="snacks" data-brand="fresh" data-price="25">
-                            <div class="product-info">
-                                <div class="product-name">Potato Chips</div>
-                                <div class="product-category">Snacks • Fresh</div>
-                                <div class="product-price">₹25.00 /pack</div>
-                            </div>
-                            <button class="add-btn" onclick="addToCart('Potato Chips', 25)">Add to Cart</button>
-                        </div>
-    
-                        <div class="product-card" data-category="beverages" data-brand="premium" data-price="120">
-                            <div class="product-info">
-                                <div class="product-name">Orange Juice</div>
-                                <div class="product-category">Beverages • Premium</div>
-                                <div class="product-price">₹120.00 /bottle</div>
-                            </div>
-                            <button class="add-btn" onclick="addToCart('Orange Juice', 120)">Add to Cart</button>
-                        </div>
-    
-                        <div class="product-card" data-category="dairy" data-brand="organic" data-price="150">
-                            <div class="product-info">
-                                <div class="product-name">Organic Cheese</div>
-                                <div class="product-category">Dairy • Organic</div>
-                                <div class="product-price">₹150.00 /pack</div>
-                            </div>
-                            <button class="add-btn" onclick="addToCart('Organic Cheese', 150)">Add to Cart</button>
-                        </div>
-                    </div>
-                </div>
-            </mat-expansion-panel>
             
         </div>
     </div>
 </div>
+<!-- <div class="spinner" style="background-color: rgba(252, 251, 250, 0.63);z-index: 900;" *ngIf="loader">
+  <mat-spinner diameter="50" color="primary"></mat-spinner>
+  <p>Loading...</p>
+  <p>Please wait while we process your request.</p>
+</div> -->
+
+<footer class="bg-body-tertiary text-center text-lg-start" id="footer">
+    <!-- Copyright -->
+    <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
+      © 2020 Copyright:
+      <a class="text-body" href="https://mdbootstrap.com/">MDBootstrap.com</a>
+    </div>
+    <!-- Copyright -->
+  </footer>
+
+
 <div id="invoice-container" style="display: none;">
 
     <div class="receipt-container"
@@ -395,78 +297,3 @@
     </div>
 
 </div>
-
-
-
- <!-- Side Panel -->
- <div class="side-panel" [class.active]="showSidePanel">
-    <div class="side-panel-header">
-      <h3>{{ editingProduct ? 'Edit Product' : 'Add New Product' }}</h3>
-      <button class="close-btn" (click)="closeSidePanel()">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
-
-    <div class="side-panel-content">
-      <form >
-        <!-- Product Name -->
-        <div class="form-group">
-          <label for="productName">Product Name</label>
-          <input 
-            type="text" 
-            id="productName"
-            name="name"
-            placeholder="Enter product name"
-            required>
-        </div>
-
-        <!-- Category -->
-        <!-- <div class="form-group">
-          <label for="category">Category</label>
-          <select 
-            id="category"
-            [(ngModel)]="productForm.category"
-            name="category"
-            required>
-            <option value="">Select Category</option>
-              {{ category }}
-            </option>
-          </select>
-        </div> -->
-
-        <!-- Price -->
-        <div class="form-group">
-          <label for="price">Price ($)</label>
-          <input 
-            type="number" 
-            id="price"
-            name="price"
-            placeholder="0.00"
-            step="0.01"
-            min="0"
-            required>
-        </div>
-
-        <!-- Quantity -->
-        <div class="form-group">
-          <label for="quantity">Quantity</label>
-          <select 
-            id="quantity"
-            name="quantity"
-            required>
-              
-          </select>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="form-actions">
-          <button type="button" class="cancel-btn" (click)="closeSidePanel()">
-            Cancel
-          </button>
-          <button type="submit" class="save-btn">
-            {{ editingProduct ? 'Update' : 'Save' }}
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>

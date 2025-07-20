@@ -12,15 +12,36 @@
     transition: margin-left 0.3s ease;
   }
   .table-container {
-    max-height: 600px; /* Adjust as needed */
+    max-height: 480px; /* Adjust as needed */
     overflow-y: auto;
     border-radius: 12px;
     box-shadow: 0 8px 32px rgba(37, 99, 235, 0.12);
     background: #ffffff;
     border: 1px solid rgba(37, 99, 235, 0.08);
-    margin: 20px 0;
+    margin: 10px 0;
   }
-  
+ .table-footer{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+    font-size: 14px;
+    color: #334155;
+
+  }
+  #footer {
+    background-color: #f8fafc;
+    padding: 20px;
+    text-align: center;
+    color: #334155;
+    font-size: 14px;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+
+  }
   /* Custom Scrollbar */
   .table-container::-webkit-scrollbar {
     width: 6px;
@@ -251,7 +272,7 @@
 }
 
 .billing-section {
-    width: 70%;
+    width: 100%;
     background: white;
     padding: 25px;
     border-radius: 10px;
@@ -938,4 +959,38 @@ background: #555;
 .separator {
 border-bottom: 1px dashed #333;
 margin: 8px 0;
+}
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+.action-buttons button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  color: #fff;
+}
+
+
+.action-buttons .btn-delete {
+  background: #f44336;
+}
+
+.action-buttons .btn-delete:hover {
+  background: #e53935;
+  transform: translateY(-1px);
+}
+
+.action-buttons i {
+  font-size: 14px;
 }
