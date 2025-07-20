@@ -299,7 +299,7 @@ export class AppComponent {
   isCategoriesActive() {
     this.resetAllTabs();
     this.isCategories = true;
-    this.router.navigate(['/categories']);
+    this.router.navigate(['/category']);
   }
   isBillingActive() {
     this.resetAllTabs();

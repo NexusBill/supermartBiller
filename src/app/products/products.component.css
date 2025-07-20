@@ -1077,7 +1077,9 @@ margin: 8px 0;
 .action-buttons .btn-delete {
   background: #f44336;
 }
-
+.action-buttons .btn-edit {
+  background: #04ac58;
+}
 .action-buttons .btn-delete:hover {
   background: #e53935;
   transform: translateY(-1px);
