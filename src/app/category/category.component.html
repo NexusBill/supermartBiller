@@ -1,321 +1,44 @@
 <div class="container">
     <!-- Header -->
     <div class="header">
-        <div class="header-content">
-            <h1><i class="fas fa-store"></i> Category Management</h1>
-            <button class="btn-primary" onclick="openAddModal()">
-                <i class="fas fa-plus"></i>
-                Add Category
-            </button>
-        </div>
+        <h1>Category Management</h1>
+        <p>Add new Categories</p>
     </div>
 
-    <!-- Controls Section -->
-    <div class="controls-section">
-        <div class="search-container">
-            <i class="fas fa-search search-icon"></i>
-            <input type="text" class="search-input" placeholder="Search categories..." id="searchInput" oninput="searchCategories()">
-        </div>
-
-        <div class="stats-grid">
-            <div class="stat-card">
-                <h3 id="totalCategories">10</h3>
-                <p><i class="fas fa-list"></i> Total Categories</p>
-            </div>
-            <div class="stat-card">
-                <h3 id="activeCategories">10</h3>
-                <p><i class="fas fa-check-circle"></i> Active Categories</p>
-            </div>
-            <div class="stat-card">
-                <h3 id="totalItems">1847</h3>
-                <p><i class="fas fa-boxes"></i> Total Items</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Categories Section -->
-    <div class="categories-section">
-        <div class="categories-grid" id="categoriesGrid">
-            <!-- Fresh Produce -->
-            <div class="category-card" data-name="fresh produce" data-description="fruits vegetables fresh herbs">
-                <div class="category-header">
-                    <h3 class="category-name">Fresh Produce</h3>
-                    <span class="status-badge status-active">Active</span>
-                </div>
-                <p class="category-description">Fruits, vegetables, and fresh herbs</p>
-                <div class="category-stats">
-                    <i class="fas fa-box"></i>
-                    <span>245 items</span>
-                </div>
-                <div class="category-actions">
-                    <button class="btn-icon btn-edit" onclick="editCategory(this)" title="Edit">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="btn-icon btn-toggle" onclick="toggleStatus(this)" title="Toggle Status">
-                        <i class="fas fa-toggle-on"></i>
-                    </button>
-                    <button class="btn-icon btn-delete" onclick="deleteCategory(this)" title="Delete">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Dairy & Eggs -->
-            <div class="category-card" data-name="dairy eggs" data-description="milk cheese yogurt eggs">
-                <div class="category-header">
-                    <h3 class="category-name">Dairy & Eggs</h3>
-                    <span class="status-badge status-active">Active</span>
-                </div>
-                <p class="category-description">Milk, cheese, yogurt, and eggs</p>
-                <div class="category-stats">
-                    <i class="fas fa-box"></i>
-                    <span>89 items</span>
-                </div>
-                <div class="category-actions">
-                    <button class="btn-icon btn-edit" onclick="editCategory(this)" title="Edit">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="btn-icon btn-toggle" onclick="toggleStatus(this)" title="Toggle Status">
-                        <i class="fas fa-toggle-on"></i>
-                    </button>
-                    <button class="btn-icon btn-delete" onclick="deleteCategory(this)" title="Delete">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Meat & Seafood -->
-            <div class="category-card" data-name="meat seafood" data-description="fresh frozen meat poultry seafood">
-                <div class="category-header">
-                    <h3 class="category-name">Meat & Seafood</h3>
-                    <span class="status-badge status-active">Active</span>
-                </div>
-                <p class="category-description">Fresh and frozen meat, poultry, and seafood</p>
-                <div class="category-stats">
-                    <i class="fas fa-box"></i>
-                    <span>156 items</span>
-                </div>
-                <div class="category-actions">
-                    <button class="btn-icon btn-edit" onclick="editCategory(this)" title="Edit">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="btn-icon btn-toggle" onclick="toggleStatus(this)" title="Toggle Status">
-                        <i class="fas fa-toggle-on"></i>
-                    </button>
-                    <button class="btn-icon btn-delete" onclick="deleteCategory(this)" title="Delete">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Bakery -->
-            <div class="category-card" data-name="bakery" data-description="fresh bread pastries baked goods">
-                <div class="category-header">
-                    <h3 class="category-name">Bakery</h3>
-                    <span class="status-badge status-active">Active</span>
-                </div>
-                <p class="category-description">Fresh bread, pastries, and baked goods</p>
-                <div class="category-stats">
-                    <i class="fas fa-box"></i>
-                    <span>78 items</span>
-                </div>
-                <div class="category-actions">
-                    <button class="btn-icon btn-edit" onclick="editCategory(this)" title="Edit">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="btn-icon btn-toggle" onclick="toggleStatus(this)" title="Toggle Status">
-                        <i class="fas fa-toggle-on"></i>
-                    </button>
-                    <button class="btn-icon btn-delete" onclick="deleteCategory(this)" title="Delete">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Pantry Staples -->
-            <div class="category-card" data-name="pantry staples" data-description="rice pasta oils cooking essentials">
-                <div class="category-header">
-                    <h3 class="category-name">Pantry Staples</h3>
-                    <span class="status-badge status-active">Active</span>
-                </div>
-                <p class="category-description">Rice, pasta, oils, and cooking essentials</p>
-                <div class="category-stats">
-                    <i class="fas fa-box"></i>
-                    <span>312 items</span>
-                </div>
-                <div class="category-actions">
-                    <button class="btn-icon btn-edit" onclick="editCategory(this)" title="Edit">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="btn-icon btn-toggle" onclick="toggleStatus(this)" title="Toggle Status">
-                        <i class="fas fa-toggle-on"></i>
-                    </button>
-                    <button class="btn-icon btn-delete" onclick="deleteCategory(this)" title="Delete">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Frozen Foods -->
-            <div class="category-card" data-name="frozen foods" data-description="frozen vegetables meals desserts">
-                <div class="category-header">
-                    <h3 class="category-name">Frozen Foods</h3>
-                    <span class="status-badge status-active">Active</span>
-                </div>
-                <p class="category-description">Frozen vegetables, meals, and desserts</p>
-                <div class="category-stats">
-                    <i class="fas fa-box"></i>
-                    <span>198 items</span>
-                </div>
-                <div class="category-actions">
-                    <button class="btn-icon btn-edit" onclick="editCategory(this)" title="Edit">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="btn-icon btn-toggle" onclick="toggleStatus(this)" title="Toggle Status">
-                        <i class="fas fa-toggle-on"></i>
-                    </button>
-                    <button class="btn-icon btn-delete" onclick="deleteCategory(this)" title="Delete">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Beverages -->
-            <div class="category-card" data-name="beverages" data-description="soft drinks juices water alcoholic beverages">
-                <div class="category-header">
-                    <h3 class="category-name">Beverages</h3>
-                    <span class="status-badge status-active">Active</span>
-                </div>
-                <p class="category-description">Soft drinks, juices, water, and alcoholic beverages</p>
-                <div class="category-stats">
-                    <i class="fas fa-box"></i>
-                    <span>167 items</span>
-                </div>
-                <div class="category-actions">
-                    <button class="btn-icon btn-edit" onclick="editCategory(this)" title="Edit">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="btn-icon btn-toggle" onclick="toggleStatus(this)" title="Toggle Status">
-                        <i class="fas fa-toggle-on"></i>
-                    </button>
-                    <button class="btn-icon btn-delete" onclick="deleteCategory(this)" title="Delete">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Snacks & Confectionery -->
-            <div class="category-card" data-name="snacks confectionery" data-description="chips chocolates sweet treats">
-                <div class="category-header">
-                    <h3 class="category-name">Snacks & Confectionery</h3>
-                    <span class="status-badge status-active">Active</span>
-                </div>
-                <p class="category-description">Chips, chocolates, and sweet treats</p>
-                <div class="category-stats">
-                    <i class="fas fa-box"></i>
-                    <span>134 items</span>
-                </div>
-                <div class="category-actions">
-                    <button class="btn-icon btn-edit" onclick="editCategory(this)" title="Edit">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="btn-icon btn-toggle" onclick="toggleStatus(this)" title="Toggle Status">
-                        <i class="fas fa-toggle-on"></i>
-                    </button>
-                    <button class="btn-icon btn-delete" onclick="deleteCategory(this)" title="Delete">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Health & Beauty -->
-            <div class="category-card" data-name="health beauty" data-description="personal care cosmetics health products">
-                <div class="category-header">
-                    <h3 class="category-name">Health & Beauty</h3>
-                    <span class="status-badge status-active">Active</span>
-                </div>
-                <p class="category-description">Personal care, cosmetics, and health products</p>
-                <div class="category-stats">
-                    <i class="fas fa-box"></i>
-                    <span>223 items</span>
-                </div>
-                <div class="category-actions">
-                    <button class="btn-icon btn-edit" onclick="editCategory(this)" title="Edit">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="btn-icon btn-toggle" onclick="toggleStatus(this)" title="Toggle Status">
-                        <i class="fas fa-toggle-on"></i>
-                    </button>
-                    <button class="btn-icon btn-delete" onclick="deleteCategory(this)" title="Delete">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Household & Cleaning -->
-            <div class="category-card" data-name="household cleaning" data-description="cleaning supplies household essentials">
-                <div class="category-header">
-                    <h3 class="category-name">Household & Cleaning</h3>
-                    <span class="status-badge status-active">Active</span>
-                </div>
-                <p class="category-description">Cleaning supplies and household essentials</p>
-                <div class="category-stats">
-                    <i class="fas fa-box"></i>
-                    <span>145 items</span>
-                </div>
-                <div class="category-actions">
-                    <button class="btn-icon btn-edit" onclick="editCategory(this)" title="Edit">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="btn-icon btn-toggle" onclick="toggleStatus(this)" title="Toggle Status">
-                        <i class="fas fa-toggle-on"></i>
-                    </button>
-                    <button class="btn-icon btn-delete" onclick="deleteCategory(this)" title="Delete">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <div class="no-results" id="noResults" style="display: none;">
-            <i class="fas fa-search"></i>
-            <h3>No categories found</h3>
-            <p>Try adjusting your search criteria</p>
-        </div>
-    </div>
-</div>
-
-<!-- Add/Edit Category Modal -->
-<div class="modal" id="categoryModal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 id="modalTitle">Add New Category</h2>
-            <button class="close-btn" onclick="closeModal()">&times;</button>
-        </div>
-        <div class="modal-body">
-            <form id="categoryForm">
+    <div class="main-content">
+        <!-- Customer Addition Form -->
+        <div class="customer-form-section">
+            <h2 class="form-title">Add New Category</h2>
+            <form id="customerForm">
                 <div class="form-group">
-                    <label for="categoryName">Category Name *</label>
-                    <input type="text" id="categoryName" class="form-control" placeholder="Enter category name" required>
+                    <label class="form-label" for="customerName">Customer Name *</label>
+                    <input type="text" id="customerName" name="customerName" class="form-input" [(ngModel)]="categoryName" placeholder="Enter customer name" required>
                 </div>
+
                 <div class="form-group">
-                    <label for="categoryDescription">Description *</label>
-                    <textarea id="categoryDescription" class="form-control" rows="3" placeholder="Enter category description" required></textarea>
+                    <label class="form-label" for="customerName">Description *</label>
+                    <input type="text" id="customerName" name="customerName" class="form-input"   [(ngModel)]="categoryDescription"  placeholder="Enter customer name" required>
                 </div>
+
+
+              
+
                 <div class="form-group">
-                    <label for="categoryStatus">Status</label>
-                    <select id="categoryStatus" class="form-control">
-                        <option value="active">Active</option>
-                        <option value="inactive">Inactive</option>
-                    </select>
+                    <button type="submit" class="btn btn-primary" (click)="validateCategory()">Save</button>
+                    <button type="reset" class="btn btn-secondary">Clear</button>
                 </div>
             </form>
         </div>
-        <div class="form-actions">
-            <button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button>
-            <button type="button" class="btn-primary" onclick="saveCategory()">
-                <span id="saveButtonText">Add Category</span>
-            </button>
+
+        <!-- Customer List -->
+        <div class="customer-list-section">
+            <h2 class="form-title">Category List</h2>
+            
+            <div class="search-container">
+                <input type="text" id="searchCustomer" class="search-input" placeholder="Search customers...">
+            </div>
+            <app-tableview [tableData]="categoryData" [columnHeaders]="ColumnHeaders" [displayedColumns]="displayedColumns"></app-tableview>
+           
         </div>
     </div>
 </div>

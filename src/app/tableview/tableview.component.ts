@@ -58,8 +58,7 @@ ngOnInit() {
   this.dataSource.data = this.tableData;
   this.dataSource.paginator = this.paginator;
   this.dataSource.sort = this.sort;
-  this.displayedColumns=this.peopleData;
-  this.columnHeaders = ['Name', 'Age', 'City'];
+ 
 
 }
 
