@@ -53,7 +53,7 @@
               <div class="head" style="display: flex;flex-direction: row;">
                <div class="title"><h2 class="section-title">Products</h2></div> 
                <div class="add-products">Amount : {{totalAmount}}</div>
-                <div class="add-products"><i class="fa-regular fa-circle-left"></i>show products</div>
+                <div class="add-products" (click)="openAddPanel() "><i class="fa-regular fa-circle-left"></i>show products</div>
                 </div>  
 
                 <div id="cartItems">
@@ -64,15 +64,15 @@
 
 
                     <div class="table-container">
-                        <table mat-table [dataSource]="products" class="elite-table">
+                        <table mat-table [dataSource]="selectedProducts" class="elite-table">
 
                             <!-- Position Column -->
                             <ng-container matColumnDef="position">
                                 <th mat-header-cell *matHeaderCellDef class="header-cell" style="width: 10%;">
                                     <span class="header-text">No.</span>
                                 </th>
-                                <td mat-cell *matCellDef="let element" class="data-cell" style="width: 10%;">
-                                    <span class="position-badge">{{element.name}}</span>
+                                <td mat-cell *matCellDef="let element;let i = index" class="data-cell" style="width: 10%;">
+                                    <span class="position-badge">{{i+1}}</span>
                                 </td>
                             </ng-container>
 
@@ -92,7 +92,11 @@
                                     <span class="header-text">Quantity</span>
                                 </th>
                                 <td mat-cell *matCellDef="let element" class="data-cell" style="width: 20% !important;">
-                                    <span class="weight-value">{{element.quantity}}</span>
+                                    <input type="number"
+                                    [(ngModel)]="element.quantity"
+                                    (ngModelChange)="onQuantityChange(element)"
+                                    class="form-control quantity-input"
+                                    min="1" />
                                     <span class="weight-unit">kg</span>
                                 </td>
                             </ng-container>
@@ -127,8 +131,7 @@
                 </div>
                 <div class="table-footer">
                 <mat-chip-set aria-label="Fish selection" style="justify-content: space-between;">
-                    <mat-chip>Number Of Products {{'10'}}</mat-chip>
-                    <mat-chip>Total Price {{''}}</mat-chip>
+                    <mat-chip>Number Of Products {{selectedProducts.length}}</mat-chip>
                     <mat-chip>Download Bill</mat-chip>
                     <mat-chip>Whatsapp</mat-chip>
                     <mat-chip printTitle="invoice" printSectionId="invoice-container"
@@ -192,7 +195,7 @@
         <!-- Shop Header -->
         <div class="shop-header"
             style="text-align: center; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 10px;">
-            <div class="shop-name" style="font-size: 16px; font-weight: bold; margin-bottom: 5px;">FRESHMART SUPERMARKET
+            <div class="shop-name" style="font-size: 16px; font-weight: bold; margin-bottom: 5px;">A2J SUPERMARKET
             </div>
             <div class="shop-address" style="font-size: 10px; font-weight: bold; margin-bottom: 3px;">123 Main Street, Mumbai</div>
             <div class="shop-address" style="font-size: 10px; font-weight: bold; margin-bottom: 3px;">Ph: +91 22 1234 5678</div>
@@ -223,49 +226,27 @@
 
         <!-- Items Section -->
         <div class="items-section" style="border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 10px;">
-            <div class="item-row"
-                style="display: flex; justify-content: space-between; margin-bottom: 3px; font-size: 11px;font-weight: bold; ">
-                <div class="item-name" style="flex: 1; margin-right: 10px;">Fresh Apples</div>
-                <div class="item-qty-price" style="white-space: nowrap;">2x120</div>
-                <div class="item-total" style="width: 50px; text-align: right;">240.00</div>
+            <div *ngFor="let item of selectedProducts" class="item-row"
+              style="display: flex; justify-content: space-between; margin-bottom: 3px; font-size: 11px; font-weight: bold;">
+              
+              <div class="item-name" style="flex: 1; margin-right: 10px;">{{ item.name }}</div>
+              <div class="item-qty-price" style="white-space: nowrap;">{{ item.quantity }}x{{ item.price }}</div>
+              <div class="item-total" style="width: 50px; text-align: right;">{{ item.quantity * item.price | number:'1.2-2' }}</div>
+            
             </div>
-            <div class="item-row"
-                style="display: flex; justify-content: space-between; margin-bottom: 3px; font-size: 11px;font-weight: bold; ">
-                <div class="item-name" style="flex: 1; margin-right: 10px;">Organic Milk</div>
-                <div class="item-qty-price" style="white-space: nowrap;">3x65</div>
-                <div class="item-total" style="width: 50px; text-align: right;">195.00</div>
-            </div>
-            <div class="item-row"
-                style="display: flex; justify-content: space-between; margin-bottom: 3px; font-size: 11px;font-weight: bold; ">
-                <div class="item-name" style="flex: 1; margin-right: 10px;">Wheat Bread</div>
-                <div class="item-qty-price" style="white-space: nowrap;">1x45</div>
-                <div class="item-total" style="width: 50px; text-align: right;">45.00</div>
-            </div>
-            <div class="item-row"
-                style="display: flex; justify-content: space-between; margin-bottom: 3px; font-size: 11px;font-weight: bold; ">
-                <div class="item-name" style="flex: 1; margin-right: 10px;">Basmati Rice</div>
-                <div class="item-qty-price" style="white-space: nowrap;">1x350</div>
-                <div class="item-total" style="width: 50px; text-align: right;">350.00</div>
-            </div>
-            <div class="item-row"
-                style="display: flex; justify-content: space-between; margin-bottom: 3px; font-size: 11px;font-weight: bold; ">
-                <div class="item-name" style="flex: 1; margin-right: 10px;">Olive Oil</div>
-                <div class="item-qty-price" style="white-space: nowrap;">1x280</div>
-                <div class="item-total" style="width: 50px; text-align: right;">280.00</div>
-            </div>
-        </div>
+          </div>
 
         <!-- Totals Section -->
         <div class="totals-section" style="font-size: 11px;font-weight: bold; ">
             <div class="total-row" style="display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 2px;">
                 <span>Subtotal:</span>
-                <span>1110.00</span>
+                <span>₹ {{totalAmount}}</span>
             </div>
             <div class="total-row" style="display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 2px;">
                 <span>Discount (5%):</span>
-                <span>-55.50</span>
+                <span>{{discountAmount}}</span>
             </div>
-            <div class="total-row" style="display: flex; justify-content: space-between;font-weight: bold;  margin-bottom: 2px;">
+            <!-- <div class="total-row" style="display: flex; justify-content: space-between;font-weight: bold;  margin-bottom: 2px;">
                 <span>CGST (9%):</span>
                 <span>94.91</span>
             </div>
@@ -281,14 +262,14 @@
                 style="display: flex; justify-content: space-between; font-weight: bold; font-size: 14px; border-top: 1px solid #333; border-bottom: 1px solid #333; padding: 5px 0; margin: 8px 0;">
                 <span>TOTAL:</span>
                 <span>₹1244.00</span>
-            </div>
+            </div> -->
         </div>
 
         <!-- Payment Info -->
         <div class="payment-info" style="font-size: 10px; font-weight: bold; margin-bottom: 10px;">
             <div class="total-row" style="display: flex; justify-content: space-between; margin-bottom: 2px;">
                 <span>Cash Paid:</span>
-                <span>₹1250.00</span>
+                <span>₹10.00</span>
             </div>
             <div class="total-row" style="display: flex; justify-content: space-between; margin-bottom: 2px;">
                 <span>Change:</span>
@@ -315,3 +296,18 @@
     </div>
 
 </div>
+
+<div class="products-panel" *ngIf="showSidePanel">
+    <div class="products-header">
+        <h2>Products</h2>
+        <button class="close-button" (click)="closeProductsPanel()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="products-list">
+        <div class="product-item" *ngFor="let product of products">
+            <span class="product-name">{{ product.name }}</span>
+            <span class="product-price">{{ product.price | currency:'INR' }}</span>
+            <button class="add-to-cart-button" (click)="addToCart(product)">Add to Cart</button>
+        </div>
+    </div>
+</div>
+

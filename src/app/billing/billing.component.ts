@@ -77,6 +77,7 @@ export class BillingComponent {
    showSidePanel:boolean = false;
    isPanelExpanded: boolean = false;
    loader: boolean = false;
+   selectedProducts: any[] = [];
    products = [
     {
       id: 1,
@@ -84,7 +85,9 @@ export class BillingComponent {
       category: 'dairy',
       price: 3.99,
       originalPrice: 4.99,
-      stock: 25,
+      stock: 25,      billprice: 0,
+
+
       quantity: 1,
       description: 'Fresh whole milk, rich in calcium and protein',
       image: 'https://via.placeholder.com/300x200/87CEEB/000000?text=Fresh+Milk'
@@ -95,7 +98,8 @@ export class BillingComponent {
       category: 'fruits',
       price: 5.99,
       stock: 15,
-      quantity: 1,
+      quantity: 1,      billprice: 0,
+
       description: 'Crisp and sweet organic apples, perfect for snacking',
       image: 'https://via.placeholder.com/300x200/FFB6C1/000000?text=Organic+Apples'
     },
@@ -106,6 +110,8 @@ export class BillingComponent {
       price: 2.99,
       stock: 8,
       quantity: 1,
+      billprice: 0,
+
       description: 'Freshly baked whole grain bread, healthy and delicious',
       image: 'https://via.placeholder.com/300x200/DEB887/000000?text=Whole+Grain+Bread'
     },
@@ -116,6 +122,8 @@ export class BillingComponent {
       price: 15.99,
       stock: 0,
       quantity: 1,
+      billprice: 0,
+
       description: 'High-quality beef cuts, perfect for grilling',
       image: 'https://via.placeholder.com/300x200/CD853F/000000?text=Premium+Beef'
     },
@@ -126,6 +134,8 @@ export class BillingComponent {
       price: 2.49,
       stock: 30,
       quantity: 1,
+      billprice: 0,
+
       description: 'Fresh leafy spinach, packed with iron and vitamins',
       image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
     },
@@ -135,6 +145,8 @@ export class BillingComponent {
       category: 'vegetables',
       price: 2.49,
       stock: 30,
+      billprice: 0,
+
       quantity: 1,
       description: 'Fresh leafy spinach, packed with iron and vitamins',
       image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
@@ -146,6 +158,7 @@ export class BillingComponent {
       price: 2.49,
       stock: 30,
       quantity: 1,
+      billprice: 0,
       description: 'Fresh leafy spinach, packed with iron and vitamins',
       image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
     },
@@ -156,6 +169,7 @@ export class BillingComponent {
       price: 2.49,
       stock: 30,
       quantity: 1,
+      billprice: 0,
       description: 'Fresh leafy spinach, packed with iron and vitamins',
       image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
     },
@@ -166,11 +180,55 @@ export class BillingComponent {
       price: 4.99,
       stock: 20,
       quantity: 1,
+      billPrice: 0,
       description: '100% pure orange juice, no added sugar',
       image: 'https://via.placeholder.com/300x200/FFA500/000000?text=Orange+Juice'
     }
   ];
   editingProduct: any = null;
+  discountAmount: number = 0;
+  onQuantityChange(product: any) {
+    if (product.quantity < 1) {
+      product.quantity = 1; // Ensure quantity is at least 1
+    }
+    this.loader = true;
+    let productExists = this.selectedProducts.find(p => p.id === product.id);
+    if (productExists) {
+      productExists.quantity = product.quantity; // Update quantity in selected products
+      this.totalAmount = this.selectedProducts.reduce((sum, p) => sum + (p.price * p.quantity), 0);
+      this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
+    } else {
+      this.selectedProducts.push({ ...product }); // Add new product with updated quantity
+      this.totalAmount += product.price * product.quantity; 
+      this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
+    }
+  }
+  deleteProduct(product: any) {
+    this.loader = true;
+    this.selectedProducts = this.selectedProducts.filter(p => p.id !== product.id);
+    this.totalAmount -= product.price * product.quantity;
+    this.totalAmount = parseFloat(this.totalAmount.toFixed(2));     
+  }
+  addToCart(product: any) {
+    debugger
+    let productExists = this.selectedProducts.find(p => p.id === product.id);
+    if (productExists) {
+      product.stock -= product.quantity;
+      productExists.quantity +=1;
+      this.loader = true;
+      this.totalAmount += product.price * (product.quantity-1);
+      this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
+      return;
+    }
+   else{
+      debugger
+      product.stock -= product.quantity;
+      this.loader = true;
+      this.selectedProducts = [...this.selectedProducts, product];
+      this.totalAmount += product.price * product.quantity;
+      this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
+    }
+  }
   resetForm() {
     this.editingProduct = null;
   }
@@ -189,13 +247,20 @@ export class BillingComponent {
      this.isPanelExpanded = true;
    }
  
+   closeProductsPanel(): void {
+     this.isPanelExpanded = false;
+     this.showSidePanel = false;
+     this.editingProduct = null;
+     this.resetForm();
+   }
    onPanelClosed(): void {
      this.isPanelExpanded = false;
    }
  
-   addToCart(productName: string, price: number): void {
-     console.log(`Added ${productName} (₹${price}) to cart!`);
-   }
+  editProduct(product: any) {
+    this.editingProduct = { ...product }; // Create a copy of the product for editing
+    this.showSidePanel = true;
+  } 
   customers = [
     {
       id: 1,
