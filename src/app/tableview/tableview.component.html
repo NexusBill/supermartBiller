@@ -1,4 +1,4 @@
-<div class="mat-elevation-z8">
+<div class="mat-elevation-z8"  style="overflow-y: auto; max-height: 100%;">
     <table mat-table [dataSource]="tableData" matSort class="w-full">
   
       <ng-container *ngFor="let column of displayedColumns; let i = index" [matColumnDef]="column">

@@ -33,9 +33,9 @@ validateCategory(){
   }
   this.openSnackBar('Category Added', 'Done');
 
-  this.categoryName = ''; 
-  this.categoryDescription = '';
-  this.categoryData.push({ name: this.categoryName, description: this.categoryDescription });
+  this.categoryData = [...this.categoryData, { name: this.categoryName, description: this.categoryDescription }]; // New array reference
+this.categoryName = '';
+this.categoryDescription = '';
   return true;
 }
 

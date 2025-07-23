@@ -31,13 +31,13 @@
         </div>
 
         <!-- Customer List -->
-        <div class="customer-list-section">
+        <div  style="max-height: 50%;">
             <h2 class="form-title">Category List</h2>
             
             <div class="search-container">
                 <input type="text" id="searchCustomer" class="search-input" placeholder="Search customers...">
             </div>
-            <app-tableview [tableData]="categoryData" [columnHeaders]="ColumnHeaders" [displayedColumns]="displayedColumns"></app-tableview>
+            <app-tableview [tableData]="categoryData" [columnHeaders]="ColumnHeaders" [displayedColumns]="displayedColumns" style="max-height: 50%;"></app-tableview>
            
         </div>
     </div>

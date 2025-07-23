@@ -68,6 +68,7 @@ ngOnInit() {
 
   // When input data changes, update the table
   ngOnChanges() {
+    debugger
     this.dataSource.data = this.tableData;
   }
 }

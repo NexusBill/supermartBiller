@@ -1,6 +1,7 @@
 table {
     width: 100%;
     cursor: pointer;
+    max-height: 100% ;
   }
   
   .mat-header-cell {

@@ -267,3 +267,12 @@ body {
         font-size: 2rem;
     }
 }
+.customer-list-section {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  
+  .search-container {
+    margin-bottom: 10px;
+  }
