@@ -17,6 +17,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 export interface PeriodicElement {
   name: string;
@@ -24,6 +25,8 @@ export interface PeriodicElement {
   weight: number;
   symbol: string;
 }
+
+
 
 const ELEMENT_DATA: PeriodicElement[] = [
   {position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H'},
@@ -45,6 +48,7 @@ const ELEMENT_DATA: PeriodicElement[] = [
     MatChipsModule,
     MatOptionModule,
     MatProgressSpinnerModule,
+    HttpClientModule,
     MatSelectModule,
     MatCardModule,
     MatAutocompleteModule,
@@ -71,6 +75,8 @@ const ELEMENT_DATA: PeriodicElement[] = [
   styleUrl: './billing.component.css'
 })
 export class BillingComponent {
+  //  displayedColumns: string[] = ['id',	'name',	'Category',	'QuantityOnHand'	,'UnitDesc',	'RetailPrice',	'SalePrice',	'MRP'	,'UnitPrice',	'EANCode','Action'];
+
   displayedColumns: string[] = ['position', 'name', 'weight', 'symbol', 'Action'];
   dataSource = ELEMENT_DATA;
    panelOpenState = signal(false);
@@ -78,116 +84,51 @@ export class BillingComponent {
    isPanelExpanded: boolean = false;
    loader: boolean = false;
    selectedProducts: any[] = [];
-   products = [
-    {
-      id: 1,
-      name: 'Fresh Milk',
-      category: 'dairy',
-      price: 3.99,
-      originalPrice: 4.99,
-      stock: 25,      billprice: 0,
+   ngOnInit() {
+    this.fetchFromExcel()  ;
+   }
+
+fetchFromExcel(){
+  const url = 'https://docs.google.com/spreadsheets/d/1bPXpxkY7K_L0oWqh7YYkrNqOrAb-56FFO3Gpv2pq8cQ/gviz/tq?tqx=out:json';
+  this.http.get(url, { responseType: 'text' }).subscribe((res: string) => {
+    // The response starts with "/O_o/google.visualization.Query.setResponse("
+    // and ends with ");" — you need to trim these parts
+    debugger;
+    const json = JSON.parse(
+      res.substring(47).slice(0, -2)
+    );
+    // Now json.table.rows holds your data
+    const rows = json.table.rows;
+  
+   
+    this.products = rows.map((row: any) => ({ 
+      id: row.c[0]?.v || '',
+      name: row.c[1]?.v || '',
+      Category: row.c[2]?.v || '',
+      quantity: 1,
+      UnitDesc:  row.c[4]?.v || '',
+      RetailPrice:  row.c[5]?.v || 0,
+      SalePrice: row.c[6]?.v || 0,
+      MRP:  row.c[7]?.v || 0,
+      UnitPrice: row.c[8]?.v || 0,
+      EANCode:  row.c[9]?.v || '', 
+    }));
+    console.log(this.products);
+
+  });
+
+}
 
 
-      quantity: 1,
-      description: 'Fresh whole milk, rich in calcium and protein',
-      image: 'https://via.placeholder.com/300x200/87CEEB/000000?text=Fresh+Milk'
-    },
-    {
-      id: 2,
-      name: 'Organic Apples',
-      category: 'fruits',
-      price: 5.99,
-      stock: 15,
-      quantity: 1,      billprice: 0,
 
-      description: 'Crisp and sweet organic apples, perfect for snacking',
-      image: 'https://via.placeholder.com/300x200/FFB6C1/000000?text=Organic+Apples'
-    },
-    {
-      id: 3,
-      name: 'Whole Grain Bread',
-      category: 'bakery',
-      price: 2.99,
-      stock: 8,
-      quantity: 1,
-      billprice: 0,
 
-      description: 'Freshly baked whole grain bread, healthy and delicious',
-      image: 'https://via.placeholder.com/300x200/DEB887/000000?text=Whole+Grain+Bread'
-    },
-    {
-      id: 4,
-      name: 'Premium Beef',
-      category: 'meat',
-      price: 15.99,
-      stock: 0,
-      quantity: 1,
-      billprice: 0,
-
-      description: 'High-quality beef cuts, perfect for grilling',
-      image: 'https://via.placeholder.com/300x200/CD853F/000000?text=Premium+Beef'
-    },
-    {
-      id: 5,
-      name: 'Fresh Spinach',
-      category: 'vegetables',
-      price: 2.49,
-      stock: 30,
-      quantity: 1,
-      billprice: 0,
-
-      description: 'Fresh leafy spinach, packed with iron and vitamins',
-      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
-    },
-    {
-      id: 5,
-      name: 'Fresh Spinach',
-      category: 'vegetables',
-      price: 2.49,
-      stock: 30,
-      billprice: 0,
-
-      quantity: 1,
-      description: 'Fresh leafy spinach, packed with iron and vitamins',
-      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
-    },
-    {
-      id: 5,
-      name: 'Fresh Spinach',
-      category: 'vegetables',
-      price: 2.49,
-      stock: 30,
-      quantity: 1,
-      billprice: 0,
-      description: 'Fresh leafy spinach, packed with iron and vitamins',
-      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
-    },
-    {
-      id: 5,
-      name: 'Fresh Spinach',
-      category: 'vegetables',
-      price: 2.49,
-      stock: 30,
-      quantity: 1,
-      billprice: 0,
-      description: 'Fresh leafy spinach, packed with iron and vitamins',
-      image: 'https://via.placeholder.com/300x200/90EE90/000000?text=Fresh+Spinach'
-    },
-    {
-      id: 6,
-      name: 'Orange Juice',
-      category: 'beverages',
-      price: 4.99,
-      stock: 20,
-      quantity: 1,
-      billPrice: 0,
-      description: '100% pure orange juice, no added sugar',
-      image: 'https://via.placeholder.com/300x200/FFA500/000000?text=Orange+Juice'
-    }
+  products: any[] = [
+   
   ];
   editingProduct: any = null;
   discountAmount: number = 0;
   onQuantityChange(product: any) {
+    debugger
     if (product.quantity < 1) {
       product.quantity = 1; // Ensure quantity is at least 1
     }
@@ -195,11 +136,11 @@ export class BillingComponent {
     let productExists = this.selectedProducts.find(p => p.id === product.id);
     if (productExists) {
       productExists.quantity = product.quantity; // Update quantity in selected products
-      this.totalAmount = this.selectedProducts.reduce((sum, p) => sum + (p.price * p.quantity), 0);
+      this.totalAmount = this.selectedProducts.reduce((sum, p) => sum + (p.MRP * p.quantity), 0);
       this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
     } else {
       this.selectedProducts.push({ ...product }); // Add new product with updated quantity
-      this.totalAmount += product.price * product.quantity; 
+      this.totalAmount += product.MRP * product.quantity; 
       this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
     }
   }
@@ -216,7 +157,7 @@ export class BillingComponent {
       product.stock -= product.quantity;
       productExists.quantity +=1;
       this.loader = true;
-      this.totalAmount += product.price * (product.quantity-1);
+      this.totalAmount += product.MRP ;
       this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
       return;
     }
@@ -225,7 +166,7 @@ export class BillingComponent {
       product.stock -= product.quantity;
       this.loader = true;
       this.selectedProducts = [...this.selectedProducts, product];
-      this.totalAmount += product.price * product.quantity;
+      this.totalAmount += product.MRP ;
       this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
     }
   }
@@ -299,5 +240,9 @@ this.loader = true;
   onCustomerChange(event: any) {
     const customerId = +event.target.value;
     this.selectedCustomer = this.customers.find(customer => customer.id === customerId);
+  }
+
+  constructor(private router: Router, private http: HttpClient) {
+
   }
 }
