@@ -94,15 +94,55 @@ export class BillingComponent {
     this.fetchFromExcel()  ;
    }
 
+   
+
+decreaseQuantity(product: any) {
+  debugger
+  
+   this.loader = true;
+   if (this.selectedProducts.find(p => p.id === product.id).quantity > 1) {
+     this.selectedProducts.find(p => p.id === product.id).quantity--;
+     this.totalAmount -= product.MRP; // Update total amount
+     this.totalAmount = parseFloat(this.totalAmount.toFixed(2)); // Ensure two decimal places
+   } else {
+     // If quantity is 1, remove the product from selectedProducts
+     this.selectedProducts = this.selectedProducts.filter(p => p.id !== product.id);
+   }
+   this.loader = true;
+   this.totalAmount = this.selectedProducts.reduce((sum, p) => sum + (p.MRP * p.quantity), 0);
+   this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
+   console.log(this.selectedProducts);
+ }
+ increaseQuantity(product: any) {
+   debugger
+ 
+   if (!this.selectedProducts.find(p => p.id === product.id)) {
+     this.selectedProducts.push({ ...product, quantity: 1 });
+   }
+   // Increment the quantity of the product in the selectedProducts array
+  else{
+   this.selectedProducts.find(p => p.id === product.id).quantity++;
+  }
+   this.loader = true;
+   this.totalAmount += product.MRP; // Update total amount
+   this.totalAmount = parseFloat(this.totalAmount.toFixed(2)); // Ensure two decimal places
+ }
+ 
+
    onCodeResult(result: string) {
-    console.log('Scanned code:', result);
+    console.log('Scanned code:--------------->', result);
     // You can process the scanned result here, e.g., search for the product in your products list
-    const scannedProduct = this.products.find(product => product.EANCode === result);
-    if (scannedProduct) {
-      this.addToCart(scannedProduct);
-    } else {
-      console.log('Product not found for scanned code:', result);
+    const scannedProduct = this.products.find(product => product.id === result);
+    if (!this.selectedProducts.find(product => product.id === result)) {
+      this.selectedProducts.push({ scannedProduct, quantity: 1 });
     }
+    // Increment the quantity of the product in the selectedProducts array
+   else{
+    this.selectedProducts.find(p => p.id === result).quantity++;
+   }
+    this.loader = true;
+    this.totalAmount += scannedProduct.MRP; // Update total amount
+    this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
   }
 
 
@@ -125,44 +165,6 @@ export class BillingComponent {
      console.log('Posted to Google Sheet', res);
    });
   }
-
-
-decreaseQuantity(product: any) {
- debugger
-  if (!this.selectedProducts.find(p => p.id === product.id)) {
-    this.selectedProducts.push({ ...product, quantity: 1 });
-  }
- else{
-  this.selectedProducts.find(p => p.id === product.id).quantity++;
- }
-  this.loader = true;
-  if (this.selectedProducts.find(p => p.id === product.id).quantity > 1) {
-    this.selectedProducts.find(p => p.id === product.id).quantity--;
-    this.totalAmount -= product.MRP; // Update total amount
-    this.totalAmount = parseFloat(this.totalAmount.toFixed(2)); // Ensure two decimal places
-  } else {
-    // If quantity is 1, remove the product from selectedProducts
-    this.selectedProducts = this.selectedProducts.filter(p => p.id !== product.id);
-  }
-  this.loader = true;
-  this.totalAmount = this.selectedProducts.reduce((sum, p) => sum + (p.MRP * p.quantity), 0);
-  this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
-  console.log(this.selectedProducts);
-}
-increaseQuantity(product: any) {
-  debugger
-
-  if (!this.selectedProducts.find(p => p.id === product.id)) {
-    this.selectedProducts.push({ ...product, quantity: 1 });
-  }
-  // Increment the quantity of the product in the selectedProducts array
- else{
-  this.selectedProducts.find(p => p.id === product.id).quantity++;
- }
-  this.loader = true;
-  this.totalAmount += product.MRP; // Update total amount
-  this.totalAmount = parseFloat(this.totalAmount.toFixed(2)); // Ensure two decimal places
-}
 
 
 
@@ -224,7 +226,7 @@ fetchFromExcel(){
   deleteProduct(product: any) {
     this.loader = true;
     this.selectedProducts = this.selectedProducts.filter(p => p.id !== product.id);
-    this.totalAmount -= product.price * product.quantity;
+    this.totalAmount -= product.MRP * product.quantity;
     this.totalAmount = parseFloat(this.totalAmount.toFixed(2));     
   }
   addToCart(product: any) {

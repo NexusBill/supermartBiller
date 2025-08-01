@@ -62,84 +62,44 @@
                         <p>Add products from the catalog to start billing</p>
                     </div>
 
-
                     <div class="table-container">
-                        <table mat-table [dataSource]="selectedProducts" class="elite-table">
-
-                            <!-- Position Column -->
-                            <ng-container matColumnDef="name">
-                                <th mat-header-cell *matHeaderCellDef class="header-cell" style="width: 10%;">
-                                    <span class="header-text">No.</span>
-                                </th>
-                                <td mat-cell *matCellDef="let element;let i = index" class="data-cell" style="width: 10%;">
-                                    <span class="position-badge">{{i+1}}</span>
-                                </td>
-                            </ng-container>
-
-                            <!-- Name Column -->
-                            <ng-container matColumnDef="mrp" >
-                                <th mat-header-cell *matHeaderCellDef class="header-cell" style="width: 40% !important;">
-                                    <span class="header-text">Name</span>
-                                </th>
-                                <td mat-cell *matCellDef="let element" class="data-cell name-cell" style="width: 40% !important;">
-                                    <span class="name-text">{{element.name}}</span>
-                                </td>
-                            </ng-container>
-
-                            <!-- Weight Column -->
-                           
-
-                            <!-- Symbol Column -->
-                            <ng-container matColumnDef="unit" >
-                                <th mat-header-cell *matHeaderCellDef class="header-cell" style="width: 20% !important;">
-                                    <span class="header-text">Price</span>
-                                </th>
-                                <td mat-cell *matCellDef="let element" class="data-cell" style="width: 20% !important;">
-                                    <span class="symbol-badge">{{element.price}}</span>
-                                </td>
-                            </ng-container>
-
-                            <ng-container matColumnDef="quantity" >
-                                <th mat-header-cell *matHeaderCellDef class="header-cell" style="width: 20% !important;">
-                                    <span class="header-text">Quantity</span>
-                                </th>
-                                <td mat-cell *matCellDef="let element" class="data-cell" style="width: 20% !important;">
-                                    <input type="number"
-                                    [(ngModel)]="element.quantity"
-                                    (ngModelChange)="onQuantityChange(element)"
-                                    class="form-control quantity-input"
-                                    min="1" />
-                                    <span class="weight-unit">kg</span>
-                                </td>
-                            </ng-container>
-
-
-                            <ng-container matColumnDef="price" >
-                                <th mat-header-cell *matHeaderCellDef class="header-cell" style="width: 20% !important;">
-                                    <span class="header-text">Price</span>
-                                </th>
-                                <td mat-cell *matCellDef="let element" class="data-cell" style="width: 20% !important;">
-                                    <span class="symbol-badge">{{element.price}}</span>
-                                </td>
-                            </ng-container>
-                            <ng-container matColumnDef="action" sticky >
-                                <th mat-header-cell *matHeaderCellDef class="header-cell sticky-action" style="width: 10% !important;">
-                                  <span class="header-text">Action</span>
-                                </th>
-                                <td mat-cell *matCellDef="let element" class="data-cell sticky-action" style="width: 10% !important;">
-                                    <div class="action-buttons">
-                                       
-                                        <button class="btn-delete">
-                                          <i class="fas fa-trash"></i> Delete
-                                        </button>
-                                      </div>
-                                </td>
-                              </ng-container>
-
-                            <tr mat-header-row *matHeaderRowDef="displayedColumns" class="header-row"></tr>
-                            <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="data-row"></tr>
+                        <table class="elite-table table table-bordered table-hover">
+                            <thead>
+                                <tr class="header-row">
+                                    <th class="header-cell" style="width: 10%;"><span class="header-text">No.</span></th>
+                                    <th class="header-cell" style="width: 40%;"><span class="header-text">Name</span></th>
+                                    <th class="header-cell" style="width: 20%;"><span class="header-text">Price</span></th>
+                                    <th class="header-cell" style="width: 20%;"><span class="header-text">Quantity</span></th>
+                                    <th class="header-cell" style="width: 10%;"><span class="header-text">Action</span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let element of selectedProducts; let i = index" class="data-row">
+                                    <td class="data-cell"><span class="position-badge">{{ i + 1 }}</span></td>
+                                    <td class="data-cell name-cell"><span class="name-text">{{ element.name }}</span></td>
+                                    <td class="data-cell"><span class="symbol-badge">{{ element.price }}</span></td>
+                                    <td class="data-cell">
+                                        <div class="d-flex align-items-center">
+                                            <input type="number"
+                                                [(ngModel)]="element.quantity"
+                                                (ngModelChange)="onQuantityChange(element)"
+                                                class="form-control quantity-input"
+                                                min="1" style="width: 80px;" />
+                                            <span class="weight-unit ms-2">kg</span>
+                                        </div>
+                                    </td>
+                                    <td class="data-cell">
+                                        <div class="action-buttons">
+                                            <button class="btn btn-sm btn-danger btn-delete" (click)="deleteProduct(element)">
+                                                <i class="fas fa-trash me-1"></i> Delete
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
                         </table>
                     </div>
+                    
                 </div>
                 <div class="table-footer">
                 <mat-chip-set aria-label="Fish selection" style="justify-content: space-between;">
