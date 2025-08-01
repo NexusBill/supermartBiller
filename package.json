@@ -21,6 +21,7 @@
     "@angular/platform-browser-dynamic": "^19.1.0",
     "@angular/router": "^19.1.0",
     "@fortawesome/fontawesome-free": "^6.7.2",
+    "@zxing/ngx-scanner": "^20.0.0",
     "bootstrap": "^5.3.7",
     "jquery": "^3.7.1",
     "ngx-print": "^3.2.0",

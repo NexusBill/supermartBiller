@@ -19,6 +19,11 @@ import {MatChipsModule} from '@angular/material/chips';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 
+
+
+import { ZXingScannerModule } from '@zxing/ngx-scanner';
+
+
 export interface PeriodicElement {
   name: string;
   position: number;
@@ -47,6 +52,7 @@ const ELEMENT_DATA: PeriodicElement[] = [
     MatIconModule,
     MatChipsModule,
     MatOptionModule,
+    ZXingScannerModule,
     MatProgressSpinnerModule,
     HttpClientModule,
     MatSelectModule,
@@ -77,7 +83,7 @@ const ELEMENT_DATA: PeriodicElement[] = [
 export class BillingComponent {
   //  displayedColumns: string[] = ['id',	'name',	'Category',	'QuantityOnHand'	,'UnitDesc',	'RetailPrice',	'SalePrice',	'MRP'	,'UnitPrice',	'EANCode','Action'];
 
-  displayedColumns: string[] = ['position', 'name', 'weight', 'symbol', 'Action'];
+  displayedColumns: string[] = ['name', 'mrp', 'unit', 'quantity', 'price', 'action'];
   dataSource = ELEMENT_DATA;
    panelOpenState = signal(false);
    showSidePanel:boolean = false;
@@ -88,16 +94,87 @@ export class BillingComponent {
     this.fetchFromExcel()  ;
    }
 
+   onCodeResult(result: string) {
+    console.log('Scanned code:', result);
+    // You can process the scanned result here, e.g., search for the product in your products list
+    const scannedProduct = this.products.find(product => product.EANCode === result);
+    if (scannedProduct) {
+      this.addToCart(scannedProduct);
+    } else {
+      console.log('Product not found for scanned code:', result);
+    }
+  }
+
+
+    scriptURL :string = 'https://script.google.com/macros/s/AKfycbzekjxHW9Uwf_Gg3U4m4bZaxjFeqbqJ9YNfAG7Z_30SyLMcAFfNe-dsFpgATMC_e3Cp/exec';
+
+    newProduct :any = {
+     id: 'P001',
+     name: 'Product 1',
+     Category: 'General',
+     quantity: 1,
+     UnitDesc: 'pcs',
+     RetailPrice: 100,
+     SalePrice: 90,
+     MRP: 120,
+     UnitPrice: 85
+   };
+   savedata(){
+   this.http.post(this.scriptURL, this.newProduct).subscribe(res => {
+    debugger;
+     console.log('Posted to Google Sheet', res);
+   });
+  }
+
+
+decreaseQuantity(product: any) {
+ debugger
+  if (!this.selectedProducts.find(p => p.id === product.id)) {
+    this.selectedProducts.push({ ...product, quantity: 1 });
+  }
+ else{
+  this.selectedProducts.find(p => p.id === product.id).quantity++;
+ }
+  this.loader = true;
+  if (this.selectedProducts.find(p => p.id === product.id).quantity > 1) {
+    this.selectedProducts.find(p => p.id === product.id).quantity--;
+    this.totalAmount -= product.MRP; // Update total amount
+    this.totalAmount = parseFloat(this.totalAmount.toFixed(2)); // Ensure two decimal places
+  } else {
+    // If quantity is 1, remove the product from selectedProducts
+    this.selectedProducts = this.selectedProducts.filter(p => p.id !== product.id);
+  }
+  this.loader = true;
+  this.totalAmount = this.selectedProducts.reduce((sum, p) => sum + (p.MRP * p.quantity), 0);
+  this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
+  console.log(this.selectedProducts);
+}
+increaseQuantity(product: any) {
+  debugger
+
+  if (!this.selectedProducts.find(p => p.id === product.id)) {
+    this.selectedProducts.push({ ...product, quantity: 1 });
+  }
+  // Increment the quantity of the product in the selectedProducts array
+ else{
+  this.selectedProducts.find(p => p.id === product.id).quantity++;
+ }
+  this.loader = true;
+  this.totalAmount += product.MRP; // Update total amount
+  this.totalAmount = parseFloat(this.totalAmount.toFixed(2)); // Ensure two decimal places
+}
+
+
+
+
 fetchFromExcel(){
   const url = 'https://docs.google.com/spreadsheets/d/1bPXpxkY7K_L0oWqh7YYkrNqOrAb-56FFO3Gpv2pq8cQ/gviz/tq?tqx=out:json';
   this.http.get(url, { responseType: 'text' }).subscribe((res: string) => {
-    // The response starts with "/O_o/google.visualization.Query.setResponse("
-    // and ends with ");" — you need to trim these parts
+   
     debugger;
     const json = JSON.parse(
       res.substring(47).slice(0, -2)
     );
-    // Now json.table.rows holds your data
     const rows = json.table.rows;
   
    

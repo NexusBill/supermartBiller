@@ -1054,6 +1054,77 @@ margin: 8px 0;
   transition: all 0.3s ease;
   color: #fff;
 }
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 6px;
+            background-color: #2196F3;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            background-color: #1976D2;
+            transform: translateY(-1px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+            background-color: #1565C0;
+        }
+
+        .btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .quantity-input {
+            width: 50px;
+            height: 32px;
+            text-align: center;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .quantity-input:focus {
+            border-color: #2196F3;
+        }
+
+        .selector-header {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .total-items {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 2px solid #2196F3;
+            text-align: center;
+            font-weight: 600;
+            color: #2196F3;
+        }
+
 
 
 .action-buttons .btn-delete {

@@ -35,10 +35,9 @@ body {
 }
 
 .main-content {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
+    display: flex;
     gap: 30px;
-    margin-bottom: 40px;
+    margin-left: 20%;
 }
 
 /* Customer Form Styles */
