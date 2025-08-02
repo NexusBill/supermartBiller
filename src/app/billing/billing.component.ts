@@ -166,7 +166,7 @@ decreaseQuantity(product: any) {
    });
   }
 
-
+scannedId:any;
 
 
 fetchFromExcel(){

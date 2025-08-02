@@ -52,6 +52,8 @@
             <div class="billing-section">
               <div class="head" style="display: flex;flex-direction: row;">
                <div class="title"><h2 class="section-title">Products</h2></div> 
+               <input matInput placeholder="Select Customer" [(ngModel)]="scannedId" (input)="onCodeResult(scannedId)" [matAutocomplete]="auto" />
+
                <div class="add-products">Amount : {{totalAmount}}</div>
                 <div class="add-products" (click)="openAddPanel() "><i class="fa-regular fa-circle-left"></i>show products</div>
                 </div>  
