@@ -52,6 +52,8 @@ const ELEMENT_DATA: PeriodicElement[] = [
     MatIconModule,
     MatChipsModule,
     MatOptionModule,
+    MatButtonModule,
+    MatExpansionModule,
     ZXingScannerModule,
     MatProgressSpinnerModule,
     HttpClientModule,
@@ -94,7 +96,15 @@ export class BillingComponent {
     this.fetchFromExcel()  ;
    }
 
-   
+   filteredProducts: any[] = [];
+
+   filterProducts() {
+     this.filteredProducts = this.products.filter(product =>
+       product.name.toLowerCase().includes(this.scannedId.toLowerCase())
+     );
+   }
+ 
+  
 
 decreaseQuantity(product: any) {
   debugger
@@ -109,7 +119,8 @@ decreaseQuantity(product: any) {
      this.selectedProducts = this.selectedProducts.filter(p => p.id !== product.id);
    }
    this.loader = true;
-   this.totalAmount = this.selectedProducts.reduce((sum, p) => sum + (p.MRP * p.quantity), 0);
+   this.totalAmount = this.selectedProducts.reduce((sum, p) => sum + (p.SalePrice * p.quantity), 0);
+    this.savedAmount = this.selectedProducts.reduce((sum, p) => sum + (p.MRP - p.SalePrice) * p.quantity, 0);
    this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
    console.log(this.selectedProducts);
  }
@@ -124,26 +135,55 @@ decreaseQuantity(product: any) {
    this.selectedProducts.find(p => p.id === product.id).quantity++;
   }
    this.loader = true;
-   this.totalAmount += product.MRP; // Update total amount
-   this.totalAmount = parseFloat(this.totalAmount.toFixed(2)); // Ensure two decimal places
+ this.totalAmount += product.SalePrice;
+  this.savedAmount+=(product.MRP-product.SalePrice);
+  this.savedAmount= parseFloat(this.savedAmount.toFixed(2));
+  this.totalAmount = parseFloat(this.totalAmount.toFixed(2));   
  }
  
 
-   onCodeResult(result: string) {
-    console.log('Scanned code:--------------->', result);
-    // You can process the scanned result here, e.g., search for the product in your products list
-    const scannedProduct = this.products.find(product => product.id === result);
-    if (!this.selectedProducts.find(product => product.id === result)) {
-      this.selectedProducts.push({ scannedProduct, quantity: 1 });
-    }
-    // Increment the quantity of the product in the selectedProducts array
-   else{
-    this.selectedProducts.find(p => p.id === result).quantity++;
-   }
-    this.loader = true;
-    this.totalAmount += scannedProduct.MRP; // Update total amount
-    this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
+ onCodeResult() {
+  debugger;
+  this.scannedId = this.scannedId.trim(); // Trim whitespace from scannedId
+
+  // Find product in master list
+  let scannedProduct = this.products.find(product =>
+    product.id.toString() === this.scannedId || product.name === this.scannedId
+  );
+
+  // Exit if not found or empty
+  if (!scannedProduct || this.scannedId.length === 0) {
+    console.log('Product not found in the list or scannedId is empty');
+    return;
   }
+
+  console.log('Scanned code:', this.scannedId);
+
+  // Check if product is already present in the selectedProducts array
+  const existingProduct = this.selectedProducts.find(product =>
+    product.id.toString() === this.scannedId || product.name === this.scannedId
+  );
+
+  if (!existingProduct) {
+    // If not present, push with quantity = 1
+    this.selectedProducts.push({ ...scannedProduct, quantity: 1 });
+  } else {
+    // If already present, increase quantity
+    existingProduct.quantity++;
+  }
+
+  // Update total amount
+  this.loader = true;
+  this.totalAmount += scannedProduct.SalePrice;
+  this.savedAmount+=(scannedProduct.MRP-scannedProduct.SalePrice);
+  this.savedAmount= parseFloat(this.savedAmount.toFixed(2));
+  this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
+  this.scannedId= ''; // Clear scannedId after processing
+}
+
+savedAmount: number = 0;
+discountAmount: number = 0;
+
 
 
     scriptURL :string = 'https://script.google.com/macros/s/AKfycbzekjxHW9Uwf_Gg3U4m4bZaxjFeqbqJ9YNfAG7Z_30SyLMcAFfNe-dsFpgATMC_e3Cp/exec';
@@ -205,7 +245,6 @@ fetchFromExcel(){
    
   ];
   editingProduct: any = null;
-  discountAmount: number = 0;
   onQuantityChange(product: any) {
     debugger
     if (product.quantity < 1) {
@@ -227,6 +266,8 @@ fetchFromExcel(){
     this.loader = true;
     this.selectedProducts = this.selectedProducts.filter(p => p.id !== product.id);
     this.totalAmount -= product.MRP * product.quantity;
+    this.savedAmount -= (product.MRP - product.SalePrice) * product.quantity;
+    this.savedAmount = parseFloat(this.savedAmount.toFixed(2));
     this.totalAmount = parseFloat(this.totalAmount.toFixed(2));     
   }
   addToCart(product: any) {

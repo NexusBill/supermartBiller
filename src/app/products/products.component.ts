@@ -5,6 +5,7 @@ import { MatTableModule } from '@angular/material/table';
 import { ChangeDetectionStrategy } from '@angular/core';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 interface Product {
   id: number;
   name: string;
@@ -28,6 +29,39 @@ export class ProductsComponent {
   stockFilter: string = '';
   sortBy: string = 'name';
   displayedColumns: string[] = ['id', 'name', 'category', 'price', 'quantity', 'Action'];
+
+
+  constructor(private http: HttpClient) {}
+
+  fetchFromExcel(){
+    const url = 'https://docs.google.com/spreadsheets/d/1bPXpxkY7K_L0oWqh7YYkrNqOrAb-56FFO3Gpv2pq8cQ/gviz/tq?tqx=out:json&gid=1958443453';
+    this.http.get(url, { responseType: 'text' }).subscribe((res: string) => {
+     
+      debugger;
+      const json = JSON.parse(
+        res.substring(47).slice(0, -2)
+      );
+      const rows = json.table.rows;
+    
+     
+      this.products = rows.map((row: any) => ({ 
+        id: row.c[0]?.v || '',
+        name: row.c[1]?.v || '',
+        Category: row.c[2]?.v || '',
+        quantity: 1,
+        UnitDesc:  row.c[4]?.v || '',
+        RetailPrice:  row.c[5]?.v || 0,
+        SalePrice: row.c[6]?.v || 0,
+        MRP:  row.c[7]?.v || 0,
+        UnitPrice: row.c[8]?.v || 0,
+        EANCode:  row.c[9]?.v || '', 
+      }));
+      console.log(this.products);
+  
+    });
+  
+  }
+
   products = [
     {
       id: 1,

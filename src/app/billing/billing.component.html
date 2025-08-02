@@ -13,22 +13,18 @@
             </mat-expansion-panel-header>
 
 
+            <!-- Customer Name Field -->
             <mat-form-field appearance="outline" style="margin-right: 10px;">
                 <mat-label>Customer Name</mat-label>
-
-                <!-- Using matPrefix for proper Angular Material integration -->
                 <i class="fa-solid fa-user" matPrefix style="margin:0px 8px; color: #666;"></i>
-
-                <input matInput placeholder="Select Customer" [(ngModel)]="selectedCustomer" [matAutocomplete]="auto" />
-
-                <mat-autocomplete #auto="matAutocomplete">
+                <input matInput placeholder="Select Customer" [(ngModel)]="selectedCustomer"
+                    [matAutocomplete]="customerAuto" />
+                <mat-autocomplete #customerAuto="matAutocomplete">
                     <mat-option *ngFor="let customer of customers" [value]="customer.name">
                         {{ customer.name }}
                     </mat-option>
                 </mat-autocomplete>
             </mat-form-field>
-
-
 
             <mat-form-field appearance="outline" style="margin-right: 10px;">
                 <mat-label>Mobile Number</mat-label>
@@ -50,13 +46,29 @@
 
         <div class="products" style="display: flex;flex-direction: column;">
             <div class="billing-section">
-              <div class="head" style="display: flex;flex-direction: row;">
-               <div class="title"><h2 class="section-title">Products</h2></div> 
-               <input matInput placeholder="Select Customer" [(ngModel)]="scannedId" (input)="onCodeResult(scannedId)" [matAutocomplete]="auto" />
+                <div class="head" style="display: flex;flex-direction: row;">
+                    <div class="title">
+                        <h2 class="section-title">Products</h2>
+                    </div>
 
-               <div class="add-products">Amount : {{totalAmount}}</div>
-                <div class="add-products" (click)="openAddPanel() "><i class="fa-regular fa-circle-left"></i>show products</div>
-                </div>  
+                    <!-- Search Product Field -->
+                    <mat-form-field appearance="outline" class="full-width">
+                        <mat-label>Search Product</mat-label>
+                        <input matInput type="text" placeholder="Type to search" [(ngModel)]="scannedId"
+                            [matAutocomplete]="productAuto" (keydown.enter)="onCodeResult()" (input)="filterProducts()"
+                            #scannedInput />
+                        <mat-autocomplete #productAuto="matAutocomplete">
+                            <mat-option *ngFor="let suggestion of filteredProducts" [value]="suggestion.name">
+                                {{ suggestion.name }} ({{ suggestion.id }})
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+
+                    <div class="add-products" (click)="openAddPanel() "><i class="fa-regular fa-circle-left"></i>show
+                        products</div>
+                </div>
+
+
 
                 <div id="cartItems">
                     <div class="empty-cart" id="emptyCart" *ngIf="dataSource.length === 0">
@@ -68,32 +80,37 @@
                         <table class="elite-table table table-bordered table-hover">
                             <thead>
                                 <tr class="header-row">
-                                    <th class="header-cell" style="width: 10%;"><span class="header-text">No.</span></th>
-                                    <th class="header-cell" style="width: 40%;"><span class="header-text">Name</span></th>
-                                    <th class="header-cell" style="width: 20%;"><span class="header-text">Price</span></th>
-                                    <th class="header-cell" style="width: 20%;"><span class="header-text">Quantity</span></th>
-                                    <th class="header-cell" style="width: 10%;"><span class="header-text">Action</span></th>
+                                    <th class="header-cell" style="width: 10%;"><span class="header-text">No.</span>
+                                    </th>
+                                    <th class="header-cell" style="width: 40%;"><span class="header-text">Name</span>
+                                    </th>
+                                    <th class="header-cell" style="width: 20%;"><span class="header-text">Price</span>
+                                    </th>
+                                    <th class="header-cell" style="width: 20%;"><span
+                                            class="header-text">Quantity</span></th>
+                                    <th class="header-cell" style="width: 10%;"><span class="header-text">Action</span>
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr *ngFor="let element of selectedProducts; let i = index" class="data-row">
                                     <td class="data-cell"><span class="position-badge">{{ i + 1 }}</span></td>
-                                    <td class="data-cell name-cell"><span class="name-text">{{ element.name }}</span></td>
-                                    <td class="data-cell"><span class="symbol-badge">{{ element.price }}</span></td>
+                                    <td class="data-cell name-cell"><span class="name-text">{{ element.name }}</span>
+                                    </td>
+                                    <td class="data-cell">{{ element.SalePrice }}</td>
                                     <td class="data-cell">
                                         <div class="d-flex align-items-center">
-                                            <input type="number"
-                                                [(ngModel)]="element.quantity"
+                                            <input type="number" [(ngModel)]="element.quantity"
                                                 (ngModelChange)="onQuantityChange(element)"
-                                                class="form-control quantity-input"
-                                                min="1" style="width: 80px;" />
-                                            <span class="weight-unit ms-2">kg</span>
+                                                class="form-control quantity-input" min="1" style="width: 80px;" />
+                                            <span class="weight-unit ms-2">{{element.UnitDesc}}</span>
                                         </div>
                                     </td>
                                     <td class="data-cell">
                                         <div class="action-buttons">
-                                            <button class="btn btn-sm btn-danger btn-delete" (click)="deleteProduct(element)">
-                                                <i class="fas fa-trash me-1"></i> Delete
+                                            <button class="btn btn-sm btn-danger btn-delete"
+                                                (click)="deleteProduct(element)">
+                                                <i class="fas fa-trash me-1"></i>
                                             </button>
                                         </div>
                                     </td>
@@ -101,19 +118,10 @@
                             </tbody>
                         </table>
                     </div>
-                    
+
                 </div>
-                <div class="table-footer">
-                <mat-chip-set aria-label="Fish selection" style="justify-content: space-between;">
-                    <mat-chip>Number Of Products {{selectedProducts.length}}</mat-chip>
-                    <mat-chip>Download Bill</mat-chip>
-                    <mat-chip>Whatsapp</mat-chip>
-                    <mat-chip printTitle="invoice" printSectionId="invoice-container"
-                    ngxPrint (click)=" downloadPDF()">Print</mat-chip>
-                  </mat-chip-set>
-                 
-                 
-                 <div class="discount">
+               
+                <!-- <div class="discount">
                     <label>Discount Applicable</label>
                     <input type="number" value="0" placeholder="Enter Discount Amount" class="discount-input" style="    height: 50px;
     width: 80px;">
@@ -134,16 +142,15 @@
                         <mat-option  value=upi>{{'UPI'}}</mat-option>
                     
                     </mat-select>
-                  </mat-form-field>
-                </div>
-                <div class="total-section" id="totalSection" style="display: none;">
-                    <div class="total-amount">Total: ₹<span id="totalAmount">0.00</span></div>
-                    <div>Items: <span id="totalItems">0</span></div>
-                    <button class="checkout-btn" onclick="checkout()">Proceed to Checkout</button>
-                </div>
+                  </mat-form-field> -->
             </div>
-            
+            <div class="total-section" id="totalSection" style="display: none;">
+                <div class="total-amount">Total: ₹<span id="totalAmount">0.00</span></div>
+                <div>Items: <span id="totalItems">0</span></div>
+                <button class="checkout-btn" onclick="checkout()">Proceed to Checkout</button>
+            </div>
         </div>
+
     </div>
 </div>
 <!-- <div class="spinner" style="background-color: rgba(252, 251, 250, 0.63);z-index: 900;" *ngIf="loader">
@@ -152,14 +159,41 @@
   <p>Please wait while we process your request.</p>
 </div> -->
 
-<footer class="bg-body-tertiary text-center text-lg-start" id="footer">
+<footer class="bg-body-tertiary text-center text-lg-start" id="footer" style="    position: absolute;
+margin-left: 12%;
+width: 88%;">
     <!-- Copyright -->
+    <div class="table-footer">
+        <mat-chip-set aria-label="Fish selection" style="justify-content: space-between;">
+            <mat-chip>Number Of Products {{selectedProducts.length}}</mat-chip>
+            <mat-chip>Download Bill</mat-chip>
+            <mat-chip>Whatsapp</mat-chip>
+            <mat-chip printTitle="invoice" printSectionId="invoice-container" ngxPrint
+                (click)=" downloadPDF()">Print</mat-chip>
+        </mat-chip-set>
+
+        <div class="total"
+            style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; background-color: #f9f9f9; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            <h2 style="margin: 10px 0; font-family: 'Arial', sans-serif; font-size: 24px; color: #333;">
+                <label>Your Savings : </label><span style=" color: #28a745; font-weight: bold">{{ savedAmount | currency: 'INR' }}</span>
+
+            </h2>
+          
+            <h2
+                style="margin: 20px 0 10px; font-family: 'Arial', sans-serif; font-size: 24px; color: #333;">
+                <label>Total Amount : </label><span style=" color: #007bff; font-weight: bold">{{ totalAmount | currency: 'INR' }}</span>
+            </h2>
+          
+        </div>
+
+
+    </div>
     <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
-      © 2025-30 Copyright:
-      <a class="text-body" href="#">Nexusbills</a>
+        © 2025-30 Copyright:
+        <a class="text-body" href="#">Nexusbills</a>
     </div>
     <!-- Copyright -->
-  </footer>
+</footer>
 
 
 <div id="invoice-container" style="display: none;">
@@ -171,9 +205,12 @@
             style="text-align: center; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 10px;">
             <div class="shop-name" style="font-size: 16px; font-weight: bold; margin-bottom: 5px;">A2J SUPERMARKET
             </div>
-            <div class="shop-address" style="font-size: 10px; font-weight: bold; margin-bottom: 3px;">123 Main Street, Mumbai</div>
-            <div class="shop-address" style="font-size: 10px; font-weight: bold; margin-bottom: 3px;">Ph: +91 22 1234 5678</div>
-            <div class="shop-address" style="font-size: 10px;font-weight: bold;  margin-bottom: 3px;">GSTIN: 27ABCDE1234F1Z5</div>
+            <div class="shop-address" style="font-size: 10px; font-weight: bold; margin-bottom: 3px;">123 Main Street,
+                Mumbai</div>
+            <div class="shop-address" style="font-size: 10px; font-weight: bold; margin-bottom: 3px;">Ph: +91 22 1234
+                5678</div>
+            <div class="shop-address" style="font-size: 10px;font-weight: bold;  margin-bottom: 3px;">GSTIN:
+                27ABCDE1234F1Z5</div>
         </div>
 
         <!-- Receipt Info -->
@@ -201,22 +238,25 @@
         <!-- Items Section -->
         <div class="items-section" style="border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 10px;">
             <div *ngFor="let item of selectedProducts" class="item-row"
-              style="display: flex; justify-content: space-between; margin-bottom: 3px; font-size: 11px; font-weight: bold;">
-              
-              <div class="item-name" style="flex: 1; margin-right: 10px;">{{ item.name }}</div>
-              <div class="item-qty-price" style="white-space: nowrap;">{{ item.quantity }}x{{ item.price }}</div>
-              <div class="item-total" style="width: 50px; text-align: right;">{{ item.quantity * item.price | number:'1.2-2' }}</div>
-            
+                style="display: flex; justify-content: space-between; margin-bottom: 3px; font-size: 11px; font-weight: bold;">
+
+                <div class="item-name" style="flex: 1; margin-right: 10px;">{{ item.name }}</div>
+                <div class="item-qty-price" style="white-space: nowrap;">{{ item.quantity }}x{{ item.price }}</div>
+                <div class="item-total" style="width: 50px; text-align: right;">{{ item.quantity * item.price |
+                    number:'1.2-2' }}</div>
+
             </div>
-          </div>
+        </div>
 
         <!-- Totals Section -->
         <div class="totals-section" style="font-size: 11px;font-weight: bold; ">
-            <div class="total-row" style="display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 2px;">
+            <div class="total-row"
+                style="display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 2px;">
                 <span>Subtotal:</span>
                 <span>₹ {{totalAmount}}</span>
             </div>
-            <div class="total-row" style="display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 2px;">
+            <div class="total-row"
+                style="display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 2px;">
                 <span>Discount (5%):</span>
                 <span>{{discountAmount}}</span>
             </div>
@@ -254,7 +294,8 @@
         <div class="separator" style="border-bottom: 1px dashed #333; margin: 8px 0;"></div>
 
         <!-- Barcode -->
-        <div class="barcode" style="text-align: center; margin: 8px 0; font-size: 8px; font-weight: bold; letter-spacing: 1px;">
+        <div class="barcode"
+            style="text-align: center; margin: 8px 0; font-size: 8px; font-weight: bold; letter-spacing: 1px;">
             ||||| |||| | ||| ||||
             <br>
             INV-001234
@@ -270,10 +311,10 @@
     </div>
 
 </div>
-<zxing-scanner
+<!-- <zxing-scanner
   (scanSuccess)="onCodeResult($event)"
   [autostart]="true"
-></zxing-scanner>
+></zxing-scanner> -->
 
 <div class="products-panel" *ngIf="showSidePanel">
     <div class="products-header">
@@ -286,10 +327,10 @@
             <span class="product-price">{{ product.price | currency:'INR' }}</span>
             <div class="quantity-control">
                 <button class="btn" (click)="decreaseQuantity(product)">−</button>
-                <input type="number" class="quantity-input" id="apples" value="0" min="0" max="99" onchange="onQuantityChange(product)">
+                <input type="number" class="quantity-input" id="apples" value="0" min="0" max="99"
+                    onchange="onQuantityChange(product)">
                 <button class="btn" (click)="increaseQuantity(product)">+</button>
             </div>
         </div>
     </div>
 </div>
-
