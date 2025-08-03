@@ -50,7 +50,7 @@ export class ProductsComponent {
     
      
       this.products = rows.map((row: any) => ({ 
-        id: row.c[0]?.v || '',
+        id: Number(row.c[0]?.v || 0), // Convert id to a number
         name: row.c[1]?.v || '',
         Category: row.c[2]?.v || '',
         quantity: 1,
@@ -63,13 +63,15 @@ export class ProductsComponent {
       }));
       console.log(this.products);
       this.isLoader= false;
+      this.products = [...this.products.sort((a, b) => a.id - b.id)];
+      this.filteredProducts = [...this.products];
 
     });
-  
+
   }
 
   products: any[] = [];
-  filteredProducts: Product[] = [...this.products];
+  filteredProducts: any[] = [];
 
   // Method implementations
   onSearch() {
@@ -99,23 +101,25 @@ export class ProductsComponent {
     if (this.searchTerm) {
       filtered = filtered.filter(product => 
         product.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        product.category.toLowerCase().includes(this.searchTerm.toLowerCase())
+        product.id.toString().includes(this.searchTerm) ||
+        product.Category.toLowerCase().includes(this.searchTerm.toLowerCase())
       );
     }
 
     // Category filter
     if (this.selectedCategory) {
-      filtered = filtered.filter(product => product.category === this.selectedCategory);
+      filtered = filtered.filter(product => product.Category === this.selectedCategory);
     }
 
     // Price range filter
     if (this.priceRange) {
+      debugger
       const [min, max] = this.priceRange.split('-').map(p => p.replace('+', ''));
       filtered = filtered.filter(product => {
         if (max) {
-          return product.price >= parseInt(min) && product.price <= parseInt(max);
+          return product.MRP >= parseInt(min) && product.MRP <= parseInt(max);
         } else {
-          return product.price >= parseInt(min);
+          return product.MRP >= parseInt(min);
         }
       });
     }
@@ -148,7 +152,7 @@ export class ProductsComponent {
         case 'quantity':
           return a.quantity - b.quantity;
         default:
-          return 0;
+          return a.id - b.id; // Default sort by ID
       }
     });
   }
@@ -196,7 +200,56 @@ export class ProductsComponent {
   }
   
 
-  categories = ['Fruits', 'Vegetables', 'Dairy', 'Bakery', 'Meat', 'Beverages', 'Snacks'];
+  categories =[
+    'Stationary',
+    'plastic',
+    'Rice',
+    'snacks',
+    'Food',
+    'Balm',
+    'Pooja Items',
+    'Mob',
+    'Cleaning',
+    'Health item',
+    'Mosquito',
+    'oil',
+    'soap',
+    'Ice Cream',
+    'Naga',
+    'tea',
+    'washing',
+    'Face Cream',
+    'Battery',
+    'Vegtebles',
+    'Jawin',
+    'Talc Power',
+    'Cosmetics',
+    'Shaving',
+    'Tooth paste',
+    'Tooth Brush',
+    'Milk Item',
+    'Hair Dye',
+    'agarbattis',
+    'Playing Items',
+    'Baby Item',
+    'Spray',
+    'Choclate',
+    'Own packing',
+    'Scissors',
+    'Surfe',
+    'Cooldrings',
+    'Fiama',
+    'Annai brand',
+    'Fire Sick',
+    'Vicks',
+    'Udhayam',
+    'Bread',
+    'Sunfeast',
+    'Nestle',
+    'paste',
+    'Birthday'
+  ]
+  ;
   quantities = [10, 25, 50, 100, 200, 500];
 
   showSidePanel = false;

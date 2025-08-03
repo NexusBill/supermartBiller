@@ -1,26 +1,26 @@
 <!-- products.component.html -->
 <div class="loading-container" *ngIf="isLoader">
   <div class="spinner" id="spinner"></div>
-  <div class="cart-loader" id="cartLoader">
+  <!-- <div class="cart-loader" id="cartLoader">
       <div class="cart"></div>
-  </div>
+  </div> -->
   
   <div class="loading-text">
-      Processing Transaction
+      Loading Products 
       <span class="dots">
           <span class="dot"></span>
           <span class="dot"></span>
           <span class="dot"></span>
       </span>
   </div>
-  <div class="loading-subtext">Please wait while we complete your purchase</div>
+  <div class="loading-subtext">Please wait while we Loads your Products your purchase</div>
 </div>
 <div class="products-container" style="margin-left: 15%;">
   <!-- Search and Filter Bar -->
   <div class="filters-section">
-    <div class="row g-3">
+    <div class="row g-1">
       <!-- Search Bar -->
-      <div class="col-md-4">
+      <div class="col-md-6">
         <div class="search-wrapper">
           <i class="fas fa-search search-icon"></i>
           <input 
@@ -33,21 +33,17 @@
       </div>
       
       <!-- Category Filter -->
-      <div class="col-md-2">
+      <div class="col-md-3">
         <select class="form-select" [(ngModel)]="selectedCategory" (change)="onCategoryChange()">
           <option value="">All Categories</option>
-          <option value="dairy">Dairy</option>
-          <option value="fruits">Fruits</option>
-          <option value="vegetables">Vegetables</option>
-          <option value="meat">Meat</option>
-          <option value="beverages">Beverages</option>
-          <option value="snacks">Snacks</option>
-          <option value="bakery">Bakery</option>
+          <option *ngFor="let category of categories" [value]="category">
+            {{ category }}
+          </option>
         </select>
       </div>
       
       <!-- Price Range Filter -->
-      <div class="col-md-2">
+      <div class="col-md-3">
         <select class="form-select" [(ngModel)]="priceRange" (change)="onPriceRangeChange()">
           <option value="">All Prices</option>
           <option value="0-50">₹0 - ₹50</option>
@@ -58,7 +54,7 @@
       </div>
       
       <!-- Stock Filter -->
-      <div class="col-md-2">
+      <!-- <div class="col-md-2">
         <select class="form-select" [(ngModel)]="stockFilter" (change)="onStockFilterChange()">
           <option value="">All Stock</option>
           <option value="in-stock">In Stock</option>
@@ -67,7 +63,7 @@
         </select>
       </div>
       
-      <!-- Sort By -->
+      <-- Sort By 
       <div class="col-md-2">
         <select class="form-select" [(ngModel)]="sortBy" (change)="onSortChange()">
           <option value="name">Name</option>
@@ -75,8 +71,8 @@
           <option value="price-high">Price: High to Low</option>
           <option value="stock">Stock</option>
         </select>
-      </div>
-    </div>
+      </div>-->
+    </div> 
     
     <!-- Add Product Button -->
     <div class="add-product-section">
@@ -163,7 +159,7 @@
 
 
 <div class="table-container">
-  <table mat-table [dataSource]="products" class="elite-table">
+  <table mat-table [dataSource]="filteredProducts" class="elite-table">
 
       <!-- Position Column -->
       <ng-container matColumnDef="id">
