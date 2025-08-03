@@ -113,6 +113,11 @@ export class AppComponent {
   paginatedSales: any[] = [];
   totalPages: number = 0;
 isLoader: boolean = false;
+enableNavigator: boolean = false;
+navigateEnabler(){
+  this.enableNavigator = !this.enableNavigator;
+}
+
   ngOnInit() {
     this.isLoader = true;
     this.filterAndPaginate();
@@ -291,32 +296,43 @@ isLoader: boolean = false;
     this.isDashboard = true;
     this.router.navigate(['/dashboard']);
     this.isLoader=false;
+    this.enableNavigator = false; // Disable navigator when on dashboard
 
   }
   isProductsActive() {
     this.resetAllTabs();
     this.isProducts = true;
     this.router.navigate(['/products']);
+    this.enableNavigator = false; // Disable navigator when on dashboard
+
   }
   isCategoriesActive() {
     this.resetAllTabs();
     this.isCategories = true;
     this.router.navigate(['/category']);
+    this.enableNavigator = false; // Disable navigator when on dashboard
+
   }
   isBillingActive() {
     this.resetAllTabs();
     this.isBilling = true;
     this.router.navigate(['/billing']);
+    this.enableNavigator = false; // Disable navigator when on dashboard
+
   }
   isCustomersActive() {
     this.resetAllTabs();
     this.isCustomers = true;
     this.router.navigate(['/customers']);
+    this.enableNavigator = false; // Disable navigator when on dashboard
+
   }
   isOrdersActive() {
     this.resetAllTabs();
     this.isOrders = true;
     this.router.navigate(['/orders']);
+    this.enableNavigator = false; // Disable navigator when on dashboard
+
   }
 
 }

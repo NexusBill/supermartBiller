@@ -3,13 +3,13 @@
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
     <div class="container-fluid">
       <!-- Mobile Menu Toggle -->
-      <button class="navbar-toggler me-3" type="button" data-bs-toggle="collapse" data-bs-target="#sideNav">
+      <button class="navbar-toggler me-3" type="button">
         <span class="navbar-toggler-icon"></span>
       </button>
       
       <!-- Brand/Logo -->
       <a class="navbar-brand fw-bold">
-        <i class="fas fa-shopping-cart me-2"></i>
+        <i class="fa-solid fa-bars" (click)="navigateEnabler()"></i>
         SuperMart
       </a>
       
@@ -35,7 +35,7 @@
   </nav>
 
   <!-- Side Navigation -->
-  <div class="sidebar-wrapper">
+  <div class="sidebar-wrapper" *ngIf="enableNavigator">
     <nav id="sideNav" class="sidebar collapse show">
       <div class="sidebar-header">
         <h5 class="text-white mb-0">Navigation</h5>
@@ -85,24 +85,6 @@
     </nav>
   </div>
   <div class="col-12">
-
-    <div class="loading-container" *ngIf="isLoader">
-      <div class="spinner" id="spinner"></div>
-      <div class="cart-loader" id="cartLoader">
-          <div class="cart"></div>
-      </div>
-      
-      <div class="loading-text">
-          Processing Transaction
-          <span class="dots">
-              <span class="dot"></span>
-              <span class="dot"></span>
-              <span class="dot"></span>
-          </span>
-      </div>
-      <div class="loading-subtext">Please wait while we complete your purchase</div>
-  </div>
-
     <div class="content-container" >
       <router-outlet></router-outlet>
     </div>

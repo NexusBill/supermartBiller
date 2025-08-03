@@ -104,8 +104,8 @@ export class BillingComponent {
      );
    }
  
-  
-
+   discountValue: number = 0; // Holds the discount value
+   discountType: string = '%'; 
 decreaseQuantity(product: any) {
   debugger
   

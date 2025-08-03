@@ -80,8 +80,6 @@ body {
 
 /* Main Content */
 .main-content {
-  margin-left: 250px;
-  margin-top: 56px;
   flex: 1;
   padding: 2rem 0;
   transition: margin-left 0.3s ease;

@@ -6,7 +6,6 @@
 }
 /* Main Content */
 .main-content {
-    margin-left: 104px;
     flex: 1;
     padding: 1rem 0;
     transition: margin-left 0.3s ease;
