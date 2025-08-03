@@ -1,4 +1,20 @@
 <!-- products.component.html -->
+<div class="loading-container" *ngIf="isLoader">
+  <div class="spinner" id="spinner"></div>
+  <div class="cart-loader" id="cartLoader">
+      <div class="cart"></div>
+  </div>
+  
+  <div class="loading-text">
+      Processing Transaction
+      <span class="dots">
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+      </span>
+  </div>
+  <div class="loading-subtext">Please wait while we complete your purchase</div>
+</div>
 <div class="products-container" style="margin-left: 15%;">
   <!-- Search and Filter Bar -->
   <div class="filters-section">
@@ -152,10 +168,10 @@
       <!-- Position Column -->
       <ng-container matColumnDef="id">
           <th mat-header-cell *matHeaderCellDef class="header-cell" style="width: 10%;">
-              <span class="header-text">No.</span>
+              <span class="header-text">Code.</span>
           </th>
           <td mat-cell *matCellDef="let element" class="data-cell" style="width: 10%;">
-              <span class="position-badge">{{element.id}}</span>
+              <span >{{element.id}}</span>
           </td>
       </ng-container>
 
@@ -172,21 +188,20 @@
       <!-- Weight Column -->
       <ng-container matColumnDef="quantity" >
           <th mat-header-cell *matHeaderCellDef class="header-cell" style="width: 20% !important;">
-              <span class="header-text">Quantity</span>
+              <span class="header-text">Unit Metrics</span>
           </th>
           <td mat-cell *matCellDef="let element" class="data-cell" style="width: 20% !important;">
-              <span class="weight-value">{{element.quantity}}</span>
-              <span class="weight-unit">kg</span>
+              <span class="weight-value">{{element.UnitDesc}}</span>
           </td>
       </ng-container>
 
       <!-- Symbol Column -->
-      <ng-container matColumnDef="price" >
+      <ng-container matColumnDef="MRP" >
           <th mat-header-cell *matHeaderCellDef class="header-cell" style="width: 20% !important;">
               <span class="header-text">Price</span>
           </th>
           <td mat-cell *matCellDef="let element" class="data-cell" style="width: 20% !important;">
-              <span class="symbol-badge">{{element.price}}</span>
+              <span>{{element.MRP}}</span>
           </td>
       </ng-container>
       <ng-container matColumnDef="category" >
@@ -194,7 +209,7 @@
             <span class="header-text">category</span>
         </th>
         <td mat-cell *matCellDef="let element" class="data-cell" style="width: 20% !important;">
-            <span class="symbol-badge">{{element.category}}</span>
+            <span >{{element.Category}}</span>
         </td>
     </ng-container>
       <ng-container matColumnDef="Action" sticky >

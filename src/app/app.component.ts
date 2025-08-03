@@ -112,8 +112,9 @@ export class AppComponent {
   filteredSales = [...this.sales];
   paginatedSales: any[] = [];
   totalPages: number = 0;
-
+isLoader: boolean = false;
   ngOnInit() {
+    this.isLoader = true;
     this.filterAndPaginate();
     this.isDashboardActive();
   }
@@ -289,6 +290,7 @@ export class AppComponent {
     this.resetAllTabs();
     this.isDashboard = true;
     this.router.navigate(['/dashboard']);
+    this.isLoader=false;
 
   }
   isProductsActive() {
