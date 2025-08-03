@@ -7,8 +7,7 @@
             <mat-expansion-panel-header>
                 <mat-panel-title> Customer Details </mat-panel-title>
                 <mat-panel-description>
-                    <div *ngIf="!selectedCustomer" class="select">Select Customer for Billing</div> {{selectedCustomer ?
-                    'Customer selected' : ''}}
+                    <div class="select">Bill No.</div> {{'INV0001'}}
                 </mat-panel-description>
             </mat-expansion-panel-header>
 
@@ -81,7 +80,7 @@
 
 
 
-                <div id="cartItems">
+                <div id="cartItems" *ngIf="selectedProducts.length > 0" class="cart-items">
                    
 
                     <div class="table-container">
@@ -128,6 +127,13 @@
                     </div>
 
                 </div>
+                <div class="Noproducts" *ngIf="selectedProducts.length === 0" style="display: flex;justify-content: center;align-items: center;height: 100%;">
+                    <div class="empty-state" id="emptyState">
+                        <div class="empty-cart-icon"></div>
+                        <h2>Your cart is empty</h2>
+                        <p>Looks like you haven't added any products to your cart yet. Start shopping to see your items appear here!</p>
+                    </div>
+                </div>
                
                 <!-- <div class="discount">
                     <label>Discount Applicable</label>
@@ -170,30 +176,36 @@
            
         </mat-chip-set>
 
+
+        <mat-chip-set aria-label="Fish selection" style="justify-content: space-between;">
+            <mat-chip style="height: 70px; width: 220px;">Amount : <h2 style=" color: #198a3bb7; font-weight: bold">{{ totalAmount | currency: 'INR' }}</h2> </mat-chip>
+           
+        </mat-chip-set>
+
         <div style="display: flex; margin: 10px;">
+            <input type="checkbox" id="roundOffCheckbox" [(ngModel)]="isDiscountApplicable"  (change)=" applyDiscount()" style="margin-right: 10px;">
             <mat-form-field appearance="outline" style="height: 60px; width: 60;display: flex;    flex-direction: row;">
               <mat-label>Discount</mat-label>
-              <input matInput type="number" placeholder="Enter Discount" [(ngModel)]="discountValue" />
-              <mat-select [(ngModel)]="discountType">
+              <input matInput type="number" placeholder="Enter Discount" [(ngModel)]="discountValue"  style="width:70%"/>
+              <mat-select [(ngModel)]="discountType" style="width: 30%;">
                 <mat-option value="%">%</mat-option>
                 <mat-option value="Rs">Rs</mat-option>
               </mat-select>
             </mat-form-field>
           </div>
-        <div class="total">           
-          
-            <h2
-                style="margin: 20px 0 10px; font-family: 'Arial', sans-serif; font-size: 30px; color: #333;">
-                <label>Amount : </label><span style=" color: #007bff; font-weight: bold">{{ totalAmount | currency: 'INR' }}</span>
-            </h2>
-          
-        </div>
-        <div class="total">
-            <h2 style="margin: 10px 0; font-family: 'Arial', sans-serif; font-size: 20px; color: #333;">
-                <label>Savings : </label><span style=" color: #28a745; font-weight: bold">{{ savedAmount | currency: 'INR' }}</span>
+          <mat-form-field appearance="outline" style="height: 60px; width: 60;display: flex;    flex-direction: row;">
+            <mat-label>Payment Type</mat-label>
+            <mat-select [(ngModel)]="paymentMethod" >
+                <mat-option value="%">Cash</mat-option>
+                <mat-option value="Rs">UPI</mat-option>
+                <mat-option value="Rs">Unpaid</mat-option>
+              </mat-select>           
+              </mat-form-field>
+          <mat-chip-set aria-label="Fish selection" style="justify-content: space-between;">
+            <mat-chip style="height: 70px; width: 220px;">savings : <h2 style=" color: #007bff; font-weight: bold">{{ savedAmount | currency: 'INR' }}</h2> </mat-chip>
+           
+        </mat-chip-set>
 
-            </h2>
-        </div>
 
 
     </div>

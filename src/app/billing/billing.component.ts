@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgxPrintModule } from 'ngx-print';
 import { Router } from '@angular/router';
@@ -20,9 +20,7 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 
-
-import { ZXingScannerModule } from '@zxing/ngx-scanner';
-
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 export interface PeriodicElement {
   name: string;
@@ -54,10 +52,10 @@ const ELEMENT_DATA: PeriodicElement[] = [
     MatOptionModule,
     MatButtonModule,
     MatExpansionModule,
-    ZXingScannerModule,
     MatProgressSpinnerModule,
     HttpClientModule,
     MatSelectModule,
+    
     MatCardModule,
     MatAutocompleteModule,
     MatButtonModule,
@@ -95,7 +93,11 @@ export class BillingComponent {
    ngOnInit() {
     this.fetchFromExcel()  ;
    }
+   private _snackBar = inject(MatSnackBar);
 
+   openSnackBar(message: string, action: string) {
+     this._snackBar.open(message, action);
+   }
    filteredProducts: any[] = [];
 
    filterProducts() {
@@ -103,8 +105,8 @@ export class BillingComponent {
        product.name.toLowerCase().includes(this.scannedId.toLowerCase())
      );
    }
- 
-   discountValue: number = 0; // Holds the discount value
+ paymentMethod: any;
+   discountValue!: number ; // Holds the discount value
    discountType: string = '%'; 
 decreaseQuantity(product: any) {
   debugger
@@ -124,6 +126,30 @@ decreaseQuantity(product: any) {
    this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
    console.log(this.selectedProducts);
  }
+ applyDiscount() {
+  debugger;
+
+
+  if(this.isDiscountApplicable){
+
+if(this.discountValue){
+
+    if (this.discountType === '%') {
+      this.discountAmount = (this.totalAmount * this.discountValue) / 100;
+    } else if (this.discountType === 'Rs') {
+      this.discountAmount = this.discountValue;
+    } else {
+      this.discountAmount = 0; // Default to 0 if no valid type is selected
+    }
+    this.totalAmount -= this.discountAmount; // Apply discount to total amount
+    this.totalAmount = parseFloat(this.totalAmount.toFixed(2)); // Ensure two decimal places
+    this.discountValue = 0; // Reset discount value after applying
+  }
+  else{
+this.openSnackBar('Please enter a valid discount value', 'Close');
+}
+}
+}
  increaseQuantity(product: any) {
    debugger
  
@@ -342,14 +368,7 @@ fetchFromExcel(){
   isDiscountApplicable: boolean = false;
   discountMetrics: any;
   totalAmount: number = 0;
-  toggleDiscount() {
-    this.isDiscountApplicable = !this.isDiscountApplicable;
-    if (this.isDiscountApplicable) {
-      console.log('Discount is now applicable');
-    } else {
-      console.log('Discount is no longer applicable');
-    }
-  }
+  
   downloadPDF(){
 this.isPrinting = true;
 this.loader = true;

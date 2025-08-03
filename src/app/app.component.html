@@ -17,7 +17,7 @@
       <div class="navbar-nav ms-auto">
         <div class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown">
-            <i class="fas fa-user me-1"></i>Account
+            <i class="fa-solid fa-bell"></i>
           </a>
           <ul class="dropdown-menu">
             <li><a class="dropdown-item">Admin</a></li>
@@ -26,10 +26,10 @@
             <li><a class="dropdown-item">Logout</a></li> -->
           </ul>
         </div>
-        <a class="nav-link">
+        <!-- <a class="nav-link">
           <i class="fas fa-shopping-basket me-1"></i>
           Dark mode <span class="badge bg-warning text-dark">uu</span>
-        </a>
+        </a> -->
       </div>
     </div>
   </nav>
@@ -65,7 +65,7 @@
           <li class="nav-item">
             <a class="nav-link"  [ngClass]="isOrders ? 'active':''"  routerLink="/orders" (click)="isOrdersActive()">
               <i class="fas fa-shopping-bag me-2"></i>
-              Orders
+              Suppliers
             </a>
           </li>
           <li class="nav-item">

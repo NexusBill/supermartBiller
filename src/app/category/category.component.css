@@ -37,7 +37,6 @@ body {
 .main-content {
     display: flex;
     gap: 30px;
-    margin-left: 20%;
 }
 
 /* Customer Form Styles */
