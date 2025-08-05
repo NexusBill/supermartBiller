@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, ElementRef, inject, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgxPrintModule } from 'ngx-print';
 import { Router } from '@angular/router';
@@ -9,7 +9,7 @@ import {MatExpansionModule} from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatAutocomplete, MatAutocompleteModule, MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { MatOptionModule } from '@angular/material/core'; // needed for mat-option
 import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
@@ -100,11 +100,8 @@ export class BillingComponent {
    }
    filteredProducts: any[] = [];
 
-   filterProducts() {
-     this.filteredProducts = this.products.filter(product =>
-       product.name.toLowerCase().includes(this.scannedId.toLowerCase())
-     );
-   }
+   @ViewChild('productAuto') productAuto!: MatAutocomplete;
+
  paymentMethod: any;
    discountValue!: number ; // Holds the discount value
    discountType: string = '%'; 
@@ -126,29 +123,42 @@ decreaseQuantity(product: any) {
    this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
    console.log(this.selectedProducts);
  }
+ isDiscountApplied: boolean = false;
  applyDiscount() {
   debugger;
-
-
-  if(this.isDiscountApplicable){
-
-if(this.discountValue){
-
+if(this.discountValue && !this.isDiscountApplied){
     if (this.discountType === '%') {
+      if (this.discountValue < 0 || this.discountValue > 100) {
+        this.openSnackBar('Please enter a valid discount percentage (0-100)', 'Close');
+        return;
+      }
       this.discountAmount = (this.totalAmount * this.discountValue) / 100;
     } else if (this.discountType === 'Rs') {
+      if (this.discountValue < 0 || this.discountValue >= this.totalAmount) {
+        this.openSnackBar('Please enter a valid discount amount', 'Close');
+        return;
+      }
       this.discountAmount = this.discountValue;
     } else {
       this.discountAmount = 0; // Default to 0 if no valid type is selected
     }
+    this.isDiscountApplied=true;
     this.totalAmount -= this.discountAmount; // Apply discount to total amount
+    this.openSnackBar(`Discount of ${this.discountValue} ${this.discountType} applied`, 'Close');
     this.totalAmount = parseFloat(this.totalAmount.toFixed(2)); // Ensure two decimal places
-    this.discountValue = 0; // Reset discount value after applying
-  }
+    }
   else{
+    if(this.isDiscountApplied){
+      this.totalAmount += this.discountAmount; // Revert discount from total amount
+      this.openSnackBar(`Discount of ${this.discountValue} ${this.discountType} Applied Already`, 'Close');
+      this.isDiscountApplied = false;
+      this.discountAmount = 0; // Reset discount amount
+    } else {  
 this.openSnackBar('Please enter a valid discount value', 'Close');
+this.discountAmount = 0; // Reset discount amount
+this.discountValue = 0; // Reset discount value
 }
-}
+  }
 }
  increaseQuantity(product: any) {
    debugger
@@ -204,8 +214,34 @@ this.openSnackBar('Please enter a valid discount value', 'Close');
   this.savedAmount+=(scannedProduct.MRP-scannedProduct.SalePrice);
   this.savedAmount= parseFloat(this.savedAmount.toFixed(2));
   this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
-  this.scannedId= ''; // Clear scannedId after processing
+  setTimeout(() => {
+    this.scannedInputRef.nativeElement.focus();
+    this.scannedInputRef.nativeElement.select();
+  }, 0);
 }
+@ViewChild(MatAutocompleteTrigger) autocompleteTrigger!: MatAutocompleteTrigger;
+
+filterProducts(): void {
+  const search = this.scannedId?.trim().toLowerCase();
+
+  // Exit if nothing is typed
+  if (!search) {
+    this.filteredProducts = [];
+    return;
+  }
+
+  // Check if input is all digits (number search — allow any length)
+  const isNumeric = /^\d+$/.test(search);
+
+  if (isNumeric || search.length > 3) {
+    this.filteredProducts = this.products.filter(p =>
+      p.name.toLowerCase().includes(search) || p.id.toString().includes(search)
+    );
+  } else {
+    this.filteredProducts = [];
+  }
+}
+
 
 savedAmount: number = 0;
 discountAmount: number = 0;
@@ -264,8 +300,52 @@ fetchFromExcel(){
 
 }
 
+ 
+holdList: any[] = [];
+onHold() {
+  if (this.selectedProducts.length === 0) {
+    this.openSnackBar('No products selected to hold', 'Close');
+    return;
+  }
+  const holdItem = {
+    invoice: 'Invoice 1',
+    products: [...this.selectedProducts],
+    amount: this.totalAmount,
+    discount: this.discountAmount,
+    customer: this.selectedCustomer ? this.selectedCustomer.name : 'Guest',
+  };
+
+  this.holdList.push(holdItem); // Now push a plain object instead of FormData
+  this.selectedProducts = [];
+  this.scannedId = '';
+  this.totalAmount = 0;
+  this.savedAmount = 0;
+  this.openSnackBar('Products on hold', 'Close');
+}
+resumeHold(index: number) {
+  const holdItem = this.holdList[index];
+
+  this.selectedProducts = [...holdItem.products];
+  this.totalAmount = holdItem.amount;
+  this.discountAmount = holdItem.discount || 0;
+  this.selectedCustomer = { name: holdItem.customer }; // Make sure this matches your actual customer structure
+
+  // Remove the resumed item from the hold list
+  this.holdList.splice(index, 1);
+
+  this.openSnackBar('Resumed held invoice', 'Close');
+}
 
 
+
+@ViewChild('scannedInput') scannedInputRef!: ElementRef;
+  // Reset focus and select input text
+ 
+
+
+selectInput(input: HTMLInputElement): void {
+  setTimeout(() => input.select(), 0); // Helps scanners overwrite
+}
 
   products: any[] = [
    
@@ -320,7 +400,12 @@ fetchFromExcel(){
     this.editingProduct = null;
   }
   
+  
   openAddPanel() {
+    if(this.holdList.length === 0) {
+      this.openSnackBar('No hold items available', 'Close');
+      return;
+    }
     this.showSidePanel = true;
     this.editingProduct = null;
     this.resetForm();

@@ -55,10 +55,11 @@
                     <mat-form-field appearance="outline" style="width: 100%; margin-top: -10px;height: 10px;">
                         <i class="fa-solid fa-magnifying-glass" matPrefix style="margin:0px 8px; color: #666;"></i>
                         <mat-label>Search Product</mat-label>
-                        <input matInput type="text" placeholder="Type to search" [(ngModel)]="scannedId"
+                        <input matInput type="text" placeholder="Type to search" [(ngModel)]="scannedId"     (focus)="selectInput(scannedInput)"
+
                             [matAutocomplete]="productAuto" (keydown.enter)="onCodeResult()" (input)="filterProducts()"
                             #scannedInput />
-                        <mat-autocomplete #productAuto="matAutocomplete">
+                        <mat-autocomplete #productAuto="matAutocomplete" >
                             <mat-option *ngFor="let suggestion of filteredProducts" [value]="suggestion.name">
                                 {{ suggestion.name }} ({{ suggestion.id }})
                             </mat-option>
@@ -67,10 +68,32 @@
                 </div>
                     <!-- <div class="add-products" (click)="openAddPanel() "><i class="fa-regular fa-circle-left"></i>show
                 </div> -->
-                <div class="add-products" (click)="openAddPanel() ">Hold <em>  </em><i class="fa-solid fa-hand-holding-hand"></i>
-                </div>
+                <div class="add-products" style="display: flex; justify-content: space-between;  padding: 10px;">
+  
+                    <!-- Left Side: Hold -->
+                    <div class="hold" style="display: flex; align-items: center; cursor: pointer;">
+                      Hold 
+                      <i class="fa-solid fa-hand-holding-hand" style="margin-left: 5px;"></i>
+                    </div>
+                  
+                    <!-- Right Side: Dropdown -->
+                    <div class="navbar-nav" style="right: 0px;">
+                      <div class="nav-item dropdown"  style="min-width: 0px;">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                          <li><a class="dropdown-item" (click)="onHold()"><i class="fa-solid fa-plus"></i> Add On Hold</a></li>
+                          <li><a class="dropdown-item" (click)="openAddPanel()"><i class="fa-solid fa-eye"></i> View Hold Items</a></li>
+                          <!-- <li><hr class="dropdown-divider"></li>
+                          <li><a class="dropdown-item">Logout</a></li> -->
+                        </ul>
+                      </div>
+                    </div>
+                  
+                  </div>
+                  
                 <div class="add-products"  printTitle="invoice" printSectionId="invoice-container" ngxPrint
-                (click)=" downloadPDF()">Download <em>  </em><i class="fa-solid fa-download"></i>
+                (click)=" downloadPDF()">WhatsApp <em>  </em><i class="fa-brands fa-square-whatsapp" style="size: 15px;"></i>
                 </div>
                 
                 <div class="add-products" printTitle="invoice" printSectionId="invoice-container" ngxPrint
@@ -183,11 +206,11 @@
         </mat-chip-set>
 
         <div style="display: flex; margin: 10px;">
-            <input type="checkbox" id="roundOffCheckbox" [(ngModel)]="isDiscountApplicable"  (change)=" applyDiscount()" style="margin-right: 10px;">
             <mat-form-field appearance="outline" style="height: 60px; width: 60;display: flex;    flex-direction: row;">
               <mat-label>Discount</mat-label>
-              <input matInput type="number" placeholder="Enter Discount" [(ngModel)]="discountValue"  style="width:70%"/>
-              <mat-select [(ngModel)]="discountType" style="width: 30%;">
+              <input matInput type="number" placeholder="Enter Discount" (keydown.enter)="applyDiscount()" [(ngModel)]="discountValue"  style="width:70%"/>
+              <mat-select [(ngModel)]="discountType" style="width: 30%;"   (selectionChange)="applyDiscount()"
+              >
                 <mat-option value="%">%</mat-option>
                 <mat-option value="Rs">Rs</mat-option>
               </mat-select>
@@ -343,15 +366,26 @@
         <button class="close-button" (click)="closeProductsPanel()"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="products-list">
-        <div class="product-item" *ngFor="let product of products">
-            <span class="product-name">{{ product.name }}</span>
-            <span class="product-price">{{ product.price | currency:'INR' }}</span>
-            <div class="quantity-control">
-                <button class="btn" (click)="decreaseQuantity(product)">−</button>
-                <input type="number" class="quantity-input" id="apples" value="0" min="0" max="99"
-                    onchange="onQuantityChange(product)">
-                <button class="btn" (click)="increaseQuantity(product)">+</button>
-            </div>
-        </div>
+        <table class="mat-elevation-z8" style="width: 100%; margin-top: 20px;">
+            <thead>
+              <tr>
+                <th>Invoice</th>
+                <th>Customer</th>
+                <th>Total Amount</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let hold of holdList; let i = index">
+                <td>{{ hold.invoice }}</td>
+                <td>{{ hold.customer }}</td>
+                <td>{{ hold.amount | currency: 'INR' }}</td>
+                <td>
+                  <button (click)="resumeHold(i)">Resume</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          
     </div>
 </div>

@@ -1,17 +1,24 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { ChangeDetectionStrategy } from '@angular/core';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import {  HttpClient, HttpClientModule } from '@angular/common/http';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 interface Product {
   id: number;
   name: string;
-  category: string;
-  price: number;
-  quantity: number;
+  Category: string;
+  MRP: number;
+  UnitPrice?: number;
+  UnitDesc?: string;
+  EANCode?: string;
+  RetailPrice?: number;
+  SalePrice?: number;
+  QuantityOnHand?: number;
 }
 @Component({
   selector: 'app-products',
@@ -37,6 +44,11 @@ export class ProductsComponent {
     this.isLoader= true;
   }
   isLoader: boolean = false;
+  private _snackBar = inject(MatSnackBar);
+
+  openSnackBar(message: string, action: string) {
+    this._snackBar.open(message, action);
+  }
   fetchFromExcel(){
     this.isLoader= true;
     const url = 'https://docs.google.com/spreadsheets/d/1bPXpxkY7K_L0oWqh7YYkrNqOrAb-56FFO3Gpv2pq8cQ/gviz/tq?tqx=out:json&gid=1958443453';
@@ -70,6 +82,24 @@ export class ProductsComponent {
 
   }
 
+  addNewProduct() {
+    debugger;
+    this.showSidePanel = true;
+    this.editingProduct = null; // Reset editing product
+
+this.products.filter(p => p.id === this.productForm.id).length > 0 ?
+      this.openSnackBar('Product with this ID already exists', 'Close') :true;
+
+  
+    // this.http.post('https://script.google.com/macros/s/AKfycbzekjxHW9Uwf_Gg3U4m4bZaxjFeqbqJ9YNfAG7Z_30SyLMcAFfNe-dsFpgATMC_e3Cp/exec', this.productForm).subscribe(res => {
+    //   console.log('New product added to Google Sheet', res);
+    //   this.openSnackBar('New product added successfully', 'Close');
+    // }, error => {
+    //   console.error('Error adding new product', error);
+    //   this.openSnackBar('Error adding new product', 'Close');
+    // });
+    this.resetForm();
+  }
   products: any[] = [];
   filteredProducts: any[] = [];
 
@@ -257,6 +287,7 @@ export class ProductsComponent {
   
   // Form data
   productForm = {
+    id:'',
     name: '',
     category: '',
     price: 0,
@@ -274,9 +305,11 @@ export class ProductsComponent {
     this.editingProduct = product;
     this.productForm = {
       name: product.name,
-      category: product.category,
-      price: product.price,
-      quantity: product.quantity
+      category: product.Category,
+      price: product.MRP,
+      id: product.id.toString(), // Ensure id is a string for the form
+      quantity: product.QuantityOnHand || 10 // Default to 10 if not provided
+
     };
   }
 
@@ -315,6 +348,7 @@ export class ProductsComponent {
 
   private resetForm() {
     this.productForm = {
+      id:'',
       name: '',
       category: '',
       price: 0,
