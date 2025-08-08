@@ -68,25 +68,25 @@
                 </div>
                     <!-- <div class="add-products" (click)="openAddPanel() "><i class="fa-regular fa-circle-left"></i>show
                 </div> -->
-                <div class="add-products" style="display: flex; justify-content: space-between;  padding: 10px;">
+                <div class="add-products" style="display: flex; justify-content: space-between;  padding: 10px;"  role="button" data-bs-toggle="dropdown" aria-expanded="false">
   
                     <!-- Left Side: Hold -->
-                    <div class="hold" style="display: flex; align-items: center; cursor: pointer;">
-                      Hold 
-                      <i class="fa-solid fa-hand-holding-hand" style="margin-left: 5px;"></i>
+                    <div class="hold" style="display: flex; align-items: center; cursor: pointer;" >
+                      Hold (F5)
+                    
                     </div>
                   
                     <!-- Right Side: Dropdown -->
                     <div class="navbar-nav" style="right: 0px;">
                       <div class="nav-item dropdown"  style="min-width: 0px;">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle" href="#">
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
-                          <li><a class="dropdown-item" (click)="onHold()"><i class="fa-solid fa-plus"></i> Add On Hold</a></li>
-                          <li><a class="dropdown-item" (click)="openAddPanel()"><i class="fa-solid fa-eye"></i> View Hold Items</a></li>
-                          <!-- <li><hr class="dropdown-divider"></li>
-                          <li><a class="dropdown-item">Logout</a></li> -->
-                        </ul>
+                            <li><a class="dropdown-item" (click)="onHold()"><i class="fa-solid fa-plus"></i> Add On Hold</a></li>
+                            <li><a class="dropdown-item" (click)="openAddPanel()"><i class="fa-solid fa-eye"></i> View Hold Items</a></li>
+                            <!-- <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item">Logout</a></li> -->
+                          </ul>
                       </div>
                     </div>
                   
@@ -97,7 +97,7 @@
                 </div>
                 
                 <div class="add-products" printTitle="invoice" printSectionId="invoice-container" ngxPrint
-                (click)=" downloadPDF()">Print <em>  </em><i class="fa-solid fa-print"></i>
+                (click)=" downloadPDF()">Print (F6)<em>  </em><i class="fa-solid fa-print"></i>
                 </div>
                 </div>
 
@@ -106,7 +106,7 @@
                 <div id="cartItems" *ngIf="selectedProducts.length > 0" class="cart-items">
                    
 
-                    <div class="table-container">
+                    <div class="table-container" #scrollContainer style="overflow-y: auto; max-height: 500px;">
                         <table class="elite-table table table-bordered table-hover">
                             <thead>
                                 <tr class="header-row">
@@ -211,8 +211,8 @@
               <input matInput type="number" placeholder="Enter Discount" (keydown.enter)="applyDiscount()" [(ngModel)]="discountValue"  style="width:70%"/>
               <mat-select [(ngModel)]="discountType" style="width: 30%;"   (selectionChange)="applyDiscount()"
               >
-                <mat-option value="%">%</mat-option>
                 <mat-option value="Rs">Rs</mat-option>
+                <mat-option value="%">%</mat-option>
               </mat-select>
             </mat-form-field>
           </div>

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, inject, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, inject, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgxPrintModule } from 'ngx-print';
 import { Router } from '@angular/router';
@@ -160,6 +160,49 @@ this.discountValue = 0; // Reset discount value
 }
   }
 }
+
+
+@HostListener('window:keydown', ['$event'])
+handleKeyDown(event: KeyboardEvent) {
+  debugger;
+  // Detect F5 (some browsers use key === 'F5', others use keyCode 116)
+  if (event.key === 'F5' || event.keyCode === 116) {
+    event.preventDefault(); // Stops the browser from refreshing
+this.openSnackBar('F5 is clicked', 'Close');
+if(this.selectedProducts.length === 0) {
+this.openAddPanel();
+      return;
+    }
+    else if(this.selectedProducts.length > 0) {
+      this.onHold();
+    }
+}
+
+  // Detect Escape
+  if (event.key === 'Escape' || event.keyCode === 27) {
+    this.selectedProducts = [];
+    this.scannedId = '';
+    this.totalAmount = 0;
+    this.savedAmount = 0;
+    this.discountAmount = 0;
+    this.discountValue = 0;
+    this.isDiscountApplied = false;
+    this.openSnackBar('Escape is clicked, form reset', 'Close');
+    this.scannedInputRef.nativeElement.focus(); // Reset focus to the scanned input
+    this.openSnackBar('F5 is clicked', 'Close');}
+    if (event.key === 'F6' || event.keyCode === 117) {
+      event.preventDefault(); // Stops the browser from refreshing
+      this.downloadPDF();
+      this.openSnackBar('F6 is clicked', 'Close');
+    }
+    if (event.key === ' ' || event.code === 'Space') {
+      event.preventDefault(); // Prevents scrolling when space is pressed
+      this.scannedInputRef.nativeElement.focus(); // Reset focus to the scanned input
+    }
+    
+}
+
+
  increaseQuantity(product: any) {
    debugger
  
@@ -218,6 +261,8 @@ this.discountValue = 0; // Reset discount value
     this.scannedInputRef.nativeElement.focus();
     this.scannedInputRef.nativeElement.select();
   }, 0);
+  setTimeout(() => this.scrollToBottom(), 0); // wait for DOM update
+
 }
 @ViewChild(MatAutocompleteTrigger) autocompleteTrigger!: MatAutocompleteTrigger;
 
@@ -305,6 +350,7 @@ holdList: any[] = [];
 onHold() {
   if (this.selectedProducts.length === 0) {
     this.openSnackBar('No products selected to hold', 'Close');
+    this.openAddPanel(); // Open the side panel if no products are selected
     return;
   }
   const holdItem = {
@@ -312,7 +358,10 @@ onHold() {
     products: [...this.selectedProducts],
     amount: this.totalAmount,
     discount: this.discountAmount,
+    savings:this.savedAmount,
+    date: new Date().toLocaleString(),
     customer: this.selectedCustomer ? this.selectedCustomer.name : 'Guest',
+    mobile: this.MobileNumber || 'N/A' // Ensure mobile number is included
   };
 
   this.holdList.push(holdItem); // Now push a plain object instead of FormData
@@ -327,6 +376,7 @@ resumeHold(index: number) {
 
   this.selectedProducts = [...holdItem.products];
   this.totalAmount = holdItem.amount;
+  this.savedAmount = holdItem.savings || 0;
   this.discountAmount = holdItem.discount || 0;
   this.selectedCustomer = { name: holdItem.customer }; // Make sure this matches your actual customer structure
 
@@ -334,6 +384,7 @@ resumeHold(index: number) {
   this.holdList.splice(index, 1);
 
   this.openSnackBar('Resumed held invoice', 'Close');
+  this.closeSidePanel();
 }
 
 
@@ -370,8 +421,11 @@ selectInput(input: HTMLInputElement): void {
   }
   deleteProduct(product: any) {
     this.loader = true;
+    this.discountAmount = 0; // Reset discount amount when deleting a product
+    this.discountValue = 0; // Reset discount value when deleting a product
+    this.isDiscountApplied = false; // Reset discount applied state
     this.selectedProducts = this.selectedProducts.filter(p => p.id !== product.id);
-    this.totalAmount -= product.MRP * product.quantity;
+    this.totalAmount -= product.SalePrice * product.quantity;
     this.savedAmount -= (product.MRP - product.SalePrice) * product.quantity;
     this.savedAmount = parseFloat(this.savedAmount.toFixed(2));
     this.totalAmount = parseFloat(this.totalAmount.toFixed(2));     
@@ -402,10 +456,10 @@ selectInput(input: HTMLInputElement): void {
   
   
   openAddPanel() {
-    if(this.holdList.length === 0) {
-      this.openSnackBar('No hold items available', 'Close');
-      return;
-    }
+    // if(this.holdList.length === 0) {
+    //   this.openSnackBar('No hold items available', 'Close');
+    //   return;
+    // }
     this.showSidePanel = true;
     this.editingProduct = null;
     this.resetForm();
@@ -453,8 +507,14 @@ selectInput(input: HTMLInputElement): void {
   isDiscountApplicable: boolean = false;
   discountMetrics: any;
   totalAmount: number = 0;
-  
+  @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
+
+  private scrollToBottom() {
+    const container = this.scrollContainer.nativeElement;
+    container.scrollTop = container.scrollHeight;
+  }
   downloadPDF(){
+    window.print() 
 this.isPrinting = true;
 this.loader = true;
   }
