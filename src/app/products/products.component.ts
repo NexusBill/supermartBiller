@@ -75,12 +75,16 @@ export class ProductsComponent {
       }));
       console.log(this.products);
       this.isLoader= false;
-      this.products = [...this.products.sort((a, b) => a.id - b.id)];
       this.filteredProducts = [...this.products];
 
     });
 
   }
+
+////https://script.google.com/macros/s/AKfycbzekjxHW9Uwf_Gg3U4m4bZaxjFeqbqJ9YNfAG7Z_30SyLMcAFfNe-dsFpgATMC_e3Cp/exec
+
+
+
 
   addNewProduct() {
     debugger;

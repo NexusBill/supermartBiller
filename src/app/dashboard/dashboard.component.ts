@@ -1,12 +1,15 @@
 import { CommonModule } from '@angular/common';
+import { HttpClient,HttpClientModule } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule,FormsModule],
+  standalone: true,
+  imports: [CommonModule,FormsModule,HttpClientModule],
   templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.css'
+  styleUrl: './dashboard.component.css',
+  providers: [HttpClient,HttpClientModule],
 })
 export class DashboardComponent {
   title = 'supermart';
@@ -16,88 +19,8 @@ export class DashboardComponent {
   sortField: string = 'date';
   sortDirection: 'asc' | 'desc' = 'desc';
   selectedSales: number[] = [];
-
-  sales = [
-    {
-      id: 1001,
-      customer: 'John Doe',
-      customerEmail: 'john@example.com',
-      customerAvatar: 'https://via.placeholder.com/40x40/007bff/ffffff?text=JD',
-      product: 'Fresh Milk',
-      category: 'dairy',
-      productImage: 'https://via.placeholder.com/35x35/87CEEB/000000?text=M',
-      quantity: 2,
-      amount: 7.98,
-      date: new Date('2024-01-15T10:30:00'),
-      status: 'completed'
-    },
-    {
-      id: 1002,
-      customer: 'Jane Smith',
-      customerEmail: 'jane@example.com',
-      customerAvatar: 'https://via.placeholder.com/40x40/28a745/ffffff?text=JS',
-      product: 'Organic Apples',
-      category: 'fruits',
-      productImage: 'https://via.placeholder.com/35x35/FFB6C1/000000?text=A',
-      quantity: 1,
-      amount: 5.99,
-      date: new Date('2024-01-15T11:15:00'),
-      status: 'pending'
-    },
-    {
-      id: 1003,
-      customer: 'Bob Johnson',
-      customerEmail: 'bob@example.com',
-      customerAvatar: 'https://via.placeholder.com/40x40/dc3545/ffffff?text=BJ',
-      product: 'Whole Grain Bread',
-      category: 'bakery',
-      productImage: 'https://via.placeholder.com/35x35/DEB887/000000?text=B',
-      quantity: 3,
-      amount: 8.97,
-      date: new Date('2024-01-15T09:45:00'),
-      status: 'processing'
-    },
-    {
-      id: 1004,
-      customer: 'Alice Brown',
-      customerEmail: 'alice@example.com',
-      customerAvatar: 'https://via.placeholder.com/40x40/ffc107/000000?text=AB',
-      product: 'Premium Beef',
-      category: 'meat',
-      productImage: 'https://via.placeholder.com/35x35/CD853F/000000?text=B',
-      quantity: 1,
-      amount: 15.99,
-      date: new Date('2024-01-15T14:20:00'),
-      status: 'completed'
-    },
-    {
-      id: 1005,
-      customer: 'Charlie Wilson',
-      customerEmail: 'charlie@example.com',
-      customerAvatar: 'https://via.placeholder.com/40x40/6f42c1/ffffff?text=CW',
-      product: 'Fresh Spinach',
-      category: 'vegetables',
-      productImage: 'https://via.placeholder.com/35x35/90EE90/000000?text=S',
-      quantity: 2,
-      amount: 4.98,
-      date: new Date('2024-01-15T16:10:00'),
-      status: 'cancelled'
-    },
-    // Add more sample data...
-    {
-      id: 1006,
-      customer: 'Diana Davis',
-      customerEmail: 'diana@example.com',
-      customerAvatar: 'https://via.placeholder.com/40x40/e83e8c/ffffff?text=DD',
-      product: 'Orange Juice',
-      category: 'beverages',
-      productImage: 'https://via.placeholder.com/35x35/FFA500/000000?text=J',
-      quantity: 2,
-      amount: 9.98,
-      date: new Date('2024-01-15T12:30:00'),
-      status: 'completed'
-    }
-  ];
+  sales:any[]=[];
+  
 
   filteredSales = [...this.sales];
   paginatedSales: any[] = [];
@@ -226,21 +149,21 @@ export class DashboardComponent {
     }
   }
 
-  // Date formatting
-  formatDate(date: Date): string {
-    return new Intl.DateTimeFormat('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    }).format(date);
-  }
+  // // Date formatting
+  // formatDate(date: Date): string {
+  //   return new Intl.DateTimeFormat('en-US', {
+  //     year: 'numeric',
+  //     month: 'short',
+  //     day: 'numeric'
+  //   }).format(date);
+  // }
 
-  formatTime(date: Date): string {
-    return new Intl.DateTimeFormat('en-US', {
-      hour: '2-digit',
-      minute: '2-digit'
-    }).format(date);
-  }
+  // formatTime(date: Date): string {
+  //   return new Intl.DateTimeFormat('en-US', {
+  //     hour: '2-digit',
+  //     minute: '2-digit'
+  //   }).format(date);
+  // }
 
   // Action methods
   viewSale(sale: any) {
@@ -254,4 +177,52 @@ export class DashboardComponent {
   deleteSale(sale: any) {
     console.log('Delete sale:', sale);
   }
+
+orderURL:string="https://docs.google.com/spreadsheets/d/1bPXpxkY7K_L0oWqh7YYkrNqOrAb-56FFO3Gpv2pq8cQ/edit?gid=901963204#gid=901963204"
+
+constructor(private http: HttpClient) {
+  this.fetchFromExcel();
+
+}
+
+
+fetchFromExcel(){
+  debugger;
+  const url = 'https://docs.google.com/spreadsheets/d/1bPXpxkY7K_L0oWqh7YYkrNqOrAb-56FFO3Gpv2pq8cQ/gviz/tq?tqx=out:json&gid=901963204#gid=901963204';
+  this.http.get(url, { responseType: 'text' }).subscribe((res: string) => {
+   
+    debugger;
+    const json = JSON.parse(
+      res.substring(47).slice(0, -2)
+    );
+    const rows = json.table.rows;
+  
+   
+    this.sales = rows.map((row: any) => ({ 
+      Id: (row.c[0]?.v || 0), // Convert id to a number
+      CustomerId: row.c[1]?.v || '',
+      CustomerName: row.c[2]?.v || '',
+      MobileNumber: 1,
+      Amount:  row.c[4]?.v || '',
+      Discount:  row.c[5]?.v || 0,
+      Products: row.c[6]?.v || 0,
+      Date: this.formatDate(new Date()) ,// now properly formatted
+      Savings: row.c[8]?.v || 0
+    }));
+    console.log(this.sales);
+   
+    
+
+  });
+}
+formatDate(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // 01-12
+  const day = String(date.getDate()).padStart(2, '0'); // 01-31
+  return `${year}-${month}-${day}`;
+}
+
+
+
+
 }
