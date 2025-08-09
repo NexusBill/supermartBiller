@@ -91,17 +91,19 @@ export class ProductsComponent {
     this.showSidePanel = true;
     this.editingProduct = null; // Reset editing product
 
-this.products.filter(p => p.id === this.productForm.id).length > 0 ?
-      this.openSnackBar('Product with this ID already exists', 'Close') :true;
-
+    let a = this.products.filter(p => p.id === this.productForm.id).length > 0 ? true : false
+    if (a) {
+      this.openSnackBar('Product with this ID already exists', 'Close') ;
+      return;
+    }
   
-    // this.http.post('https://script.google.com/macros/s/AKfycbzekjxHW9Uwf_Gg3U4m4bZaxjFeqbqJ9YNfAG7Z_30SyLMcAFfNe-dsFpgATMC_e3Cp/exec', this.productForm).subscribe(res => {
-    //   console.log('New product added to Google Sheet', res);
-    //   this.openSnackBar('New product added successfully', 'Close');
-    // }, error => {
-    //   console.error('Error adding new product', error);
-    //   this.openSnackBar('Error adding new product', 'Close');
-    // });
+    this.http.post('https://script.google.com/macros/s/AKfycbzekjxHW9Uwf_Gg3U4m4bZaxjFeqbqJ9YNfAG7Z_30SyLMcAFfNe-dsFpgATMC_e3Cp/exec', this.productForm).subscribe(res => {
+      console.log('New product added to Google Sheet', res);
+      this.openSnackBar('New product added successfully', 'Close');
+    }, error => {
+      console.error('Error adding new product', error);
+      this.openSnackBar('Error adding new product', 'Close');
+    });
     this.resetForm();
   }
   products: any[] = [];

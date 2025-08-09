@@ -256,7 +256,16 @@
             placeholder="Enter product name"
             required>
         </div>
-
+        <div class="form-group">
+          <label for="productName">Product Id</label>
+          <input 
+            type="text" 
+            id="productName"
+            [(ngModel)]="productForm.id"
+            name="id"
+            placeholder="Enter product id"
+            required>
+        </div>
         <!-- Category -->
         <div class="form-group">
           <label for="category">Category</label>

@@ -270,9 +270,22 @@ this.openAddPanel();
     this.scannedInputRef.nativeElement.select();
   }, 0);
   setTimeout(() => this.scrollToBottom(), 0); // wait for DOM update
+  this.filteredProducts = [];
 
 }
 @ViewChild(MatAutocompleteTrigger) autocompleteTrigger!: MatAutocompleteTrigger;
+
+
+
+holdFunction(){
+  if (this.selectedProducts.length === 0) {
+    this.openAddPanel(); // Open the side panel if no products are selected
+    return;
+  }
+  else{
+    this.onHold();
+  }
+}
 
 filterProducts(): void {
   const search = this.scannedId?.trim().toLowerCase();
@@ -286,9 +299,9 @@ filterProducts(): void {
   // Check if input is all digits (number search — allow any length)
   const isNumeric = /^\d+$/.test(search);
 
-  if (isNumeric || search.length > 3) {
+  if (!isNumeric && search.length > 3) {
     this.filteredProducts = this.products.filter(p =>
-      p.name.toLowerCase().includes(search) || p.id.toString().includes(search)
+      p.name.toLowerCase().includes(search)
     );
   } else {
     this.filteredProducts = [];
