@@ -1,18 +1,81 @@
-<div class="suppliers">
-    <!-- Header -->
-    <div class="header">
-        <h1>Supplier Management</h1>
-        <p>Add new Suppliers</p>
+<div class="supplier-card">
+    <h2>Add / Edit Supplier</h2>
+  
+    <form [formGroup]="supplierForm" (ngSubmit)="onSubmit()" class="supplier-form">
+      <div class="row">
+        <label>Supplier Name *</label>
+        <input formControlName="name" placeholder="Supplier name" />
+        <div class="error" *ngIf="f['name'].touched && f['name'].invalid">Enter valid phone</div>        
     </div>
-
-    <div class="main-content">
-        <!-- Supplier Addition Form -->
-        <div class="supplier-form-section">
-            <h2 class="form-title">Add New Supplier</h2>
-            <form id="supplierForm">
-                <div class="form-group      "></div>
-                <label class="form-label" for="supplierName">Supplier Name *</label>
-            </form>
+  
+      <div class="row two-col">
+        <div>
+          <label>Contact Person</label>
+          <input formControlName="contactPerson" placeholder="Contact person" />
         </div>
-    </div>
-</div>
+        <div>
+          <label>Phone *</label>
+          <input formControlName="phone" placeholder="Phone" />
+          <div class="error" *ngIf="f['phone'].touched && f['phone'].invalid">Enter valid phone</div>        </div>
+
+      </div>
+  
+      <div class="row two-col">
+        <div>
+          <label>Email</label>
+          <input formControlName="email" placeholder="Email" />
+        </div>
+        <div>
+          <label>GSTIN / Tax ID</label>
+          <input formControlName="gstin" placeholder="GSTIN" />
+        </div>
+      </div>
+  
+      <div class="row">
+        <label>Address</label>
+        <textarea formControlName="address" placeholder="Street, locality"></textarea>
+      </div>
+  
+      <div class="row three-col">
+        <div>
+          <label>State</label>
+          <input formControlName="state" placeholder="State" />
+        </div>
+        <div>
+          <label>City</label>
+          <input formControlName="city" placeholder="City" />
+        </div>
+        <div>
+          <label>Pin</label>
+          <input formControlName="pincode" placeholder="Pin code" />
+        </div>
+      </div>
+  
+      <div class="row">
+        <label>Payment Terms</label>
+        <select formControlName="paymentTerms">
+          <option value="">Select</option>
+          <option value="cod">Cash on Delivery</option>
+          <option value="net7">NET 7</option>
+          <option value="net15">NET 15</option>
+          <option value="net30">NET 30</option>
+        </select>
+      </div>
+  
+      <div class="row">
+        <label>Items / Categories Supplied</label>
+        <input formControlName="items" placeholder="Comma separated (e.g. Rice, Snacks)" />
+      </div>
+  
+      <div class="row inline">
+        <label>
+          <input type="checkbox" formControlName="active" /> Active
+        </label>
+      </div>
+  
+      <div class="actions">
+        <button type="submit" [disabled]="supplierForm.invalid">Save Supplier</button>
+        <button type="button" class="secondary" (click)="onCancel()">Cancel</button>
+      </div>
+    </form>
+  </div>

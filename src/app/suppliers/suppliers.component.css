@@ -1,0 +1,118 @@
+.supplier-card {
+    background: #fff;
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    font-family: Arial, sans-serif;
+  }
+  
+  .supplier-card h2 {
+    margin-bottom: 15px;
+    font-size: 20px;
+    color: #333;
+    font-weight: 600;
+  }
+  
+  .supplier-form .row {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .supplier-form .row.two-col {
+    flex-direction: row;
+    gap: 20px;
+  }
+  
+  .supplier-form .row.three-col {
+    flex-direction: row;
+    gap: 15px;
+  }
+  
+  .supplier-form label {
+    font-weight: 500;
+    margin-bottom: 5px;
+    color: #555;
+  }
+  
+  .supplier-form input,
+  .supplier-form textarea,
+  .supplier-form select {
+    padding: 8px 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    outline: none;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease-in-out;
+  }
+  
+  .supplier-form input:focus,
+  .supplier-form textarea:focus,
+  .supplier-form select:focus {
+    border-color: #4a90e2;
+  }
+  
+  .supplier-form textarea {
+    min-height: 60px;
+    resize: vertical;
+  }
+  
+  .supplier-form .inline {
+    flex-direction: row;
+    align-items: center;
+  }
+  
+  .supplier-form .inline label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .error {
+    font-size: 12px;
+    color: #d93025;
+    margin-top: 3px;
+  }
+  
+  .actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  
+  .actions button {
+    padding: 8px 15px;
+    font-size: 14px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .actions button[type="submit"] {
+    background-color: #4a90e2;
+    color: white;
+  }
+  
+  .actions button.secondary {
+    background-color: #e0e0e0;
+    color: #333;
+  }
+  
+  .actions button:disabled {
+    background-color: #b0c4de;
+    cursor: not-allowed;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 600px) {
+    .supplier-form .row.two-col,
+    .supplier-form .row.three-col {
+      flex-direction: column;
+      gap: 10px;
+    }
+  }
+  

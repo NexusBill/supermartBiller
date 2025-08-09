@@ -411,11 +411,15 @@ selectInput(input: HTMLInputElement): void {
     let productExists = this.selectedProducts.find(p => p.id === product.id);
     if (productExists) {
       productExists.quantity = product.quantity; // Update quantity in selected products
-      this.totalAmount = this.selectedProducts.reduce((sum, p) => sum + (p.MRP * p.quantity), 0);
+      this.totalAmount = this.selectedProducts.reduce((sum, p) => sum + (p.SalePrice * p.quantity), 0);
+      this.savedAmount = this.selectedProducts.reduce((sum, p) => sum + (p.MRP - p.SalePrice) * p.quantity, 0);
+      this.savedAmount = parseFloat(this.savedAmount.toFixed(2));
       this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
     } else {
       this.selectedProducts.push({ ...product }); // Add new product with updated quantity
-      this.totalAmount += product.MRP * product.quantity; 
+      this.totalAmount += product.SalePrice * product.quantity; 
+      this.savedAmount += (product.MRP - product.SalePrice) * product.quantity;
+      this.savedAmount = parseFloat(this.savedAmount.toFixed(2));
       this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
     }
   }
