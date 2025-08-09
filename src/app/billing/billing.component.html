@@ -106,7 +106,7 @@
                 <div id="cartItems" *ngIf="selectedProducts.length > 0" class="cart-items">
                    
 
-                    <div class="table-container" #scrollContainer style="overflow-y: auto; max-height: 500px;">
+                    <div class="table-container" #scrollContainer style="overflow-y: auto; max-height: 300px;">
                         <table class="elite-table table table-bordered table-hover">
                             <thead>
                                 <tr class="header-row">
@@ -130,9 +130,16 @@
                                     <td class="data-cell">{{ element.SalePrice }}</td>
                                     <td class="data-cell">
                                         <div class="d-flex align-items-center">
-                                            <input type="number" [(ngModel)]="element.quantity"
-                                                (ngModelChange)="onQuantityChange(element)"
-                                                class="form-control quantity-input" min="1" style="width: 80px;" />
+                                            <input #quantity
+                                            type="text"
+                                            [(ngModel)]="element.quantity"
+                                            (ngModelChange)="onQuantityChange(element)"
+                                            (focus)="selectInput(quantity)"
+                                            class="form-control quantity-input"
+                                           
+                                            style="width: 80px;"
+                                          />
+                                          
                                             <span class="weight-unit ms-2">{{element.UnitDesc}}</span>
                                         </div>
                                     </td>

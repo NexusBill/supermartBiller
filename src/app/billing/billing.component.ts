@@ -91,8 +91,16 @@ export class BillingComponent {
    loader: boolean = false;
    selectedProducts: any[] = [];
    ngOnInit() {
-    this.fetchFromExcel()  ;
+    this.fetchFromExcel();
    }
+
+   
+  ngAfterViewInit() {
+    setTimeout(() => {
+      this.scannedInputRef.nativeElement.focus();
+      this.scannedInputRef.nativeElement.select();
+    }, 100);
+  }
    private _snackBar = inject(MatSnackBar);
 
    openSnackBar(message: string, action: string) {
@@ -390,6 +398,7 @@ resumeHold(index: number) {
 
 
 @ViewChild('scannedInput') scannedInputRef!: ElementRef;
+//@ViewChild('scannedInput') scannedInputRef!: ElementRef;
   // Reset focus and select input text
  
 
@@ -518,7 +527,6 @@ selectInput(input: HTMLInputElement): void {
     container.scrollTop = container.scrollHeight;
   }
   downloadPDF(){
-    window.print() 
 this.isPrinting = true;
 this.loader = true;
   }
