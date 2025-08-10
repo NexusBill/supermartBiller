@@ -117,7 +117,6 @@ export class BillingComponent {
 decreaseQuantity(product: any) {
   debugger
   
-   this.loader = true;
    if (this.selectedProducts.find(p => p.id === product.id).quantity > 1) {
      this.selectedProducts.find(p => p.id === product.id).quantity--;
      this.totalAmount -= product.MRP; // Update total amount
@@ -126,7 +125,6 @@ decreaseQuantity(product: any) {
      // If quantity is 1, remove the product from selectedProducts
      this.selectedProducts = this.selectedProducts.filter(p => p.id !== product.id);
    }
-   this.loader = true;
    this.totalAmount = this.selectedProducts.reduce((sum, p) => sum + (p.SalePrice * p.quantity), 0);
     this.savedAmount = this.selectedProducts.reduce((sum, p) => sum + (p.MRP - p.SalePrice) * p.quantity, 0);
    this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
@@ -222,7 +220,6 @@ this.openAddPanel();
   else{
    this.selectedProducts.find(p => p.id === product.id).quantity++;
   }
-   this.loader = true;
  this.totalAmount += product.SalePrice;
   this.savedAmount+=(product.MRP-product.SalePrice);
   this.savedAmount= parseFloat(this.savedAmount.toFixed(2));
@@ -261,7 +258,6 @@ this.openAddPanel();
   }
 
   // Update total amount
-  this.loader = true;
   this.totalAmount += scannedProduct.SalePrice;
   this.savedAmount+=(scannedProduct.MRP-scannedProduct.SalePrice);
   this.savedAmount= parseFloat(this.savedAmount.toFixed(2));
@@ -338,9 +334,9 @@ discountAmount: number = 0;
 scannedId:any;
 
 
-async fetchFromExcel(){
+ fetchFromExcel(){
   const url = 'https://docs.google.com/spreadsheets/d/1bPXpxkY7K_L0oWqh7YYkrNqOrAb-56FFO3Gpv2pq8cQ/gviz/tq?tqx=out:json';
-await  this.http.get(url, { responseType: 'text' }).subscribe((res: string) => {
+  this.http.get(url, { responseType: 'text' }).subscribe((res: string) => {
    
     debugger;
     const json = JSON.parse(
@@ -430,7 +426,6 @@ selectInput(input: HTMLInputElement): void {
     if (product.quantity < 1) {
       product.quantity = 1; // Ensure quantity is at least 1
     }
-    this.loader = true;
     let productExists = this.selectedProducts.find(p => p.id === product.id);
     if (productExists) {
       productExists.quantity = product.quantity; // Update quantity in selected products
@@ -447,7 +442,6 @@ selectInput(input: HTMLInputElement): void {
     }
   }
   deleteProduct(product: any) {
-    this.loader = true;
     this.discountAmount = 0; // Reset discount amount when deleting a product
     this.discountValue = 0; // Reset discount value when deleting a product
     this.isDiscountApplied = false; // Reset discount applied state
@@ -463,7 +457,6 @@ selectInput(input: HTMLInputElement): void {
     if (productExists) {
       product.stock -= product.quantity;
       productExists.quantity +=1;
-      this.loader = true;
       this.totalAmount += product.MRP ;
       this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
       return;
@@ -471,7 +464,6 @@ selectInput(input: HTMLInputElement): void {
    else{
       debugger
       product.stock -= product.quantity;
-      this.loader = true;
       this.selectedProducts = [...this.selectedProducts, product];
       this.totalAmount += product.MRP ;
       this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
@@ -542,7 +534,6 @@ selectInput(input: HTMLInputElement): void {
   }
   downloadPDF(){
 this.isPrinting = true;
-this.loader = true;
   }
   currentDate: Date = new Date();
   selectedCustomer: any = null;
