@@ -133,6 +133,7 @@
                                         <div class="d-flex align-items-center">
                                             <input #quantity type="text" [(ngModel)]="element.quantity"
                                                 (ngModelChange)="onQuantityChange(element)"
+                                                (keydown.enter)="selectInput(scannedInput)"
                                                 (focus)="selectInput(quantity)" class="form-control quantity-input"
                                                 style="width: 80px;" />
 
