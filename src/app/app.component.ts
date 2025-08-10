@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { BillingComponent } from './billing/billing.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { MatIconModule } from '@angular/material/icon';
+import { ProductService } from './shared/product.service';
 
 @Component({
   selector: 'app-root',
@@ -24,7 +25,9 @@ export class AppComponent {
   selectedSales: number[] = [];
 
   constructor(private router: Router) {
-
+// this.productService.getProducts().subscribe(products => {
+//       console.log('Products from service:', products);
+//     });
   }
 
   sales = [

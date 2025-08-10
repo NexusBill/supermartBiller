@@ -91,6 +91,7 @@ export class BillingComponent {
    loader: boolean = false;
    selectedProducts: any[] = [];
    ngOnInit() {
+    this.loader = true;
     this.fetchFromExcel();
    }
 
@@ -337,9 +338,9 @@ discountAmount: number = 0;
 scannedId:any;
 
 
-fetchFromExcel(){
+async fetchFromExcel(){
   const url = 'https://docs.google.com/spreadsheets/d/1bPXpxkY7K_L0oWqh7YYkrNqOrAb-56FFO3Gpv2pq8cQ/gviz/tq?tqx=out:json';
-  this.http.get(url, { responseType: 'text' }).subscribe((res: string) => {
+await  this.http.get(url, { responseType: 'text' }).subscribe((res: string) => {
    
     debugger;
     const json = JSON.parse(
@@ -361,7 +362,7 @@ fetchFromExcel(){
       EANCode:  row.c[9]?.v || '', 
     }));
     console.log(this.products);
-
+this.loader = false;
   });
 
 }

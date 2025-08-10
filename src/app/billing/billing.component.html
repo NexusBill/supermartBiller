@@ -52,32 +52,33 @@
 
                     <!-- Search Product Field -->
                     <div class="col-md-3">
-                    <mat-form-field appearance="outline" style="width: 100%; margin-top: -10px;height: 10px;">
-                        <i class="fa-solid fa-magnifying-glass" matPrefix style="margin:0px 8px; color: #666;"></i>
-                        <mat-label>Search Product</mat-label>
-                        <input matInput type="text" placeholder="Type to search" [(ngModel)]="scannedId"     (focus)="selectInput(scannedInput)"
-
-                            [matAutocomplete]="productAuto" (keydown.enter)="onCodeResult()" (input)="filterProducts()"
-                            #scannedInput />
-                        <mat-autocomplete #productAuto="matAutocomplete" >
-                            <mat-option *ngFor="let suggestion of filteredProducts" [value]="suggestion.name">
-                                {{ suggestion.name }} ({{ suggestion.id }})
-                            </mat-option>
-                        </mat-autocomplete>
-                    </mat-form-field>
-                </div>
+                        <mat-form-field appearance="outline" style="width: 100%; margin-top: -10px;height: 10px;">
+                            <i class="fa-solid fa-magnifying-glass" matPrefix style="margin:0px 8px; color: #666;"></i>
+                            <mat-label>Search Product</mat-label>
+                            <input matInput type="text" placeholder="Type to search" [(ngModel)]="scannedId"
+                                (focus)="selectInput(scannedInput)" [matAutocomplete]="productAuto"
+                                (keydown.enter)="onCodeResult()" (input)="filterProducts()" #scannedInput />
+                            <mat-autocomplete #productAuto="matAutocomplete">
+                                <mat-option *ngFor="let suggestion of filteredProducts" [value]="suggestion.name">
+                                    {{ suggestion.name }} ({{ suggestion.id }})
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
                     <!-- <div class="add-products" (click)="openAddPanel() "><i class="fa-regular fa-circle-left"></i>show
                 </div> -->
-                <div class="add-products" style="display: flex; justify-content: space-between;  padding: 10px;"  role="button" data-bs-toggle="dropdown" aria-expanded="false">
-  
-                    <!-- Left Side: Hold -->
-                    <div class="hold" style="display: flex; align-items: center; cursor: pointer;" (click)="holdFunction()" >
-                      Hold (F5)
-                    
-                    </div>
-                  
-                    <!-- Right Side: Dropdown -->
-                    <!-- <div class="navbar-nav" style="right: 0px;">
+                    <div class="add-products" style="display: flex; justify-content: space-between;  padding: 10px;"
+                        role="button" data-bs-toggle="dropdown" aria-expanded="false">
+
+                        <!-- Left Side: Hold -->
+                        <div class="hold" style="display: flex; align-items: center; cursor: pointer;"
+                            (click)="holdFunction()">
+                            Hold (F5)
+
+                        </div>
+
+                        <!-- Right Side: Dropdown -->
+                        <!-- <div class="navbar-nav" style="right: 0px;">
                       <div class="nav-item dropdown"  style="min-width: 0px;">
                         <a class="nav-link dropdown-toggle" href="#">
                         </a>
@@ -89,21 +90,22 @@
                       </div>
                     </div>
                    -->
-                  </div>
-                  
-                <div class="add-products"  printTitle="invoice" printSectionId="invoice-container" ngxPrint
-                (click)=" downloadPDF()">WhatsApp <em>  </em><i class="fa-brands fa-square-whatsapp" style="size: 15px;"></i>
-                </div>
-                
-                <div class="add-products" printTitle="invoice" printSectionId="invoice-container" ngxPrint
-                (click)=" downloadPDF()">Print (F6)<em>  </em><i class="fa-solid fa-print"></i>
-                </div>
+                    </div>
+
+                    <div class="add-products" printTitle="invoice" printSectionId="invoice-container" ngxPrint
+                        (click)=" downloadPDF()">WhatsApp <em> </em><i class="fa-brands fa-square-whatsapp"
+                            style="size: 15px;"></i>
+                    </div>
+
+                    <div class="add-products" printTitle="invoice" printSectionId="invoice-container" ngxPrint
+                        (click)=" downloadPDF()">Print (F6)<em> </em><i class="fa-solid fa-print"></i>
+                    </div>
                 </div>
 
 
 
-                <div id="cartItems" *ngIf="selectedProducts.length > 0" class="cart-items" >
-                   
+                <div id="cartItems" *ngIf="selectedProducts.length > 0" class="cart-items">
+
 
                     <div class="table-container" #scrollContainer style="overflow-y: scroll; max-height: 300px;">
                         <table class="elite-table table table-bordered table-hover">
@@ -129,16 +131,11 @@
                                     <td class="data-cell">{{ element.SalePrice }}</td>
                                     <td class="data-cell">
                                         <div class="d-flex align-items-center">
-                                            <input #quantity
-                                            type="text"
-                                            [(ngModel)]="element.quantity"
-                                            (ngModelChange)="onQuantityChange(element)"
-                                            (focus)="selectInput(quantity)"
-                                            class="form-control quantity-input"
-                                           
-                                            style="width: 80px;"
-                                          />
-                                          
+                                            <input #quantity type="text" [(ngModel)]="element.quantity"
+                                                (ngModelChange)="onQuantityChange(element)"
+                                                (focus)="selectInput(quantity)" class="form-control quantity-input"
+                                                style="width: 80px;" />
+
                                             <span class="weight-unit ms-2">{{element.UnitDesc}}</span>
                                         </div>
                                     </td>
@@ -156,14 +153,16 @@
                     </div>
 
                 </div>
-                <div class="Noproducts" *ngIf="selectedProducts.length === 0" style="display: flex;justify-content: center;align-items: center;height: 100%;">
+                <div class="Noproducts" *ngIf="selectedProducts.length === 0"
+                    style="display: flex;justify-content: center;align-items: center;height: 100%;">
                     <div class="empty-state" id="emptyState">
                         <div class="empty-cart-icon"></div>
                         <h2>Your cart is empty</h2>
-                        <p>Looks like you haven't added any products to your cart yet. Start shopping to see your items appear here!</p>
+                        <p>Looks like you haven't added any products to your cart yet. Start shopping to see your items
+                            appear here!</p>
                     </div>
                 </div>
-               
+
                 <!-- <div class="discount">
                     <label>Discount Applicable</label>
                     <input type="number" value="0" placeholder="Enter Discount Amount" class="discount-input" style="    height: 50px;
@@ -201,38 +200,41 @@
     <!-- Copyright -->
     <div class="table-footer">
         <mat-chip-set aria-label="Fish selection" style="justify-content: space-between;">
-            <mat-chip style="height: 70px; width: 220px;">Number Of Products : <h2>{{selectedProducts.length}}</h2> </mat-chip>
-           
+            <mat-chip style="height: 70px; width: 220px;">Number Of Products : <h2>{{selectedProducts.length}}</h2>
+            </mat-chip>
+
         </mat-chip-set>
 
 
         <mat-chip-set aria-label="Fish selection" style="justify-content: space-between;">
-            <mat-chip style="height: 70px; width: 220px;">Amount : <h2 style=" color: #198a3bb7; font-weight: bold">{{ totalAmount | currency: 'INR' }}</h2> </mat-chip>
-           
+            <mat-chip style="height: 70px; width: 220px;">Amount : <h2 style=" color: #198a3bb7; font-weight: bold">{{
+                    totalAmount | currency: 'INR' }}</h2> </mat-chip>
+
         </mat-chip-set>
 
         <div style="display: flex; margin: 10px;">
             <mat-form-field appearance="outline" style="height: 60px; width: 60;display: flex;    flex-direction: row;">
-              <mat-label>Discount</mat-label>
-              <input matInput type="number" placeholder="Enter Discount" (keydown.enter)="applyDiscount()" [(ngModel)]="discountValue"  style="width:70%"/>
-              <mat-select [(ngModel)]="discountType" style="width: 30%;"   (selectionChange)="applyDiscount()"
-              >
-                <mat-option value="Rs">Rs</mat-option>
-                <mat-option value="%">%</mat-option>
-              </mat-select>
+                <mat-label>Discount</mat-label>
+                <input matInput type="number" placeholder="Enter Discount" (keydown.enter)="applyDiscount()"
+                    [(ngModel)]="discountValue" style="width:70%" />
+                <mat-select [(ngModel)]="discountType" style="width: 30%;" (selectionChange)="applyDiscount()">
+                    <mat-option value="Rs">Rs</mat-option>
+                    <mat-option value="%">%</mat-option>
+                </mat-select>
             </mat-form-field>
-          </div>
-          <mat-form-field appearance="outline" style="height: 60px; width: 60;display: flex;    flex-direction: row;">
+        </div>
+        <mat-form-field appearance="outline" style="height: 60px; width: 60;display: flex;    flex-direction: row;">
             <mat-label>Payment Type</mat-label>
-            <mat-select [(ngModel)]="paymentMethod" >
+            <mat-select [(ngModel)]="paymentMethod">
                 <mat-option value="%">Cash</mat-option>
                 <mat-option value="Rs">UPI</mat-option>
                 <mat-option value="Rs">Unpaid</mat-option>
-              </mat-select>           
-              </mat-form-field>
-          <mat-chip-set aria-label="Fish selection" style="justify-content: space-between;">
-            <mat-chip style="height: 70px; width: 220px;">savings : <h2 style=" color: #007bff; font-weight: bold">{{ savedAmount | currency: 'INR' }}</h2> </mat-chip>
-           
+            </mat-select>
+        </mat-form-field>
+        <mat-chip-set aria-label="Fish selection" style="justify-content: space-between;">
+            <mat-chip style="height: 70px; width: 220px;">savings : <h2 style=" color: #007bff; font-weight: bold">{{
+                    savedAmount | currency: 'INR' }}</h2> </mat-chip>
+
         </mat-chip-set>
 
 
@@ -374,24 +376,41 @@
     <div class="products-list">
         <table class="mat-elevation-z8" style="width: 100%; margin-top: 20px;">
             <thead>
-              <tr>
-                <th>Invoice</th>
-                <th>Customer</th>
-                <th>Total Amount</th>
-                <th>Action</th>
-              </tr>
+                <tr>
+                    <th>Invoice</th>
+                    <th>Customer</th>
+                    <th>Total Amount</th>
+                    <th>Action</th>
+                </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let hold of holdList; let i = index">
-                <td>{{ hold.invoice }}</td>
-                <td>{{ hold.customer }}</td>
-                <td>{{ hold.amount | currency: 'INR' }}</td>
-                <td>
-                  <button (click)="resumeHold(i)">Resume</button>
-                </td>
-              </tr>
+                <tr *ngFor="let hold of holdList; let i = index">
+                    <td>{{ hold.invoice }}</td>
+                    <td>{{ hold.customer }}</td>
+                    <td>{{ hold.amount | currency: 'INR' }}</td>
+                    <td>
+                        <button (click)="resumeHold(i)">Resume</button>
+                    </td>
+                </tr>
             </tbody>
-          </table>
-          
+        </table>
+
+    </div>
+</div>
+
+
+<div class="loader"
+    style="display: flex; justify-content: center; align-items: center; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.8); z-index: 1000;"
+>
+
+    <div class="spinner">
+        <div class="" style="text-align: center;">
+          <div class="spin" style="justify-content: center;
+          display: flex
+      ;
+      "><mat-spinner diameter="50" color="primary"></mat-spinner><br></div>  
+          <div class="text" style="margin-top: 25px;"> <p>Loading...</p>
+            <p>Please wait while we process your request.</p></div> 
+        </div>
     </div>
 </div>
