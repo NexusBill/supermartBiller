@@ -37,8 +37,14 @@ export class ProductsComponent {
   stockFilter: string = '';
   sortBy: string = 'name';
   displayedColumns: string[] = ['id', 'name', 'category', 'MRP', 'quantity', 'Action'];
-
-
+  idMap = new Map<string, any>();
+  nameMap = new Map<string, any>();
+  
+  // Pagination variables
+  pageSize = 100; // Number of items per page
+  currentPage = 1;
+  totalPages = 0;
+  pagedProducts: any[] = [];
   constructor(private http: HttpClient) {
     this.  fetchFromExcel();
     this.isLoader= true;
@@ -51,38 +57,65 @@ export class ProductsComponent {
   }
   fetchFromExcel(){
     this.isLoader= true;
-    const url = 'https://docs.google.com/spreadsheets/d/1bPXpxkY7K_L0oWqh7YYkrNqOrAb-56FFO3Gpv2pq8cQ/gviz/tq?tqx=out:json&gid=1958443453';
-    this.http.get(url, { responseType: 'text' }).subscribe((res: string) => {
+    // const url = 'https://docs.google.com/spreadsheets/d/1bPXpxkY7K_L0oWqh7YYkrNqOrAb-56FFO3Gpv2pq8cQ/gviz/tq?tqx=out:json&gid=1958443453';
+    // this.http.get(""url"", { responseType: 'text' }).subscribe((res: string) => {
      
-      debugger;
-      const json = JSON.parse(
-        res.substring(47).slice(0, -2)
-      );
-      const rows = json.table.rows;
+    //   debugger;
+    //   const json = JSON.parse(
+    //     res.substring(47).slice(0, -2)
+    //   );
+    //   const rows = json.table.rows;
     
      
-      this.products = rows.map((row: any) => ({ 
-        id: Number(row.c[0]?.v || 0), // Convert id to a number
-        name: row.c[1]?.v || '',
-        Category: row.c[2]?.v || '',
-        quantity: 1,
-        UnitDesc:  row.c[4]?.v || '',
-        RetailPrice:  row.c[5]?.v || 0,
-        SalePrice: row.c[6]?.v || 0,
-        MRP:  row.c[7]?.v || 0,
-        UnitPrice: row.c[8]?.v || 0,
-        EANCode:  row.c[9]?.v || '', 
-      }));
+    //   this.products = rows.map((row: any) => ({ 
+    //     id: Number(row.c[0]?.v || 0), // Convert id to a number
+    //     name: row.c[1]?.v || '',
+    //     Category: row.c[2]?.v || '',
+    //     quantity: 1,
+    //     UnitDesc:  row.c[4]?.v || '',
+    //     RetailPrice:  row.c[5]?.v || 0,
+    //     SalePrice: row.c[6]?.v || 0,
+    //     MRP:  row.c[7]?.v || 0,
+    //     UnitPrice: row.c[8]?.v || 0,
+    //     EANCode:  row.c[9]?.v || '', 
+    //   }));
+    //   console.log(this.products);
+    this.http.get('https://supermartspring.vercel.app/products').subscribe((res: any) => {
+      this.products = res;
       console.log(this.products);
-      this.isLoader= false;
       this.filteredProducts = [...this.products];
+ // Build maps for O(1) search
+ this.buildLookupMaps();
 
+ // Initialize pagination
+ this.filteredProducts = [...this.products];
+ this.totalPages = Math.ceil(this.filteredProducts.length / this.pageSize);
+ this.setPage(1);
+
+ this.isLoader = false;
     });
 
   }
 
 ////https://script.google.com/macros/s/AKfycbzekjxHW9Uwf_Gg3U4m4bZaxjFeqbqJ9YNfAG7Z_30SyLMcAFfNe-dsFpgATMC_e3Cp/exec
+buildLookupMaps() {
+  // this.idMap.clear();
+  // this.nameMap.clear();
 
+  // for (const p of this.products) {
+  //   this.idMap.set(p.id.toString(), p);
+  //   this.nameMap.set(p.name.toLowerCase(), p);
+  // }
+}
+
+setPage(page: number) {
+  if (page < 1 || page > this.totalPages) return;
+  this.currentPage = page;
+
+  const startIndex = (page - 1) * this.pageSize;
+  const endIndex = startIndex + this.pageSize;
+  this.pagedProducts = this.filteredProducts.slice(startIndex, endIndex);
+}
 
 
 
@@ -91,13 +124,16 @@ export class ProductsComponent {
     this.showSidePanel = true;
     this.editingProduct = null; // Reset editing product
 
-    let a = this.products.filter(p => p.id === this.productForm.id).length > 0 ? true : false
+    let a = this.idMap.get(this.productForm.id);
     if (a) {
       this.openSnackBar('Product with this ID already exists', 'Close') ;
       return;
     }
-  
-    this.http.post('https://script.google.com/macros/s/AKfycbzekjxHW9Uwf_Gg3U4m4bZaxjFeqbqJ9YNfAG7Z_30SyLMcAFfNe-dsFpgATMC_e3Cp/exec', this.productForm).subscribe(res => {
+ 
+    this.http.post('https://supermartspring.vercel.app/products', this.productForm).subscribe(res => {
+      debugger;
+      this.fetchFromExcel(); // Refresh the product list
+      this.showSidePanel = false; // Close the side panel after adding
       console.log('New product added to Google Sheet', res);
       this.openSnackBar('New product added successfully', 'Close');
     }, error => {
@@ -173,6 +209,9 @@ export class ProductsComponent {
     // }
 
     this.filteredProducts = filtered;
+    this.totalPages = Math.ceil(this.filteredProducts.length / this.pageSize);
+    this.setPage(1); // Reset to first page after filtering
+    this.pagedProducts = this.filteredProducts.slice(0, this.pageSize);
     this.sortProducts();
   }
 
@@ -286,7 +325,7 @@ export class ProductsComponent {
     'Birthday'
   ]
   ;
-  quantities = [10, 25, 50, 100, 200, 500];
+  quantities = ['Nos', "Kg", "Dozen", 'Ltr', 'Packet', 'Bottle', 'Box', 'Pouch', 'Tin', 'Piece'];
 
   showSidePanel = false;
   editingProduct: Product | null = null;
@@ -295,8 +334,14 @@ export class ProductsComponent {
   productForm = {
     id:'',
     name: '',
-    category: '',
+    Category: '',
     price: 0,
+    UnitDesc: '',
+    RetailPrice: 0, 
+    SalePrice: 0,
+    MRP: 0,
+    UnitPrice: 0,
+    EANCode: '',
     quantity: 10
   };
 
@@ -311,7 +356,13 @@ export class ProductsComponent {
     this.editingProduct = product;
     this.productForm = {
       name: product.name,
-      category: product.Category,
+      UnitDesc: product.UnitDesc || '',
+      RetailPrice: product.RetailPrice || 0,
+      SalePrice: product.SalePrice || 0,
+      MRP: product.MRP || 0,
+      UnitPrice: product.UnitPrice || 0,
+      EANCode: product.EANCode || '',
+      Category: product.Category,
       price: product.MRP,
       id: product.id.toString(), // Ensure id is a string for the form
       quantity: product.QuantityOnHand || 10 // Default to 10 if not provided
@@ -356,7 +407,13 @@ export class ProductsComponent {
     this.productForm = {
       id:'',
       name: '',
-      category: '',
+      UnitDesc: '',
+      RetailPrice: 0,
+      SalePrice: 0,
+      MRP: 0,
+      UnitPrice: 0,
+      EANCode: '',
+      Category: '',
       price: 0,
       quantity: 10
     };

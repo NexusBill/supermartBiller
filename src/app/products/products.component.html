@@ -4,14 +4,14 @@
   <!-- <div class="cart-loader" id="cartLoader">
       <div class="cart"></div>
   </div> -->
-  
+
   <div class="loading-text">
-      Loading Products 
-      <span class="dots">
-          <span class="dot"></span>
-          <span class="dot"></span>
-          <span class="dot"></span>
-      </span>
+    Loading Products
+    <span class="dots">
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+    </span>
   </div>
   <div class="loading-subtext">Please wait while we Loads your Products your purchase</div>
 </div>
@@ -23,15 +23,11 @@
       <div class="col-md-6">
         <div class="search-wrapper">
           <i class="fas fa-search search-icon"></i>
-          <input 
-            type="text" 
-            class="form-control search-input" 
-            placeholder="Search products..." 
-            [(ngModel)]="searchTerm"
+          <input type="text" class="form-control search-input" placeholder="Search products..." [(ngModel)]="searchTerm"
             (input)="onSearch()">
         </div>
       </div>
-      
+
       <!-- Category Filter -->
       <div class="col-md-3">
         <select class="form-select" [(ngModel)]="selectedCategory" (change)="onCategoryChange()">
@@ -41,7 +37,7 @@
           </option>
         </select>
       </div>
-      
+
       <!-- Price Range Filter -->
       <div class="col-md-3">
         <select class="form-select" [(ngModel)]="priceRange" (change)="onPriceRangeChange()">
@@ -52,7 +48,7 @@
           <option value="201+">₹201+</option>
         </select>
       </div>
-      
+
       <!-- Stock Filter -->
       <!-- <div class="col-md-2">
         <select class="form-select" [(ngModel)]="stockFilter" (change)="onStockFilterChange()">
@@ -72,8 +68,8 @@
           <option value="stock">Stock</option>
         </select>
       </div>-->
-    </div> 
-    
+    </div>
+
     <!-- Add Product Button -->
     <div class="add-product-section">
       <button class="add-btn" (click)="openAddPanel()">
@@ -158,81 +154,91 @@
 </div> -->
 
 
-<div class="table-container">
-  <table mat-table [dataSource]="filteredProducts" class="elite-table">
+  <div class="table-container">
+    <table mat-table [dataSource]="pagedProducts" class="elite-table">
 
       <!-- Position Column -->
       <ng-container matColumnDef="id">
-          <th mat-header-cell *matHeaderCellDef class="header-cell" style="width: 10%;">
-              <span class="header-text">Code.</span>
-          </th>
-          <td mat-cell *matCellDef="let element" class="data-cell" style="width: 10%;">
-              <span >{{element.id}}</span>
-          </td>
+        <th mat-header-cell *matHeaderCellDef class="header-cell" style="width: 10%;">
+          <span class="header-text">Code.</span>
+        </th>
+        <td mat-cell *matCellDef="let element" class="data-cell" style="width: 10%;">
+          <span>{{element.id}}</span>
+        </td>
       </ng-container>
 
       <!-- Name Column -->
-      <ng-container matColumnDef="name" >
-          <th mat-header-cell *matHeaderCellDef class="header-cell" style="width: 40% !important;">
-              <span class="header-text">Name</span>
-          </th>
-          <td mat-cell *matCellDef="let element" class="data-cell name-cell" style="width: 40% !important;">
-              <span class="name-text">{{element.name}}</span>
-          </td>
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef class="header-cell" style="width: 40% !important;">
+          <span class="header-text">Name</span>
+        </th>
+        <td mat-cell *matCellDef="let element" class="data-cell name-cell" style="width: 40% !important;">
+          <span class="name-text">{{element.name}}</span>
+        </td>
       </ng-container>
 
       <!-- Weight Column -->
-      <ng-container matColumnDef="quantity" >
-          <th mat-header-cell *matHeaderCellDef class="header-cell" style="width: 20% !important;">
-              <span class="header-text">Unit Metrics</span>
-          </th>
-          <td mat-cell *matCellDef="let element" class="data-cell" style="width: 20% !important;">
-              <span class="weight-value">{{element.UnitDesc}}</span>
-          </td>
+      <ng-container matColumnDef="quantity">
+        <th mat-header-cell *matHeaderCellDef class="header-cell" style="width: 20% !important;">
+          <span class="header-text">Unit Metrics</span>
+        </th>
+        <td mat-cell *matCellDef="let element" class="data-cell" style="width: 20% !important;">
+          <span class="weight-value">{{element.UnitDesc}}</span>
+        </td>
       </ng-container>
 
       <!-- Symbol Column -->
-      <ng-container matColumnDef="MRP" >
-          <th mat-header-cell *matHeaderCellDef class="header-cell" style="width: 20% !important;">
-              <span class="header-text">Price</span>
-          </th>
-          <td mat-cell *matCellDef="let element" class="data-cell" style="width: 20% !important;">
-              <span>{{element.MRP}}</span>
-          </td>
-      </ng-container>
-      <ng-container matColumnDef="category" >
+      <ng-container matColumnDef="MRP">
         <th mat-header-cell *matHeaderCellDef class="header-cell" style="width: 20% !important;">
-            <span class="header-text">category</span>
+          <span class="header-text">Price</span>
         </th>
         <td mat-cell *matCellDef="let element" class="data-cell" style="width: 20% !important;">
-            <span >{{element.Category}}</span>
+          <span>{{element.MRP}}</span>
         </td>
-    </ng-container>
-      <ng-container matColumnDef="Action" sticky >
-          <th mat-header-cell *matHeaderCellDef class="header-cell sticky-action" style="width: 10% !important;">
-            <span class="header-text">Action</span>
-          </th>
-          <td mat-cell *matCellDef="let element" class="data-cell sticky-action" style="width: 10% !important;">
-              <div class="action-buttons">
-                <button class="btn-edit">
-                  <i class="fas fa-edit"></i> Edit
-                </button>
-                  <button class="btn-delete">
-                    <i class="fas fa-trash"></i> Delete
-                  </button>
-                </div>
-          </td>
-        </ng-container>
+      </ng-container>
+      <ng-container matColumnDef="category">
+        <th mat-header-cell *matHeaderCellDef class="header-cell" style="width: 20% !important;">
+          <span class="header-text">category</span>
+        </th>
+        <td mat-cell *matCellDef="let element" class="data-cell" style="width: 20% !important;">
+          <span>{{element.Category}}</span>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="Action" sticky>
+        <th mat-header-cell *matHeaderCellDef class="header-cell sticky-action" style="width: 10% !important;">
+          <span class="header-text">Action</span>
+        </th>
+        <td mat-cell *matCellDef="let element" class="data-cell sticky-action" style="width: 10% !important;">
+          <div class="action-buttons">
+            <button class="btn-edit">
+              <i class="fas fa-edit"></i> Edit
+            </button>
+            <button class="btn-delete">
+              <i class="fas fa-trash"></i> Delete
+            </button>
+          </div>
+        </td>
+      </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns" class="header-row"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="data-row"></tr>
-  </table>
-</div>
+    </table>
+  </div>
+  <div class="pagination">
+    <button (click)="setPage(currentPage - 1)" [disabled]="currentPage === 1">
+      Prev
+    </button>
+
+    <span>Page {{ currentPage }} of {{ totalPages }}</span>
+
+    <button (click)="setPage(currentPage + 1)" [disabled]="currentPage === totalPages">
+      Next
+    </button>
+  </div>
 
 
-  <div class="side-panel-overlay" 
-       [class.active]="showSidePanel" 
-       (click)="closeSidePanel()">
+
+  <div class="side-panel-overlay" [class.active]="showSidePanel" (click)="closeSidePanel()">
   </div>
 
   <div class="side-panel" [class.active]="showSidePanel">
@@ -244,36 +250,22 @@
     </div>
 
     <div class="side-panel-content">
-      <form >
+      <form>
         <!-- Product Name -->
         <div class="form-group">
           <label for="productName">Product Name</label>
-          <input 
-            type="text" 
-            id="productName"
-            [(ngModel)]="productForm.name"
-            name="name"
-            placeholder="Enter product name"
-            required>
+          <input type="text" id="productName" [(ngModel)]="productForm.name" name="name"
+            placeholder="Enter product name" required>
         </div>
         <div class="form-group">
           <label for="productName">Product Id</label>
-          <input 
-            type="text" 
-            id="productName"
-            [(ngModel)]="productForm.id"
-            name="id"
-            placeholder="Enter product id"
+          <input type="text" id="productName" [(ngModel)]="productForm.id" name="id" placeholder="Enter product id"
             required>
         </div>
         <!-- Category -->
         <div class="form-group">
           <label for="category">Category</label>
-          <select 
-            id="category"
-            [(ngModel)]="productForm.category"
-            name="category"
-            required>
+          <select id="category" [(ngModel)]="productForm.Category" name="category" required>
             <option value="">Select Category</option>
             <option *ngFor="let category of categories" [value]="category">
               {{ category }}
@@ -283,26 +275,34 @@
 
         <!-- Price -->
         <div class="form-group">
-          <label for="price">Price ($)</label>
-          <input 
-            type="number" 
-            id="price"
-            [(ngModel)]="productForm.price"
-            name="price"
-            placeholder="0.00"
-            step="0.01"
-            min="0"
+          <label for="price">Price (MRP)</label>
+          <input type="number" id="price" [(ngModel)]="productForm.MRP" name="price" placeholder="0.00" step="0.01"
+            min="0" required>
+        </div>
+        <div class="form-group">
+          <label for="price">Sales Price ()</label>
+          <input type="number" id="price" [(ngModel)]="productForm.SalePrice" name="price" placeholder="0.00"
+            step="0.01" min="0" required>
+        </div>
+        <div class="form-group">
+          <label for="price">Retail Price ()</label>
+          <input type="number" id="price" [(ngModel)]="productForm.RetailPrice" name="price" placeholder="0.00"
+            step="0.01" min="0" required>
+        </div>
+        <div class="form-group">
+          <label for="price">Unit Price ()</label>
+          <input type="number" id="price" [(ngModel)]="productForm.UnitPrice" name="price" placeholder="0.00"
+            step="0.01" min="0" required>
+        </div>
+        <div class="form-group">
+          <label for="price">EAN Code</label>
+          <input type="text" id="EANCode" [(ngModel)]="productForm.EANCode" name="EANCode" placeholder="Enter EAN Code"
             required>
         </div>
-
         <!-- Quantity -->
         <div class="form-group">
-          <label for="quantity">Quantity</label>
-          <select 
-            id="quantity"
-            [(ngModel)]="productForm.quantity"
-            name="quantity"
-            required>
+          <label for="quantity">Unit/Metrics</label>
+          <select id="quantity" [(ngModel)]="productForm.UnitDesc" name="quantity" required>
             <option *ngFor="let qty of quantities" [value]="qty">
               {{ qty }}
             </option>
