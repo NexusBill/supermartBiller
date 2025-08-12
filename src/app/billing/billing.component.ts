@@ -22,27 +22,21 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 import {MatSnackBar} from '@angular/material/snack-bar';
 
-export interface PeriodicElement {
-  name: string;
-  position: number;
-  weight: number;
-  symbol: string;
+export interface Order {
+  id: string;
+  prodducts: string;
+  totalAmount: number;
+  discountAmount: string;
+  discountValue: string;
+  customer: string;
+  mobile: string;
+  date: Date;
+  Savings: string;
 }
 
 
 
-const ELEMENT_DATA: PeriodicElement[] = [
-  {position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H'},
-  {position: 2, name: 'Helium', weight: 4.0026, symbol: 'He'},
-  {position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li'},
-  {position: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be'},
-  {position: 5, name: 'Boron', weight: 10.811, symbol: 'B'},
-  {position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C'},
-  {position: 7, name: 'Nitrogen', weight: 14.0067, symbol: 'N'},
-  {position: 8, name: 'Oxygen', weight: 15.9994, symbol: 'O'},
-  {position: 9, name: 'Fluorine', weight: 18.9984, symbol: 'F'},
-  {position: 10, name: 'Neon', weight: 20.1797, symbol: 'Ne'},
-];
+
 @Component({
   selector: 'app-billing',
   imports: [CommonModule, FormsModule,NgxPrintModule,MatTableModule,MatFormFieldModule,
@@ -84,8 +78,8 @@ export class BillingComponent {
   //  displayedColumns: string[] = ['id',	'name',	'Category',	'QuantityOnHand'	,'UnitDesc',	'RetailPrice',	'SalePrice',	'MRP'	,'UnitPrice',	'EANCode','Action'];
 
   displayedColumns: string[] = ['name', 'mrp', 'unit', 'quantity', 'price', 'action'];
-  dataSource = ELEMENT_DATA;
    panelOpenState = signal(false);
+
    showSidePanel:boolean = false;
    isPanelExpanded: boolean = false;
    loader: boolean = false;
@@ -93,6 +87,7 @@ export class BillingComponent {
    ngOnInit() {
     this.loader = true;
     this.fetchFromExcel();
+    this.holdList=localStorage.getItem('holdList') ? JSON.parse(localStorage.getItem('holdList') || '[]') : [];
    }
 
    
@@ -171,7 +166,6 @@ this.discountValue = 0; // Reset discount value
 
 @HostListener('window:keydown', ['$event'])
 handleKeyDown(event: KeyboardEvent) {
-  debugger;
   // Detect F5 (some browsers use key === 'F5', others use keyCode 116)
   if (event.key === 'F5' || event.keyCode === 116) {
     event.preventDefault(); // Stops the browser from refreshing
@@ -311,7 +305,6 @@ discountAmount: number = 0;
 
 
 
-    scriptURL :string = 'https://script.google.com/macros/s/AKfycbzekjxHW9Uwf_Gg3U4m4bZaxjFeqbqJ9YNfAG7Z_30SyLMcAFfNe-dsFpgATMC_e3Cp/exec';
 
     newProduct :any = {
      id: 'P001',
@@ -324,18 +317,13 @@ discountAmount: number = 0;
      MRP: 120,
      UnitPrice: 85
    };
-   savedata(){
-   this.http.post(this.scriptURL, this.newProduct).subscribe(res => {
-    debugger;
-     console.log('Posted to Google Sheet', res);
-   });
-  }
+   
 
 scannedId:any;
 
 
  fetchFromExcel(){
-  this.http.get('https://supermartspring.vercel.app/get-products').subscribe((res: any) => {
+  this.http.get('https://supermartspring.vercel.app/products').subscribe((res: any) => {
     this.products = res;
     console.log(this.products);
   });
@@ -360,8 +348,9 @@ onHold() {
     customer: this.selectedCustomer ? this.selectedCustomer.name : 'Guest',
     mobile: this.MobileNumber || 'N/A' // Ensure mobile number is included
   };
-
+debugger
   this.holdList.push(holdItem); // Now push a plain object instead of FormData
+  localStorage.setItem('holdList', JSON.stringify(this.holdList));
   this.selectedProducts = [];
   this.scannedId = '';
   this.totalAmount = 0;

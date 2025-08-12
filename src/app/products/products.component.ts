@@ -352,6 +352,7 @@ setPage(page: number) {
   }
 
   openEditPanel(product: Product) {
+    debugger;
     this.showSidePanel = true;
     this.editingProduct = product;
     this.productForm = {
@@ -399,8 +400,18 @@ setPage(page: number) {
   //   }
   // }
 
-  deleteProduct(id: number) {
-    this.products = this.products.filter(p => p.id !== id);
+  deleteProduct(product: any) {
+    if (!product || !product._id) {
+      this.openSnackBar('Invalid product', 'Close');
+      return;
+    }
+    this.http.delete(`https://supermartspring.vercel.app/products/${product._id}`).subscribe(res => {
+      this.openSnackBar('Product deleted successfully', 'Close');
+      this.fetchFromExcel(); // Refresh the product list
+    }, error => {
+      console.error('Error deleting product', error);
+      this.openSnackBar('Error deleting product', 'Close');
+    });
   }
 
   private resetForm() {

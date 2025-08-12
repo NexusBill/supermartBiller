@@ -210,10 +210,10 @@
         </th>
         <td mat-cell *matCellDef="let element" class="data-cell sticky-action" style="width: 10% !important;">
           <div class="action-buttons">
-            <button class="btn-edit">
+            <button class="btn-edit" (click)="openEditPanel(element)">
               <i class="fas fa-edit"></i> Edit
             </button>
-            <button class="btn-delete">
+            <button class="btn-delete" (click)="deleteProduct(element)">
               <i class="fas fa-trash"></i> Delete
             </button>
           </div>
