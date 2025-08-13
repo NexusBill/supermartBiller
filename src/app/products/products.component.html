@@ -251,23 +251,24 @@
 
     <div class="side-panel-content">
       <form>
+        <div class="form-group">
+          <label for="productName">Product Id(Barcode)</label>
+          <input type="text" id="productName" [(ngModel)]="productForm.id" name="id" (keydown.enter)="selectInput(productName, $event)"  #productId placeholder="Enter product id"
+            required/>
+        </div>
         <!-- Product Name -->
         <div class="form-group">
           <label for="productName">Product Name</label>
-          <input type="text" id="productName" [(ngModel)]="productForm.name" name="name"
-            placeholder="Enter product name" required>
+          <input type="text" id="productName" #productName  (keydown.enter)="selectInput(category, $event)"  [(ngModel)]="productForm.name" name="name"
+            placeholder="Enter product name" required/>
         </div>
-        <div class="form-group">
-          <label for="productName">Product Id</label>
-          <input type="text" id="productName" [(ngModel)]="productForm.id" name="id" placeholder="Enter product id"
-            required>
-        </div>
+       
         <!-- Category -->
         <div class="form-group">
           <label for="category">Category</label>
-          <select id="category" [(ngModel)]="productForm.Category" name="category" required>
+          <select id="category" [(ngModel)]="productForm.Category" name="category"   (change)="selectInput(price, $event)"   #category required>
             <option value="">Select Category</option>
-            <option *ngFor="let category of categories" [value]="category">
+            <option *ngFor="let category of categories" [value]="category" >
               {{ category }}
             </option>
           </select>
@@ -276,46 +277,62 @@
         <!-- Price -->
         <div class="form-group">
           <label for="price">Price (MRP)</label>
-          <input type="number" id="price" [(ngModel)]="productForm.MRP" name="price" placeholder="0.00" step="0.01"
-            min="0" required>
+          <input type="number" id="price" [(ngModel)]="productForm.MRP" (keydown.enter)="selectInput(SalePrice, $event)"   #price name="price" placeholder="0.00" required/>
         </div>
         <div class="form-group">
           <label for="price">Sales Price ()</label>
-          <input type="number" id="price" [(ngModel)]="productForm.SalePrice" name="price" placeholder="0.00"
-            step="0.01" min="0" required>
+          <input type="number" id="price" [(ngModel)]="productForm.SalePrice" #SalePrice (keydown.enter)="selectInput(RetailPrice, $event)" name="price" placeholder="0.00"
+            required/>
         </div>
         <div class="form-group">
           <label for="price">Retail Price ()</label>
-          <input type="number" id="price" [(ngModel)]="productForm.RetailPrice" name="price" placeholder="0.00"
-            step="0.01" min="0" required>
+          <input type="number" id="price" [(ngModel)]="productForm.RetailPrice" #RetailPrice (keydown.enter)="selectInput(UnitPrice, $event)" name="price" placeholder="0.00"
+            required/>
         </div>
         <div class="form-group">
           <label for="price">Unit Price ()</label>
-          <input type="number" id="price" [(ngModel)]="productForm.UnitPrice" name="price" placeholder="0.00"
-            step="0.01" min="0" required>
+          <input type="number" id="price" [(ngModel)]="productForm.UnitPrice" (keydown.enter)="selectInput(EANCode, $event)" #UnitPrice name="price" placeholder="0.00"
+            required/>
         </div>
         <div class="form-group">
           <label for="price">EAN Code</label>
-          <input type="text" id="EANCode" [(ngModel)]="productForm.EANCode" name="EANCode" placeholder="Enter EAN Code"
-            required>
+          <input type="text" id="EANCode" [(ngModel)]="productForm.EANCode" (keydown.enter)="selectInput(UnitDesc, $event)" #EANCode name="EANCode" placeholder="Enter EAN Code"
+            required/>
         </div>
         <!-- Quantity -->
         <div class="form-group">
           <label for="quantity">Unit/Metrics</label>
-          <select id="quantity" [(ngModel)]="productForm.UnitDesc" name="quantity" required>
-            <option *ngFor="let qty of quantities" [value]="qty">
+          <select id="quantity" [(ngModel)]="productForm.UnitDesc"  #UnitDesc  (change)="selectInput(unitinhand, $event)" required>
+            <option *ngFor="let qty of unitDesc" [value]="qty">
               {{ qty }}
             </option>
           </select>
         </div>
+        <div class="form-group">
+          <label for="price">Units In Hand</label>
+          <input type="text" id="EANCode" [(ngModel)]="productForm.quantity"  #unitinhand name="quantity" placeholder="Enter Quantity"
+            required/>
+        </div>
 
+        <!-- Confirmation Modal -->
+<div #confirmationModal class="modal-overlay" [class.show]="showModal">
+  <div class="modal-content">
+    <h3>Confirm Save</h3>
+    <p>Are you sure you want to save this product?</p>
+    <div class="modal-actions">
+      <div class="yes-btn" (click)="confirmSave()">Yes</div>
+      <div class="yes-btn" style="background-color: red;" (click)="closeModal()">Cancel</div>
+    </div>
+  </div>
+</div>
         <!-- Action Buttons -->
         <div class="form-actions">
+          
+          <button type="submit" class="save-btn" (click)="openModal() ">
+            {{ editingProduct ? 'Update' : 'Save' }}
+          </button>
           <button type="button" class="cancel-btn" (click)="closeSidePanel()">
             Cancel
-          </button>
-          <button type="submit" class="save-btn" (click)="addNewProduct()">
-            {{ editingProduct ? 'Update' : 'Save' }}
           </button>
         </div>
       </form>

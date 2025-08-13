@@ -15,12 +15,22 @@
             <p class="welcome-subtitle">$50,000</p>
           </div>
         </div>
-        <div class="col-4">
-          <div class="welcome-card">
-            <h1 class="welcome-title">Customers</h1>
-            <p class="welcome-subtitle">50</p>
-          </div>
-        </div>
+        <mat-form-field appearance="fill">
+          <mat-label>Select date range</mat-label>
+          <mat-date-range-input [rangePicker]="picker">
+            <input matStartDate placeholder="Start date"
+                   [(ngModel)]="startDate"
+                   (dateChange)="onDateChange()">
+        
+            <input matEndDate placeholder="End date"
+                   [(ngModel)]="endDate"
+                   (dateChange)="onDateChange()">
+          </mat-date-range-input>
+        
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-date-range-picker #picker></mat-date-range-picker>
+        </mat-form-field>
+        
       </div>
 
       <!-- Router Outlet Container -->
@@ -100,38 +110,37 @@
                   <tr *ngFor="let sale of sales; let i = index" 
                       [class.table-row-selected]="selectedSales.includes(sale.Id)">
                     <td class="order-id">
-                      <span class="order-number">#{{ sale.Id }}</span>
+                      <span class="order-number">#{{ sale.invoice }}</span>
                     </td>
                     <td class="customer-cell">
                       <div class="customer-info">
                         <div class="customer-details">
-                          <span class="customer-name">{{ sale.CustomerName }}</span>
-                          <span class="customer-email">{{ sale.CustomerId }}</span>
+                          <span class="customer-name">{{ sale.customer }}</span>
+                          <span class="customer-email">{{ sale.mobile }}</span>
                         </div>
                       </div>
                     </td>
                     <td class="product-cell">
                       <div class="product-info">
                         <div class="product-details">
-                          <span class="product-name">{{ sale.Products }}</span>
-                          <span class="product-category">{{ sale.category }}</span>
+                          <span class="product-name">{{ sale.products }}</span>
                         </div>
                       </div>
                     </td>
                     <td class="quantity-cell">
-                      <span class="quantity-badge">{{ sale.Discount }}</span>
+                      <span class="quantity-badge">{{ sale.discount }}</span>
                     </td>
                     <td class="amount-cell">
-                      <span class="amount-value">${{ sale.Amount | number:'1.2-2' }}</span>
+                      <span class="amount-value">${{ sale.amount | number:'1.2-2' }}</span>
                     </td>
                     <td class="date-cell">
-                      <span class="date-value">{{ sale.Date }}</span>
-                      <span class="time-value">{{ sale.Date }}</span>
+                      <span class="date-value">{{ sale.date }}</span>
+                      <!-- <span class="time-value">{{ sale.Date }}</span> -->
                     </td>
                     <td class="status-cell">
                       <span class="status-badge" >
                         <!-- <i class="fas" [ngClass]="getStatusIcon(sale.status)"></i> -->
-                        {{ sale.Savings }}
+                        {{ sale.savings }}
                       </span>
                     </td>
                     <td class="actions-cell text-center">

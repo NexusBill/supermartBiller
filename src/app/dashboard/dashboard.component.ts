@@ -2,11 +2,14 @@ import { CommonModule } from '@angular/common';
 import { HttpClient,HttpClientModule } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule,FormsModule,HttpClientModule],
+  imports: [CommonModule,FormsModule,HttpClientModule,MatDatepickerModule,MatNativeDateModule,MatFormFieldModule,MatInputModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
   providers: [HttpClient,HttpClientModule],
@@ -21,7 +24,8 @@ export class DashboardComponent {
   selectedSales: number[] = [];
   sales:any[]=[];
   
-
+  startDate!: Date | null;
+  endDate!: Date | null;
   filteredSales = [...this.sales];
   paginatedSales: any[] = [];
   totalPages: number = 0;
@@ -38,6 +42,36 @@ export class DashboardComponent {
   onItemsPerPageChange() {
     this.currentPage = 1;
     this.filterAndPaginate();
+  }
+  
+  onDateChange() {
+    debugger;
+    if (this.startDate && this.endDate) {
+      const start = this.formatDate(this.startDate);
+      const end = this.formatDate(this.endDate);
+
+      this.fetchOrdersBetweenDates(start, end);
+    }
+  }
+  fetchOrdersBetweenDates(start: string, end: string) {
+    this.http.get(`https://supermartspring.vercel.app/api/orders?start=${start}&end=${end}`).subscribe((res: any) => {
+      this.sales = res.map((item: any) => ({
+
+        id: item.invoice,    
+        customer: item.customer,
+        product: item.products,
+       
+        date: new Date(item.date),
+        status: item.status,
+        paymentMethod: item.paymentMethod,
+        paymentStatus: item.paymentStatus,
+        amount: item.amount,
+        discount: item.discount,
+        savings: item.savings,
+        createdAt: new Date(item.createdAt)
+      }));
+      this.filterAndPaginate();
+    });
   }
 
   sort(field: string) {
@@ -188,29 +222,23 @@ constructor(private http: HttpClient) {
 
 fetchFromExcel(){
   debugger;
-  const url = 'https://docs.google.com/spreadsheets/d/1bPXpxkY7K_L0oWqh7YYkrNqOrAb-56FFO3Gpv2pq8cQ/gviz/tq?tqx=out:json&gid=901963204#gid=901963204';
-  this.http.get(url, { responseType: 'text' }).subscribe((res: string) => {
-   
-    debugger;
-    const json = JSON.parse(
-      res.substring(47).slice(0, -2)
-    );
-    const rows = json.table.rows;
-  
-   
-    this.sales = rows.map((row: any) => ({ 
-      Id: (row.c[0]?.v || 0), // Convert id to a number
-      CustomerId: row.c[1]?.v || '',
-      CustomerName: row.c[2]?.v || '',
-      MobileNumber: 1,
-      Amount:  row.c[4]?.v || '',
-      Discount:  row.c[5]?.v || 0,
-      Products: row.c[6]?.v || 0,
-      Date: this.formatDate(new Date()) ,// now properly formatted
-      Savings: row.c[8]?.v || 0
+  this.http.get('https://supermartspring.vercel.app/api/orders').subscribe((res: any) => {
+   debugger
+ this.sales = res.map((item: any) => ({
+
+      id: item.invoice,    
+      customer: item.customer,
+      product: item.products,
+     
+      date: new Date(item.date),
+      status: item.status,
+      paymentMethod: item.paymentMethod,
+      paymentStatus: item.paymentStatus,
+      amount: item.amount,
+      discount: item.discount,
+      savings: item.savings,
+      createdAt: new Date(item.createdAt)
     }));
-    console.log(this.sales);
-   
     
 
   });

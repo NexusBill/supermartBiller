@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, ElementRef, inject, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { ChangeDetectionStrategy } from '@angular/core';
@@ -325,7 +325,7 @@ setPage(page: number) {
     'Birthday'
   ]
   ;
-  quantities = ['Nos', "Kg", "Dozen", 'Ltr', 'Packet', 'Bottle', 'Box', 'Pouch', 'Tin', 'Piece'];
+  unitDesc = ['Nos', "Kg", "Dozen", 'Ltr', 'Packet', 'Bottle', 'Box', 'Pouch', 'Tin', 'Piece'];
 
   showSidePanel = false;
   editingProduct: Product | null = null;
@@ -344,11 +344,36 @@ setPage(page: number) {
     EANCode: '',
     quantity: 10
   };
+  @ViewChild('confirmationModal') confirmationMdal!: ElementRef;
+
+  showModal = false;
+
+  // Open the modal
+  openModal() {
+    this.showModal = true;
+  }
+
+  // Close the modal
+  closeModal() {
+    this.showModal = false;
+  }
+
+  // When user clicks "Yes"
+  confirmSave() {
+    this.closeModal();
+    this.addNewProduct(); // Call your actual save logic
+  }
+  @ViewChild('productId') productIdField!: ElementRef<HTMLInputElement>;
 
   openAddPanel() {
     this.showSidePanel = true;
     this.editingProduct = null;
     this.resetForm();
+  
+    // Wait for the panel to render, then focus the input
+    setTimeout(() => {
+      this.productIdField.nativeElement.focus();
+    });
   }
 
   openEditPanel(product: Product) {
@@ -414,6 +439,10 @@ setPage(page: number) {
     });
   }
 
+  selectInput(input: HTMLElement,event: Event): void {
+    event.preventDefault(); // stops the form from submitting
+    setTimeout(() => input.focus(), 0); // Helps scanners overwrite
+  }
   private resetForm() {
     this.productForm = {
       id:'',
