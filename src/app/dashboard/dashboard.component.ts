@@ -47,6 +47,7 @@ export class DashboardComponent {
   onDateChange() {
     debugger;
     if (this.startDate && this.endDate) {
+      debugger;
       const start = this.formatDate(this.startDate);
       const end = this.formatDate(this.endDate);
 
@@ -54,7 +55,7 @@ export class DashboardComponent {
     }
   }
   fetchOrdersBetweenDates(start: string, end: string) {
-    this.http.get(`https://supermartspring.vercel.app/api/orders?start=${start}&end=${end}`).subscribe((res: any) => {
+    this.http.get(`https://supermartspring.vercel.app/api/orders/date-range?start=${start}&end=${end}`).subscribe((res: any) => {
       this.sales = res.map((item: any) => ({
 
         id: item.invoice,    

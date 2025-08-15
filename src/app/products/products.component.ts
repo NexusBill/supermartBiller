@@ -122,14 +122,24 @@ setPage(page: number) {
   addNewProduct() {
     debugger;
     this.showSidePanel = true;
-    this.editingProduct = null; // Reset editing product
-
     let a = this.idMap.get(this.productForm.id);
     if (a) {
       this.openSnackBar('Product with this ID already exists', 'Close') ;
       return;
     }
- 
+ if(this.editingProduct) {
+      // Update existing product
+      this.http.put(`https://supermartspring.vercel.app/products/${this.productForm.id}`, this.productForm).subscribe(res => {
+        this.fetchFromExcel(); // Refresh the product list
+        this.showSidePanel = false; // Close the side panel after updating
+        console.log('Product updated successfully', res);
+        this.openSnackBar('Product updated successfully', 'Close');
+      }, error => {
+        console.error('Error updating product', error);
+        this.openSnackBar('Error updating product', 'Close');
+      });
+ }
+ else {
     this.http.post('https://supermartspring.vercel.app/products', this.productForm).subscribe(res => {
       debugger;
       this.fetchFromExcel(); // Refresh the product list
@@ -141,6 +151,7 @@ setPage(page: number) {
       this.openSnackBar('Error adding new product', 'Close');
     });
     this.resetForm();
+  }
   }
   products: any[] = [];
   filteredProducts: any[] = [];
