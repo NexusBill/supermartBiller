@@ -87,6 +87,7 @@ export class BillingComponent {
    ngOnInit() {
     this.loader = true;
     this.fetchFromExcel();
+    this.fetchCustomers();
     this.holdList=localStorage.getItem('holdList') ? JSON.parse(localStorage.getItem('holdList') || '[]') : [];
    }
 
@@ -125,6 +126,54 @@ decreaseQuantity(product: any) {
    this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
    console.log(this.selectedProducts);
  }
+ order = new FormData();
+
+ saveOrder(){
+  debugger;
+  // if (this.selectedProducts.length === 0) {
+  //   this.openSnackBar('Please add products to the order', 'Close');
+  //   return;
+  // }
+  // if (!this.selectedCustomer) {
+  //   this.openSnackBar('Please select a customer', 'Close');
+  //   return;
+  // }
+  // if (!this.MobileNumber) {
+  //   this.openSnackBar('Please enter a mobile number', 'Close');
+  //   return;
+  // }
+  // if (this.totalAmount <= 0) {
+  //   this.openSnackBar('Total amount must be greater than zero', 'Close');
+  //   return;
+  // }
+this.order.append('invoice', 'Invoice 10');
+  this.order.append('customer', this.selectedCustomer ? this.selectedCustomer : 'Guest');
+  this.order.append('mobile', this.MobileNumber || 'N/A'); // Ensure mobile number is included
+  this.order.append('amount', this.totalAmount.toString());
+  this.order.append('discount', this.discountAmount.toString());  
+  this.order.append('savings', this.savedAmount.toString());
+  this.order.append('date',     this.formatDate( new Date()));
+  this.http.post("https://supermartspring.vercel.app/api/orders",this.order).subscribe( (data:any) =>{
+    this.openSnackBar(data.res, 'Close');
+    this.selectedProducts = [];
+    this.scannedId = '';
+    this.totalAmount = 0;
+    this.savedAmount = 0; 
+    this.discountAmount = 0;
+    this.discountValue = 0;
+    this.isDiscountApplied = false;
+    this.order = new FormData(); // Reset the order FormData
+    this.scannedInputRef.nativeElement.focus(); // Reset focus to the scanned input
+  })
+ }
+ formatDate(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // 01-12
+  const day = String(date.getDate()).padStart(2, '0'); // 01-31
+  return `${year}-${month}-${day}`;
+}
+
+
  isDiscountApplied: boolean = false;
  applyDiscount() {
   debugger;
@@ -474,22 +523,7 @@ selectInput(input: HTMLInputElement): void {
     this.editingProduct = { ...product }; // Create a copy of the product for editing
     this.showSidePanel = true;
   } 
-  customers = [
-    {
-      id: 1,
-      name: 'Kaviyarasan',
-      phone: '9994305384'
-        },
-    {
-      id: 2,
-      name: 'John Doe',
-      phone: '9876543210',
-    },
-    {
-      id: 3,
-      name: 'Jane Smith',
-      phone: '9123456789'    }
-  ];
+  customers: any[] = [];
   isPrinting: boolean = false;
   isDiscountApplicable: boolean = false;
   discountMetrics: any;
@@ -509,6 +543,12 @@ this.isPrinting = true;
   onCustomerChange(event: any) {
     const customerId = +event.target.value;
     this.selectedCustomer = this.customers.find(customer => customer.id === customerId);
+  }
+  fetchCustomers(){
+    this.http.get('https://supermartspring.vercel.app/customers').subscribe((res: any) => {
+      this.customers = res;
+      console.log(this.customers);
+    });
   }
 
   constructor(private router: Router, private http: HttpClient) {

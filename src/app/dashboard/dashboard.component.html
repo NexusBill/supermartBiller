@@ -1,218 +1,204 @@
 <!-- Main Content Area -->
 <main class="main-content">
-    <div class="container-fluid">
-      <!-- Welcome Section -->
-      <div class="row welcome-section" style="justify-content: space-between;">
-        <div class="col-4">
-          <div class="welcome-card">
-            <h1 class="welcome-title">Today's Sale</h1>
-            <p class="welcome-subtitle">$50,0000</p>
-          </div>
+  <div class="container-fluid">
+    <!-- Welcome Section -->
+    <div class="row">
+      <!-- <mat-chip-set aria-label="Fish selection" style="justify-content: space-between;">
+        <mat-chip style="height: 70px; width: 220px;">Montly Sales <h2>{{monthlySalesAmount}}</h2>
+        </mat-chip>
+
+      </mat-chip-set>
+      <mat-chip-set aria-label="Fish selection" style="justify-content: space-between;">
+        <mat-chip style="height: 70px; width: 220px;">Montly's Profit <h2>{{monthlyProfitAmount}}</h2>
+        </mat-chip>
+
+      </mat-chip-set> -->
+      <div class="col-3">
+        <div class="welcome-card">
+          <h2 class="welcome-title">Montly's Sale : </h2>
+          <h3 class="welcome-title" style="margin-top: 7px;">{{monthlySalesAmount}}</h3>
         </div>
-        <div class="col-4">
-          <div class="welcome-card">
-            <h1 class="welcome-title">Profit</h1>
-            <p class="welcome-subtitle">$50,000</p>
-          </div>
+      </div>
+      <div class="col-3">
+        <div class="welcome-card">
+          <h2 class="welcome-title">Monthly Profit : </h2>
+          <h3 class="welcome-title" style="margin-top: 7px;">{{monthlyProfitAmount}}</h3>
         </div>
-        <mat-form-field appearance="fill">
-          <mat-label>Select date range</mat-label>
-          <mat-date-range-input [rangePicker]="picker">
-            <input matStartDate placeholder="Start date"
-                   [(ngModel)]="startDate"
-                   (dateChange)="onDateChange()">
+      </div>
+      <div class="col-3" style="margin-top: 5px;">
+        <mat-form-field appearance="outline" style="margin-right: 10px;">
+          <mat-label>Customer Name</mat-label>
+          <i class="fa-solid fa-user" matPrefix style="margin:0px 8px; color: #666;"></i>
+          <input
+            matInput
+            placeholder="Select Customer"
+            [(ngModel)]="selectedCustomer"
+            [matAutocomplete]="customerAuto"
+            (keydown.enter)="onCustomerChange()" />
         
-            <input matEndDate placeholder="End date"
-                   [(ngModel)]="endDate"
-                   (dateChange)="onDateChange()">
-          </mat-date-range-input>
-        
-          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-          <mat-date-range-picker #picker></mat-date-range-picker>
+          <mat-autocomplete #customerAuto="matAutocomplete">
+            <mat-option *ngFor="let customer of customers" [value]="customer.name">
+              {{ customer.name }}
+            </mat-option>
+          </mat-autocomplete>
         </mat-form-field>
         
       </div>
+      <div class="col-3">
+        <mat-form-field appearance="fill">
+          <mat-label>Select date range</mat-label>
+          <mat-date-range-input [rangePicker]="picker">
+            <input matStartDate placeholder="Start date" [(ngModel)]="startDate" (dateChange)="onDateChange()">
 
-      <!-- Router Outlet Container -->
-      <div class="row">
-        <div class="sales-table-container">
-          <!-- Header Section -->
-          <div class="table-header">
-            <div class="row align-items-center">
-              <div class="col-md-6">
-                <h3 class="table-title">
-                  <i class="fas fa-chart-line me-2"></i>
-                  Recent Sales
-                </h3>
-                <p class="table-subtitle">Track your latest transactions and orders</p>
-              </div>
-              <div class="col-md-6">
-                <div class="header-actions">
-                  <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input 
-                      type="text" 
-                      class="form-control" 
-                      placeholder="Search sales..."
-                      [(ngModel)]="searchTerm"
-                      (input)="onSearch()">
-                  </div>
-                  <div class="items-per-page">
-                    Show:
-                    <select class="form-select" [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()" style="color: rgb(253, 248, 248);">
-                        <option value="2" style="color: black;" selected>2</option>
-                      <option value="5" style="color: black;">5</option>
-                      <option value="10"  style="color: black;">10</option>
-                      <option value="25"  style="color: black;">25</option>
-                      <option value="50"  style="color: black;">50</option>
-                    </select>
-                  </div>
+            <input matEndDate placeholder="End date" [(ngModel)]="endDate" (dateChange)="onDateChange()">
+          </mat-date-range-input>
+
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-date-range-picker #picker></mat-date-range-picker>
+        </mat-form-field>
+      </div>
+      
+
+    </div>
+    
+
+    <!-- Router Outlet Container -->
+    <div class="row">
+      <div class="sales-table-container">
+        <!-- Header Section -->
+        <div class="table-header">
+          <div class="row align-items-center">
+            <div class="col-md-6">
+              <h3 class="table-title">
+                <i class="fas fa-chart-line me-2"></i>
+                Recent Sales
+              </h3>
+              <p class="table-subtitle">Track your latest transactions and orders</p>
+            </div>
+            <div class="col-md-6">
+              <div class="header-actions">
+                <div class="search-box">
+                  <i class="fas fa-search"></i>
+                  <input type="text" class="form-control" placeholder="Search sales..." [(ngModel)]="searchTerm"
+                    (input)="onSearch()">
                 </div>
-              </div>
-            </div>
-          </div>
-        
-          <!-- Table Section -->
-          <div class="table-wrapper">
-            <div class="table-responsive">
-              <table class="table table-hover">
-                <thead class="table-head">
-                  <tr>
-                    <th scope="col" class="sortable" (click)="sort('id')">
-                      Order ID
-                      <i class="fa-solid fa-sort"[ngClass]="getSortIcon('id')"></i> 
-                    </th>
-                    <th scope="col" class="sortable" (click)="sort('customer')">
-                      Customer
-                      <i class="fas fa-sort sort-icon" [ngClass]="getSortIcon('customer')"></i>
-                    </th>
-                    <th scope="col" class="sortable" (click)="sort('product')">
-                      Product
-                      <i class="fas fa-sort sort-icon" [ngClass]="getSortIcon('product')"></i>
-                    </th>
-                    <th scope="col" class="sortable" (click)="sort('quantity')">
-                      Quantity
-                      <i class="fas fa-sort sort-icon" [ngClass]="getSortIcon('quantity')"></i>
-                    </th>
-                    <th scope="col" class="sortable" (click)="sort('amount')">
-                      Amount
-                      <i class="fas fa-sort sort-icon" [ngClass]="getSortIcon('amount')"></i>
-                    </th>
-                    <th scope="col" class="sortable" (click)="sort('date')">
-                      Date
-                      <i class="fas fa-sort sort-icon" [ngClass]="getSortIcon('date')"></i>
-                    </th>
-                    <th scope="col">Status</th>
-                    <th scope="col" class="text-center">Actions</th>
-                  </tr>
-                </thead>
-                <tbody class="table-body">
-                  <tr *ngFor="let sale of sales; let i = index" 
-                      [class.table-row-selected]="selectedSales.includes(sale.Id)">
-                    <td class="order-id">
-                      <span class="order-number">#{{ sale.invoice }}</span>
-                    </td>
-                    <td class="customer-cell">
-                      <div class="customer-info">
-                        <div class="customer-details">
-                          <span class="customer-name">{{ sale.customer }}</span>
-                          <span class="customer-email">{{ sale.mobile }}</span>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="product-cell">
-                      <div class="product-info">
-                        <div class="product-details">
-                          <span class="product-name">{{ sale.products }}</span>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="quantity-cell">
-                      <span class="quantity-badge">{{ sale.discount }}</span>
-                    </td>
-                    <td class="amount-cell">
-                      <span class="amount-value">${{ sale.amount | number:'1.2-2' }}</span>
-                    </td>
-                    <td class="date-cell">
-                      <span class="date-value">{{ sale.date }}</span>
-                      <!-- <span class="time-value">{{ sale.Date }}</span> -->
-                    </td>
-                    <td class="status-cell">
-                      <span class="status-badge" >
-                        <!-- <i class="fas" [ngClass]="getStatusIcon(sale.status)"></i> -->
-                        {{ sale.savings }}
-                      </span>
-                    </td>
-                    <td class="actions-cell text-center">
-                      <div class="action-buttons">
-                        <button class="btn btn-sm btn-outline-primary" (click)="viewSale(sale)" title="View Details">
-                          <i class="fas fa-eye">View</i>
-                        </button>
-                        <button class="btn btn-sm btn-outline-success" (click)="editSale(sale)" title="Edit">
-                          <i class="fas fa-edit">History</i>
-                        </button>
-                        <button class="btn btn-sm btn-outline-danger" (click)="deleteSale(sale)" title="Delete">
-                          <i class="fas fa-trash">Delete</i>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-        
-            <!-- Empty State -->
-            <div class="empty-state" *ngIf="paginatedSales.length === 0">
-              <i class="fas fa-receipt"></i>
-              <h4>No sales found</h4>
-              <p>No sales match your current search criteria</p>
-            </div>
-          </div>
-        
-          <!-- Pagination Section -->
-          <div class="pagination-wrapper">
-            <div class="row align-items-center">
-              <div class="col-md-6">
-                <div class="pagination-info">
-                  <span>Showing {{ getStartIndex() }} to {{ getEndIndex() }} of {{ filteredSales.length }} entries</span>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <nav aria-label="Table pagination">
-                  <ul class="pagination justify-content-end">
-                    <!-- <li class="page-item" [class.disabled]="currentPage === 1">
-                      <button class="page-link" (click)="goToPage(1)" [disabled]="currentPage === 1">
-                        <i class="fas fa-angle-double-left"></i>
-                      </button>
-                    </li>
-                    <li class="page-item" [class.disabled]="currentPage === 1">
-                      <button class="page-link" (click)="previousPage()" [disabled]="currentPage === 1">
-                        <i class="fas fa-angle-left"></i>
-                      </button>
-                    </li> -->
-                    
-                    <li class="page-item" 
-                        *ngFor="let page of getVisiblePages()" 
-                        [class.active]="page === currentPage">
-                      <button class="page-link" (click)="goToPage(page)">{{ page }}</button>
-                    </li>
-                    
-                    <!-- <li class="page-item" [class.disabled]="currentPage === totalPages">
-                      <button class="page-link" (click)="nextPage()" [disabled]="currentPage === totalPages">
-                        <i class="fas fa-angle-right"></i>
-                      </button>
-                    </li>
-                    <li class="page-item" [class.disabled]="currentPage === totalPages">
-                      <button class="page-link" (click)="goToPage(totalPages)" [disabled]="currentPage === totalPages">
-                        <i class="fas fa-angle-double-right"></i>
-                      </button>
-                    </li> -->
-                  </ul>
-                </nav>
+
               </div>
             </div>
           </div>
         </div>
+
+        <!-- Table Section -->
+        <div class="table-wrapper">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead class="table-head">
+                <tr>
+                  <th scope="col" class="sortable" (click)="sort('id')">
+                    Order ID
+                    <i class="fa-solid fa-sort" [ngClass]="getSortIcon('id')"></i>
+                  </th>
+                  <th scope="col" class="sortable" (click)="sort('customer')">
+                    Customer
+                    <i class="fas fa-sort sort-icon" [ngClass]="getSortIcon('customer')"></i>
+                  </th>
+                  <th scope="col" class="sortable" (click)="sort('quantity')">
+                    Discount
+                    <i class="fas fa-sort sort-icon" [ngClass]="getSortIcon('quantity')"></i>
+                  </th>
+                  <th scope="col" class="sortable" (click)="sort('amount')">
+                      Total Amount
+                    <i class="fas fa-sort sort-icon" [ngClass]="getSortIcon('amount')"></i>
+                  </th>
+                  <th scope="col" class="sortable" (click)="sort('date')">
+                    Date
+                    <i class="fas fa-sort sort-icon" [ngClass]="getSortIcon('date')"></i>
+                  </th>
+                  <th scope="col">Savings</th>
+                  <th scope="col" class="text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="table-body">
+                <tr *ngFor="let sale of paginatedSales; let i = index"
+                  [class.table-row-selected]="selectedSales.includes(sale.id)">
+                  <td class="order-id">
+                    <span class="order-number">#{{ sale.id }}</span>
+                  </td>
+                  <td class="customer-cell">
+                    <div class="customer-info">
+                      <div class="customer-details">
+                        <span class="customer-name">{{ sale.customer }}</span>
+                        <span class="customer-email">{{ sale.mobile }}</span>
+                      </div>
+                    </div>
+                  </td>
+                 
+                  <td class="quantity-cell">
+                    <span class="quantity-badge">{{ sale.discount }}</span>
+                  </td>
+                  <td class="amount-cell">
+                    <span class="amount-value">${{ sale.amount | number:'1.2-2' }}</span>
+                  </td>
+                  <td class="date-cell">
+                    <span class="date-value">{{ sale.date }}</span>
+                    <!-- <span class="time-value">{{ sale.Date }}</span> -->
+                  </td>
+                  <td class="status-cell">
+                    <span class="status-badge">
+                      <!-- <i class="fas" [ngClass]="getStatusIcon(sale.status)"></i> -->
+                      {{ sale.savings }}
+                    </span>
+                  </td>
+                  <td class="actions-cell text-center">
+                    <div class="action-buttons">
+                      <button class="btn btn-sm btn-outline-primary" (click)="viewSale(sale)" title="View Details">
+                        <i class="fas fa-eye"></i>
+                      </button>
+                     
+                      <button class="btn btn-sm btn-outline-danger" (click)="deleteSale(sale)" title="Delete">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                      <button class="btn btn-sm btn-outline-success" (click)="editSale(sale)" title="Edit">
+                        <i class="fa-solid fa-right-left">Exchnage</i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Empty State -->
+          <div class="empty-state" *ngIf="filteredSales.length === 0">
+            <i class="fas fa-receipt"></i>
+            <h4>No sales found</h4>
+            <p>No sales match your current search criteria</p>
+          </div>
+        </div>
+
+        <div class="pagination-wrapper" *ngIf="totalPages > 1">
+          <nav aria-label="Table pagination">
+            <ul class="pagination justify-content-end">
+              <li class="page-item" [class.disabled]="currentPage === 1">
+                <button class="page-link" (click)="previousPage()" [disabled]="currentPage === 1">
+                  <i class="fas fa-angle-left"></i>
+                </button>
+              </li>
+        
+              <li class="page-item" *ngFor="let page of getVisiblePages()" [class.active]="page === currentPage">
+                <button class="page-link" (click)="goToPage(page)">{{ page }}</button>
+              </li>
+        
+              <li class="page-item" [class.disabled]="currentPage === totalPages">
+                <button class="page-link" (click)="nextPage()" [disabled]="currentPage === totalPages">
+                  <i class="fas fa-angle-right"></i>
+                </button>
+              </li>
+            </ul>
+          </nav>
+        </div>
+        
       </div>
     </div>
-  </main>
+  </div>
+</main>
