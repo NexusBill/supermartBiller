@@ -84,10 +84,17 @@ export class BillingComponent {
    isPanelExpanded: boolean = false;
    loader: boolean = false;
    selectedProducts: any[] = [];
+   invoiceId: string = 'INV001';
+   intervalId: any;
    ngOnInit() {
     this.loader = true;
     this.fetchFromExcel();
     this.fetchCustomers();
+    this.lastOrder();
+    this.intervalId = setInterval(() => {
+      this.currentDate = new Date();
+    }, 1000);
+    this.scannedId = '';
     this.holdList=localStorage.getItem('holdList') ? JSON.parse(localStorage.getItem('holdList') || '[]') : [];
    }
 
@@ -146,15 +153,17 @@ decreaseQuantity(product: any) {
   //   this.openSnackBar('Total amount must be greater than zero', 'Close');
   //   return;
   // }
-this.order.append('invoice', 'Invoice 10');
-  this.order.append('customer', this.selectedCustomer ? this.selectedCustomer : 'Guest');
-  this.order.append('mobile', this.MobileNumber || 'N/A'); // Ensure mobile number is included
-  this.order.append('amount', this.totalAmount.toString());
-  this.order.append('discount', this.discountAmount.toString());  
-  this.order.append('savings', this.savedAmount.toString());
-  this.order.append('date',     this.formatDate( new Date()));
-  this.http.post("https://supermartspring.vercel.app/api/orders",this.order).subscribe( (data:any) =>{
-    this.openSnackBar(data.res, 'Close');
+  const body = {
+    invoiceId: this.invoiceId,
+    customer: this.selectedCustomer ? this.selectedCustomer.name : 'Guest',
+    mobile: this.MobileNumber || 'N/A',
+    amount: this.totalAmount,
+    products: this.selectedProducts,
+    savings: this.savedAmount,
+    date: new Date().toISOString()
+  };
+  this.http.post("https://supermartspring.vercel.app/api/orders",body).subscribe( (data:any) =>{
+    this.openSnackBar(data.message, 'Close');
     this.selectedProducts = [];
     this.scannedId = '';
     this.totalAmount = 0;
@@ -550,6 +559,29 @@ this.isPrinting = true;
       console.log(this.customers);
     });
   }
+
+
+  
+  lastOrder() {
+    debugger;
+    this.http.get('https://supermartspring.vercel.app/api/orders').subscribe((res: any) => {
+      debugger
+      const now = new Date();
+  
+      // Short month name like "Sep"
+      const month = now.toLocaleString("en-US", { month: "short" });
+    
+      // Year like "2025"
+      const year = now.getFullYear();
+    
+      // Sequence = current count + 1
+      const seq = res.length + 1;
+    
+this.invoiceId = `INV${month}${year}${seq}`;
+    });
+  }
+
+ 
 
   constructor(private router: Router, private http: HttpClient) {
 

@@ -3,22 +3,27 @@ import { TableviewComponent } from '../tableview/tableview.component';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { FormsModule } from '@angular/forms';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-customer',
   standalone: true,
-  imports: [CommonModule,MatTableModule, FormsModule,TableviewComponent],
+  imports: [CommonModule,MatTableModule,HttpClientModule ,FormsModule,TableviewComponent],
   templateUrl: './customer.component.html',
   styleUrl: './customer.component.css'
 })
 export class CustomerComponent {
 
+  constructor( private http : HttpClient) {
+    this.getCustomers(); 
+   }
   customerName: string = '';
   customerEmail: string = '';
   customerPhone: string = '';
   customertype: string = '';
   customerAddress: string = '';
   customerCity: string = '';
+  customerPoints: number = 0;
 
   addCustomer() {
     if (this.customerName.trim() === '' || this.customerEmail.trim() === '' || this.customerPhone.trim() === '') {
@@ -28,6 +33,21 @@ export class CustomerComponent {
     }
     else {
       this.customerData = [...this.customerData, { name: this.customerName, email: this.customerEmail, phone: this.customerPhone }];
+      this.http.post('https://supermartspring.vercel.app/customers', {
+        name: this.customerName,
+        email: this.customerEmail,
+        phone: this.customerPhone,
+        type: this.customertype,
+        address: this.customerAddress,
+        city: this.customerCity,
+        points: this.customerPoints
+      }).subscribe((response) => {
+        debugger
+        console.log('Customer added successfully', response); 
+      }, (error) => {
+        console.error('Error adding customer', error);
+      });
+      this.customerName = '';
       this.clear();
       alert('Customer added successfully');
     }
@@ -40,13 +60,51 @@ export class CustomerComponent {
     this.customerAddress = '';
     this.customerCity = '';
   }
-  customerData = [
-    { name: 'John Doe', email: 'kvjdhfjkshf', phone: '123-456-7890' },
-    { name: 'Jane Smith', email: 'fhgfgh', phone: '987-654-3210' },
-    { name: 'Alice Johnson', email: 'ghfghfgh', phone: '555-555-5555' },
-    { name: 'Bob Brown', email: 'ghfghfgh', phone: '444-444-4444' },
-    { name: 'Charlie White', email: 'ghfghfgh', phone:    '333-333-3333' }
-  ];
-  ColumnHeaders = ['Customer Name', 'Email', 'Phone'];
-  displayedColumns = ['name', 'email', 'phone'];
+
+  
+editCustomer(customer: any) {
+    this.customerName = customer.name;
+    this.customerEmail = customer.email;
+    this.customerPhone = customer.phone;
+    this.customertype = customer.type;
+    this.customerAddress = customer.address;
+    this.customerCity = customer.city;
+    this.customerPoints = customer.points;
+    this.http.put(`https://supermartspring.vercel.app/customers/${customer.id}`, {
+      name: this.customerName,
+      email: this.customerEmail,
+      phone: this.customerPhone,
+      type: this.customertype,
+      address: this.customerAddress,
+      city: this.customerCity,
+      points: this.customerPoints
+    }).subscribe((response) => {
+      console.log('Customer updated successfully', response);
+    }, (error) => {
+      console.error('Error updating customer', error);
+    });
+  }
+
+
+
+  getCustomers() {
+    this.http.get('https://supermartspring.vercel.app/customers').subscribe((response: any) => {
+
+      this.customerData = response;
+      this.customerData.forEach((customer: any) => {
+        customer.name = customer.name || 'Guest';
+        customer.email = customer.email || 'Please provide email';
+        customer.phone = customer.phone || 'phone';
+        customer.type = customer.type || 'Regular';
+        customer.address = customer.address || 'Please provide address';
+        customer.city = customer.city || 'please provide city';
+        customer.points = customer.points || 0;
+      }
+    )}, (error) => {
+      console.error('Error fetching customers', error);
+    });
+  }
+  customerData :any[]= [];
+  ColumnHeaders = ['Customer Name', 'Email', 'Phone', 'Type', 'Address', 'City', 'Points', 'Actions'];
+  displayedColumns = ['name', 'email', 'phone', 'type', 'address', 'city', 'points', 'actions'];
 }
