@@ -7,7 +7,7 @@
             <mat-expansion-panel-header>
                 <mat-panel-title> Customer Details </mat-panel-title>
                 <mat-panel-description>
-                    <div class="select">Bill No.</div> {{ invoiceId }}
+                    <div class="select">Bill No : </div> {{ invoiceId }}
                 </mat-panel-description>
             </mat-expansion-panel-header>
 
@@ -16,7 +16,7 @@
             <mat-form-field appearance="outline" style="margin-right: 10px;">
                 <mat-label>Customer Name</mat-label>
                 <i class="fa-solid fa-user" matPrefix style="margin:0px 8px; color: #666;"></i>
-                <input matInput placeholder="Select Customer" [(ngModel)]="selectedCustomer"
+                <input matInput placeholder="Select Customer" [(ngModel)]="selectedCustomer" (ngModelChange)="onCustomerChange($event)"
                     [matAutocomplete]="customerAuto" />
                 <mat-autocomplete #customerAuto="matAutocomplete">
                     <mat-option *ngFor="let customer of customers" [value]="customer.name">
@@ -192,7 +192,11 @@
             </mat-chip>
 
         </mat-chip-set>
+        <!-- <mat-chip-set aria-label="Fish selection" style="justify-content: space-between;">
+            <mat-chip style="height: 70px; width: 220px;">Customer Points <h2> {{customerPoints}}</h2>
+            </mat-chip>
 
+        </mat-chip-set> -->
 
         <mat-chip-set aria-label="Fish selection" style="justify-content: space-between;">
             <mat-chip style="height: 70px; width: 220px;">Amount : <h2 style=" color: #198a3bb7; font-weight: bold">{{

@@ -134,7 +134,7 @@ decreaseQuantity(product: any) {
    console.log(this.selectedProducts);
  }
  order = new FormData();
-
+customerPoints: number = 0;
  saveOrder(){
   debugger;
   // if (this.selectedProducts.length === 0) {
@@ -552,6 +552,13 @@ this.isPrinting = true;
   onCustomerChange(event: any) {
     const customerId = +event.target.value;
     this.selectedCustomer = this.customers.find(customer => customer.id === customerId);
+    if (this.selectedCustomer) {
+      this.MobileNumber = this.selectedCustomer.mobile;
+      this.customerPoints = this.selectedCustomer.points || 0; // Set customer points if available
+    } else {
+      this.MobileNumber = null; // Reset mobile number if no customer is selected
+      this.customerPoints = 0; // Reset points if no customer is selected
+    }
   }
   fetchCustomers(){
     this.http.get('https://supermartspring.vercel.app/customers').subscribe((res: any) => {
