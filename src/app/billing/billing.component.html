@@ -43,6 +43,28 @@
         </mat-expansion-panel>
 
 
+        <div class="prductname" style="gap: 10px;display: contents;">
+            <mat-form-field appearance="outline">
+    <mat-label>Product Name</mat-label>
+    <input matInput  type="text" [(ngModel)]="productsName">
+  </mat-form-field>
+
+  
+   <mat-form-field appearance="outline">
+    <mat-label>Product Price</mat-label>
+    <input matInput  type="number" [(ngModel)]="price">
+  </mat-form-field>
+
+   <mat-form-field appearance="outline">
+    <mat-label>Product Quantity</mat-label>
+    <input matInput  type="number" [(ngModel)]="quantity">
+  </mat-form-field>
+
+  <button (click)="enterProduct()" style="height: 35px;border: 0px;border-radius: 7px;background-color: #3a86e9;color: aliceblue;">Add</button>
+                
+
+        </div>
+
         <div class="products" style="display: flex;flex-direction: column;">
             <div class="billing-section">
                 <div class="head" style="display: flex;flex-direction: row;">
@@ -65,6 +87,7 @@
                             </mat-autocomplete>
                         </mat-form-field>
                     </div>
+                  
                     <div class="add-products" style="display: flex; justify-content: space-between;  padding: 10px;"
                         role="button" data-bs-toggle="dropdown" aria-expanded="false"  (click)="holdFunction()">
 
@@ -77,15 +100,14 @@
                     </div>
 
                     <div class="add-products" printTitle="invoice" printSectionId="invoice-container" ngxPrint
-                        (click)=" downloadPDF()">WhatsApp <em> </em><i class="fa-brands fa-square-whatsapp"
+                        (click)="saveOrder() ">WhatsApp <em> </em><i class="fa-brands fa-square-whatsapp"
                             style="size: 15px;"></i>
                     </div>
 
-                    <div class="add-products" 
-                        (click)=" saveOrder()">Print (F6)<em> </em><i class="fa-solid fa-print"></i>
+                    <div class="add-products"  printTitle="invoice" printSectionId="invoice-container" ngxPrint
+                        (click)=" downloadPDF()">Print (F6)<em> </em><i class="fa-solid fa-print"></i>
                     </div>
                 </div>
-
 
 
                 <div id="cartItems" *ngIf="selectedProducts.length > 0" class="cart-items">
@@ -97,8 +119,8 @@
                                 <tr class="header-row">
                                     <th class="header-cell" style="width: 10%;"><span class="header-text">No.</span>
                                     </th>
-                                    <th class="header-cell" style="width: 10%;"><span class="header-text">BarCode</span>
-                                    </th>
+                                    <!-- <th class="header-cell" style="width: 10%;"><span class="header-text">BarCode</span> -->
+                                    <!-- </th> -->
                                     <th class="header-cell" style="width: 40%;"><span class="header-text">Name</span>
                                     </th>
                                     <th class="header-cell" style="width: 20%;"><span class="header-text">Price</span>
@@ -112,10 +134,10 @@
                             <tbody>
                                 <tr *ngFor="let element of selectedProducts; let i = index" class="data-row">
                                     <td class="data-cell"><span class="position-badge">{{ i + 1 }}</span></td>
-                                    <td class="data-cell name-cell"><span class="name-text">{{ element.id }}</span>
+                                    <!-- <td class="data-cell name-cell"><span class="name-text">{{ element.id }}</span> -->
                                     <td class="data-cell name-cell"><span class="name-text">{{ element.name }}</span>
                                     </td>
-                                    <td class="data-cell">{{ element.SalePrice }}</td>
+                                    <td class="data-cell">{{ element.MRP }}</td>
                                     <td class="data-cell">
                                         <div class="d-flex align-items-center">
                                             <input #quantity type="text" [(ngModel)]="element.quantity"
@@ -236,15 +258,26 @@
         © 2025-30 Copyright:
         <a class="text-body" href="#">Nexusbills</a>
     </div>
+
+
+    <div #confirmModal class="modal">
+        <div class="modal-content">
+          <h4>Do you want to refresh Billing</h4>
+          <div class="modal-actions">
+            <button class="btn btn-danger" (click)="confirmAction()">Yes</button>
+            <button class="btn btn-secondary" (click)="closeModal()">No</button>
+          </div>
+        </div>
+      </div>
     <!-- Copyright -->
 </footer>
 
 
-<div id="invoice-container" style="display: none;">
+<!-- <div id="invoice-container" style="display: none;">
 
     <div class="receipt-container"
         style="box-shadow: none; border: 2px dashed #333; margin: 0 auto; width: 100%; max-width: 300px; background: white; line-height: 1.4; font-family: 'Courier New', monospace; font-size: 12px;">
-        <!-- Shop Header -->
+        <!-- Shop Header -
         <div class="shop-header"
             style="text-align: center; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 10px;">
             <div class="shop-name" style="font-size: 16px; font-weight: bold; margin-bottom: 5px;">A2J SUPERMARKET
@@ -257,7 +290,7 @@
                 27ABCDE1234F1Z5</div>
         </div>
 
-        <!-- Receipt Info -->
+        <!-- Receipt Info -
         <div class="receipt-info" style="margin-bottom: 10px; font-size: 10px;font-weight: bold; ">
             <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
                 <span>Bill No:</span>
@@ -279,7 +312,7 @@
 
         <div class="separator" style="border-bottom: 1px dashed #333; margin: 8px 0;"></div>
 
-        <!-- Items Section -->
+        <!-- Items Section --
         <div class="items-section" style="border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 10px;">
             <div *ngFor="let item of selectedProducts" class="item-row"
                 style="display: flex; justify-content: space-between; margin-bottom: 3px; font-size: 11px; font-weight: bold;">
@@ -292,7 +325,7 @@
             </div>
         </div>
 
-        <!-- Totals Section -->
+        <!-- Totals Section --
         <div class="totals-section" style="font-size: 11px;font-weight: bold; ">
             <div class="total-row"
                 style="display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 2px;">
@@ -320,10 +353,10 @@
                 style="display: flex; justify-content: space-between; font-weight: bold; font-size: 14px; border-top: 1px solid #333; border-bottom: 1px solid #333; padding: 5px 0; margin: 8px 0;">
                 <span>TOTAL:</span>
                 <span>₹1244.00</span>
-            </div> -->
+            </div> --
         </div>
 
-        <!-- Payment Info -->
+        <!-- Payment Info --
         <div class="payment-info" style="font-size: 10px; font-weight: bold; margin-bottom: 10px;">
             <div class="total-row" style="display: flex; justify-content: space-between; margin-bottom: 2px;">
                 <span>Cash Paid:</span>
@@ -337,7 +370,7 @@
 
         <div class="separator" style="border-bottom: 1px dashed #333; margin: 8px 0;"></div>
 
-        <!-- Barcode -->
+        <!-- Barcode --
         <div class="barcode"
             style="text-align: center; margin: 8px 0; font-size: 8px; font-weight: bold; letter-spacing: 1px;">
             ||||| |||| | ||| ||||
@@ -345,7 +378,7 @@
             INV-001234
         </div>
 
-        <!-- Thank You -->
+        <!-- Thank You --
         <div class="thank-you"
             style="text-align: center; font-size: 11px;font-weight: bold;  margin-top: 10px; border-top: 1px solid #333; padding-top: 10px;">
             <div>THANK YOU FOR SHOPPING!</div>
@@ -354,7 +387,8 @@
         </div>
     </div>
 
-</div>
+</div> -->
+
 <!-- <zxing-scanner
   (scanSuccess)="onCodeResult($event)"
   [autostart]="true"
@@ -406,3 +440,243 @@
         </div>
     </div>
 </div> -->
+
+
+
+ <div id="invoice-container" style=" height: auto;width: auto;" >
+                    <div
+                        style="background-color: #FFFFFF; padding: 0 5mm; position: relative; height: auto;width: auto;">
+                        <div *ngIf="false"
+                            style="text-align: center; font-weight: 500; font-size: 12px; color: #667085; margin: 5px 0;">
+                            Tax
+                            Invoice</div>
+                            <div 
+                            style="text-align: center; font-weight: 500; font-size: 12px; color: #667085; margin: 5px 0;">
+            
+                            Estimate</div>
+                        <div style="background-color: #60a6f7; padding: 5px;border:1px solid#667085; border-radius: 15px; margin-bottom: 2mm;">
+                            <div style="display: flex; justify-content: start; margin-bottom: 5px;">
+                                <!-- <div style="display: flex; width: 20%;">
+                                    <div
+                                        style="width: 30mm; height: 20mm; background-color: #FFFFFF; border-radius: 1mm; overflow: hidden;">
+                                        <img [src]="'assets/images/invoiceLogo1.jpeg'" alt="Logo"
+                                            style="width: 100%; height: 100%; ">
+                                    </div>
+                                </div> -->
+                                <div
+                                    style="display: flex; flex-direction: column; justify-content: center; margin-left: 0px; width: 60%; text-align: center;">
+                                    <div
+                                        style="font-weight: 600; font-size: 25px; color: #1A1C21 !important; margin-bottom: 0mm;">
+                                        AYYANAR METALS</div>
+                                    <div
+                                        style="font-weight: 500; font-size: 10px; color: #667085; line-height: 1.4; padding: 0 10px;">
+                                        <!-- <B>DEALERS IN: MOTOR PARTS, IRON, SPRING LEAF AND ALL VEHICLES </B><br>
+                                        O.No 293/1, N.No 130, G.S.T. Road,
+                                        Urapakkam, (Opp. State Bank of India)<br>
+                                        Chengalpattu Dist- 603210,
+                                        Tamil Nadu, India -->
+                                        203, E Veli St,opp. Raj Mahal silks, Madurai, Tamil Nadu 625001
+                                    </div>
+                                </div>
+                                <div style="width: 20%;">
+                                    <div  style="font-weight: 500; font-size: 10px; color: #1A1C21 !important; line-height: 1.4; margin-top: 10px;">Phone No: <span style="color: #667085;font-weight: 400">+91 7947114984<br></span>
+                                        </div>
+                                    <div  *ngIf="true"  style="font-weight: 500; font-size: 10px; color: #1A1C21 !important; line-height: 1.4;margin-top: 35px;">GST: <span  style="color: #667085;font-weight: 400">33AXHPK8999E1ZY</span></div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div *ngIf="true" style="display: flex; justify-content: space-between; margin-bottom: 0px;">
+                            <!-- <div style="padding-left: 5mm; width: 50%;">
+                                <div style="font-weight: 700; font-size: 13px; color: #1A1C21 !important; margin-bottom: 2mm;">
+                                    To:
+                                    {{selectedCustomer}}</div>
+                                <div style="font-weight: 700; font-size: 11px; color: #1A1C21 !important; line-height: 1.4;">
+                                    Name not found</div>
+                                    <div  *ngIf="true" style="font-weight: 700; font-size: 11px; color: #1A1C21 !important; line-height: 1.4;">GST: <span  style="color: #667085;font-weight: 400">{{selectedCustomerGst}}</span></div>
+                                    <div  style="font-weight: 700; font-size: 11px; color: #1A1C21 !important; line-height: 1.4;">Phone No: <span  style="color: #667085;font-weight: 400">{{selectedCustomerPhoneno}}</span>
+                                    </div>
+                                    <div  style="font-weight: 700; font-size: 11px; color: #1A1C21 !important; line-height: 1.4;">Vehicle No: <span  style="color: #667085;font-weight: 400">{{ addproducts.length > 0 ?
+                                            vehicleNumber :
+                                            '-'}}</span></div>
+                            </div> -->
+                            <div style="padding-left: 5mm;padding-top: 6.7mm; width: 40%;">
+                                <div style="font-weight: 800; font-size: 12px; color: #1A1C21 !important; line-height: 1.4;">Invoice No: <span  style="color: #667085;font-weight: 400">{{invoiceId}}</span></div>
+                                <div style="font-weight: 700; font-size: 10px; color: #1A1C21 !important; line-height: 1.4;">Date & Time : <span  style="color: #667085;font-weight: 400">{{currentDate}}</span></div>
+                                <!-- <div  style="font-weight: 700; font-size: 10px; color: #1A1C21 !important; line-height: 1.4;">Bill Type: <span  style="color: #667085;font-weight: 400">{{billType}}</span></div> -->
+                                <div  style="font-weight: 700; font-size: 10px; color: #1A1C21 !important; line-height: 1.4;">Payment Type: <span  style="color: #667085;font-weight: 400">{{paymentMethod}}</span></div>
+                            </div>
+                        </div>
+                        <!-- <div *ngIf="true" style="display: flex; justify-content: space-between; margin-bottom: 0px;">
+        
+                            <div style="padding-left: 5mm;padding-top: 8mm; width: 40%;">
+                                <div style="font-weight: 700; font-size: 10px; color: #1A1C21 !important; line-height: 1.4;">Date & Time : <span  style="color: #667085;font-weight: 400">{{currentDate}}</span></div>
+                                </div>
+                        </div> -->
+                        
+                        <!-- <div
+                            style="display: flex; justify-content: space-between; margin-top: 5mm; border-top: 1px solid #E0E2E7; padding-top: 3mm;">
+                            <div style="flex: 1; padding: 0 2mm; border-right: 1px solid #E0E2E7; border-left: none;">
+                                <div style="font-weight: 500; font-size: 9px; color: #667085; margin-bottom: 1mm;">
+                                    Invoice No
+                                </div>
+                                <div style="font-weight: 600; font-size: 10px; color: #1A1C21 !important;">{{invoiceId}}</div>
+                            </div>
+                            <div style="flex: 1; padding: 0 2mm; border-right: 1px solid #E0E2E7;">
+                                <div style="font-weight: 500; font-size: 9px; color: #667085; margin-bottom: 1mm;">Date
+                                    & Time
+                                </div>
+                                <div style="font-weight: 600; font-size: 10px; color: #1A1C21 !important;">{{currentDate}}</div>
+                            </div>
+                            <div style="flex: 1; padding: 0 2mm; border-right: 1px solid #E0E2E7;">
+                                <div style="font-weight: 500; font-size: 9px; color: #667085; margin-bottom: 1mm;">GST
+                                    No</div>
+                                <div style="font-weight: 600; font-size: 10px; color: #1A1C21 !important;">{{selectedCustomerGst}}
+                                </div>
+                            </div>
+                            <div style="flex: 1; padding: 0 2mm; border-right: 1px solid #E0E2E7;">
+                                <div style="font-weight: 500; font-size: 9px; color: #667085; margin-bottom: 1mm;">Bill
+                                    Type
+                                </div>
+                                <div style="font-weight: 600; font-size: 10px; color: #1A1C21 !important;">{{billType}}</div>
+                            </div>
+                            <div style="flex: 1; padding: 0 2mm;">
+                                <div style="font-weight: 500; font-size: 9px; color: #667085; margin-bottom: 1mm;">
+                                    Payment Type
+                                </div>
+                                <div style="font-weight: 600; font-size: 10px; color: #1A1C21 !important;">{{PaymentMode}}</div>
+                            </div>
+                        </div> -->
+
+                        <div
+                            style="background-color: #F0F2F9; padding: 0 3mm; margin-top: 5px; min-height: auto; max-height: auto; overflow: auto;">
+                            <table style="width: 100%; border-collapse: collapse; font-size: 10px;">
+                                <thead>
+                                    <tr>
+                                        <th
+                                            style=" border: 1px solid #ddd; padding: 2mm; text-align: left; background-color: #f2f2f2; font-weight: 600;">
+                                            S. No.</th>
+                                        <th
+                                            style=" border: 1px solid #ddd; padding: 2mm; text-align: left; background-color: #f2f2f2; font-weight: 600;">
+                                            Product & Description of goods</th>
+                                        <!-- <th
+                                            *ngIf="isgst" style=" border: 1px solid #ddd; padding: 2mm; text-align: left; background-color: #f2f2f2; font-weight: 600;">
+                                            HSN Code</th>
+                                        <th
+                                            *ngIf="isgst" style=" border: 1px solid #ddd; padding: 2mm; text-align: left; background-color: #f2f2f2; font-weight: 600;">
+                                            GST %</th> -->
+                                        <th
+                                            style=" border: 1px solid #ddd; padding: 2mm; text-align: left; background-color: #f2f2f2; font-weight: 600;">
+                                            Quantity</th>
+                                        <th
+                                            style=" border: 1px solid #ddd; padding: 2mm; text-align: left; background-color: #f2f2f2; font-weight: 600;">
+                                            Rate</th>
+                                      
+                                        <!-- <th
+                                            style=" border: 1px solid #ddd; padding: 2mm; text-align: left; background-color: #f2f2f2; font-weight: 600;">
+                                            Total (₹)</th> -->
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let item of selectedProducts; let i = index">
+                                        <td style="border: 1px solid #ddd; padding: 2mm; text-align: left;">{{ i + 1 }}
+                                        </td>
+                                        <td style="border: 1px solid #ddd; padding: 2mm; text-align: left;font-size: 12px;">
+                                            {{item.name}} {{
+                                            item.Description }}</td>
+                                        <!-- <td *ngIf="isgst" style="border: 1px solid #ddd; padding: 2mm; text-align: left;">{{
+                                            item.HSN_Code }}
+                                        </td>
+                                        <td *ngIf="isgst" style="border: 1px solid #ddd; padding: 2mm; text-align: left;">{{ item.gst
+                                            }}</td> -->
+                                        <td style="border: 1px solid #ddd; padding: 2mm; text-align: left;">{{
+                                            item.quantity }}
+                                        </td>
+                                        <td style="border: 1px solid #ddd; padding: 2mm; text-align: right;">{{ item.MRP
+                                            }}</td>
+                                        <!-- <td style="border: 1px solid #ddd; padding: 2mm; text-align: right;">{{
+                                            item.MRP }}
+                                        </td> -->
+                                    </tr>
+                                </tbody>
+                                <!-- <tfoot>
+                                    <tr *ngIf="isgst">
+                                        <td style="border: 1px solid #ddd; padding: 2mm; text-align: left;"></td>
+                                        <td style="border: 1px solid #ddd; padding: 2mm; text-align: left;">
+                                            <div style="font-weight: 600;" *ngIf="isgst">Product Price</div>
+                                            <div *ngIf="isNinePercent">
+                                                <div *ngIf="!isiGst" style="font-weight: 600;">SGST Price At 9%</div>
+                                                <div *ngIf="!isiGst" style="font-weight: 600;">CGST Price At 9%</div>
+                                                <div  *ngIf="isiGst" style="font-weight: 600;">IGST Price At 18%</div>
+                                            </div>
+                                            <div *ngIf="isFourteenPercent">
+                                                <div *ngIf="!isiGst" style="font-weight: 600;">SGST Price At 14%</div>
+                                                <div *ngIf="!isiGst"style="font-weight: 600;">CGST Price At 14%</div>
+                                                <div *ngIf="isiGst"style="font-weight: 600;">IGST Price At 28%</div>
+                                            </div>
+                                            <div style="font-weight: 600;" *ngIf="isgst">Total Gst</div>
+                                        </td>
+                                        <td colspan="4" style="border: 1px solid #ddd; padding: 2mm; text-align: left;">
+                                        </td>
+                                        <td style="border: 1px solid #ddd; padding: 2mm; text-align: right;">
+                                            <div style="font-weight: 600;">{{productAmount}}</div>
+                                            <div *ngIf="isNinePercent">
+                                                <div *ngIf="!isiGst" style="font-weight: 600;">{{stateGst1}}</div>
+                                                <div *ngIf="!isiGst" style="font-weight: 600;">{{CentralGst1}}</div>
+                                                <div *ngIf="isiGst" style="font-weight: 600;">{{stateGst1+CentralGst1}}</div>
+
+                                            </div>
+                                            <div *ngIf="isFourteenPercent">
+                                                <div *ngIf="!isiGst" style="font-weight: 600;">{{stateGst2}}</div>
+                                                <div *ngIf="!isiGst" style="font-weight: 600;">{{CentralGst2}}</div>
+                                                <div *ngIf="isiGst" style="font-weight: 600;">{{stateGst2+CentralGst2}}</div>
+
+                                            </div>
+                                            <div style="font-weight: 600;">{{totalGST}}</div>
+                                        </td>
+                                    </tr>
+                                    <tr style="border-top: 2px solid #000; font-weight: 700;">
+                                        <td style="border: 1px solid #ddd; padding: 2mm; text-align: right;"></td>
+                                        <td colspan="*ngIf='isgst' ? 3 : 0" style="border: 1px solid #ddd; padding: 2mm; text-align: left;">
+                                            Total
+                                        </td>
+                                        <td  *ngIf="isgst" style="border: 1px solid #ddd; padding: 2mm; text-align: left;">
+                                              
+                                        </td>
+                                        <td  *ngIf="isgst"> </td>
+                                        <td  style="border: 1px solid #ddd; padding: 2mm; text-align: left;"> {{productCount}} Nos</td>
+                                       <td   style="border: 1px solid #ddd; padding: 2mm; text-align: left;">{{productAmount}}</td>
+                                        <td style="border: 1px solid #ddd; padding: 2mm; text-align: right;">
+                                            {{TotalAmount |
+                                            currency: 'INR'}} </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="8"
+                                            style="border: 1px solid #ddd; padding: 2mm; text-align: left; font-weight: 500; font-size: 11px;">
+                                            Amount In Words: <span
+                                                style="text-transform: capitalize;">{{TotalAmountInWords}}</span>
+                                        </td>
+                                    </tr>
+                                </tfoot> -->
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- <div 
+                    style="position: absolute; bottom: .2mm;left: 8mm; right: 8mm; background-color: #f8f9fa;display: flex; flex-direction: row; justify-content: space-between; align-items: flex-start; border-top: 1px solid #ddd;">
+                    <div *ngIf="true" style="font-size: 10px; color: #667085; line-height: 1; width: 100%;">
+                        <div style="font-weight: 800;">E. & O.E.</div>
+                        <div style="font-weight: 700;">Bank Account Details:</div>
+                        <div style="font-weight: 700;">Bank: INDIAN BANK: URAPAKKAM BRANCH</div>
+                        <div style="font-weight: 700;">A/C.No: 6503488516</div>
+                        <div style="font-weight: 700;">IFSC: IDIB000U036</div>
+                    </div>
+                    <div style="text-align: center; font-size: 10px; color: #667085; width: 100%;">Thank You, Visit Again</div>
+                    <div *ngIf="true" style="text-align: right; font-size: 10px; color: #667085; width: 100%;">
+                        <div style="font-weight: 700;">For AL M.S TRADERS</div>
+                        <div style="height: 5.5mm; margin: 3mm 0;"></div>
+                        <div style="font-weight: 700;">Authorised Signatory</div>
+                    </div>
+                </div> -->
+                </div>
