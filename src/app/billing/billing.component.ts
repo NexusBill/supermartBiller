@@ -79,7 +79,6 @@ export class BillingComponent {
 
   displayedColumns: string[] = ['name', 'mrp', 'unit', 'quantity', 'price', 'action'];
    panelOpenState = signal(false);
-
    showSidePanel:boolean = false;
    isPanelExpanded: boolean = false;
    loader: boolean = false;
@@ -105,6 +104,10 @@ export class BillingComponent {
       this.scannedInputRef.nativeElement.select();
     }, 100);
   }
+
+
+ 
+
    private _snackBar = inject(MatSnackBar);
 
    openSnackBar(message: string, action: string) {
@@ -255,8 +258,8 @@ this.openAddPanel();
       this.openSnackBar('F6 is clicked', 'Close');
     }
     if (event.key === ' ' || event.code === 'Space') {
-      event.preventDefault(); // Prevents scrolling when space is pressed
-      this.scannedInputRef.nativeElement.focus(); // Reset focus to the scanned input
+     // event.preventDefault(); // Prevents scrolling when space is pressed
+     // this.scannedInputRef.nativeElement.focus(); // Reset focus to the scanned input
     }
     
 }
@@ -467,6 +470,20 @@ selectInput(input: HTMLInputElement): void {
       this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
     }
   }
+  enterProduct(){
+    let product={
+      "name":this.productsName,
+      "MRP":this.price,
+      "quantity":this.quantity,
+      "salesPrice":0,
+      "id":this.selectedProducts.length
+    }
+    this.addToCart(product);
+    this.productsName=''
+    this.price=0;
+    this.quantity=0;
+  }
+  quantity!:number;
   deleteProduct(product: any) {
     this.discountAmount = 0; // Reset discount amount when deleting a product
     this.discountValue = 0; // Reset discount value when deleting a product
@@ -588,9 +605,21 @@ this.invoiceId = `INV${month}${year}${seq}`;
     });
   }
 
- 
+
+
+
+
+ confirmAction(){
+
+ }
+ closeModal(){
+  
+ }
+isSpeaking: boolean = false;
+
+productsName:string="";
+price!:number;
 
   constructor(private router: Router, private http: HttpClient) {
-
   }
 }
