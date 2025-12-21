@@ -187,12 +187,16 @@
     <!-- FOOTER -->
     <div class="panel-footer">
 
-      <div class="form-group">
-        <label>Order Status</label>
-        <ng-select class="status-select" [items]="statusList" bindValue="id" placeholder="Select status"
-          [(ngModel)]="selectedOrder.status">
-        </ng-select>
-      </div>
+     <div class="form-group">
+  <label>Order Status</label>
+  <select class="status-select" [(ngModel)]="selectedOrder.status">
+    <option value="" disabled>Select status</option>
+    <option *ngFor="let status of statusList" [value]="status">
+      {{ status | titlecase }}
+    </option>
+  </select>
+</div>
+
       <div class="form-group">
         <label>Comments</label>
         <textarea class="comment-box" placeholder="Add  comments..." [(ngModel)]="orderComment">

@@ -124,7 +124,7 @@ navigateEnabler(){
   ngOnInit() {
     this.isLoader = true;
     this.filterAndPaginate();
-    this.isBillingActive();
+    this.isOrdersActive();
   }
 
   onSearch() {
