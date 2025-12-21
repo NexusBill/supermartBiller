@@ -36,6 +36,15 @@ openSidebar: boolean = false;
   this.openSidebar = false;
 }
 
+onRejectOrder() {
+    // Logic to reject the order
+    this.selectedOrder.status = 'cancelled';
+     this.httpClient.put(`https://supermartspring.vercel.app/api/nexus_supermart/orders/status-update/${this.selectedOrder?.orderId}`, this.selectedOrder).subscribe((data:any) => {
+      console.log('Order updated successfully:', data);
+      this.closeSidebar();
+    });
+  }
+
   orderComment: string = '';
   addComment(orderId: number) {
     // Logic to add comment to the order

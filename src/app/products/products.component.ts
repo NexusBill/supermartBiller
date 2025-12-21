@@ -83,6 +83,7 @@ export class ProductsComponent {
   openSnackBar(message: string, action: string) {
     this._snackBar.open(message, action);
   }
+ 
  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
    dataSource = new MatTableDataSource<any>([]);

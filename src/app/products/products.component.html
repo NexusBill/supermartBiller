@@ -175,7 +175,7 @@
           <mat-icon>sync_disabled</mat-icon>
         </button>
 
-        <button mat-icon-button color="warn"  (click)="deleteProduct(element)">
+        <button mat-icon-button color="warn" *ngIf="element?.isImageUploaded" (click)="deleteProduct(element)">
           <mat-icon>Image Status</mat-icon> </button>
 
       </td>

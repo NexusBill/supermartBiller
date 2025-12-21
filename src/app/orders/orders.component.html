@@ -63,12 +63,15 @@
       <!-- ACTION -->
       <ng-container matColumnDef="action" sticky>
         <th mat-header-cell *matHeaderCellDef>Action</th>
-        <td mat-cell *matCellDef="let element">
+        <td mat-cell *matCellDef="let element" style="padding: 10px;gap: 10px;">
 
 
-          <img src="../../assets/truck.svg" height="20px" width="20px" alt="visibility" style="cursor: pointer;"
+          <img src="../../assets/Pick hover.svg" height="20px" width="20px" alt="visibility" style="cursor: pointer; margin: 0px 5px;"
             (click)="openSidebar=true;selectedOrder=element" />
-
+            <img src="../../assets/Reject hover.svg" height="20px" width="20px" alt="delete" style="cursor: pointer; margin: 0px 5px;"
+            (click)="onRejectOrder();selectedOrder=element" />
+<!-- <img src="../../assets/Pin hover.svg" height="20px" width="20px" alt="delete" style="cursor: pointer; margin: 0px 5px;"
+            /> -->
         </td>
       </ng-container>
 
