@@ -1,13 +1,20 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, inject, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MatTableModule } from '@angular/material/table';
-import { ChangeDetectionStrategy } from '@angular/core';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import {  HttpClient, HttpClientModule } from '@angular/common/http';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { SelectionModel } from '@angular/cdk/collections';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { ToastrService } from 'ngx-toastr';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+
 interface Product {
   id: number;
   name: string;
@@ -23,7 +30,13 @@ interface Product {
 @Component({
   selector: 'app-products',
   imports: [CommonModule,HttpClientModule,FormsModule,MatTableModule, MatFormFieldModule,
-    MatExpansionModule],
+    MatExpansionModule,
+   MatDialogModule,
+  MatButtonModule,
+  MatIconModule,
+  MatPaginatorModule,
+  
+MatCheckboxModule],
   templateUrl: './products.component.html',
   styleUrl: './products.component.css',
   providers: [HttpClient],
@@ -36,10 +49,24 @@ export class ProductsComponent {
   priceRange: string = '';
   stockFilter: string = '';
   sortBy: string = 'name';
-  displayedColumns: string[] = ['id', 'name', 'category', 'MRP', 'quantity', 'Action'];
+  displayedColumns:any[] = [];
   idMap = new Map<string, any>();
   nameMap = new Map<string, any>();
-  
+
+  userMessage: string = '';
+  // invokeBedrock(prompt: string) {
+  //   debugger;
+  //   const sessionId = 'session-' + new Date().getTime();
+  //   this.bedrockService.invokeAgent(prompt, sessionId)
+  //     .then(response => {
+  //       console.log('Bedrock Agent Response:', response);
+  //       this.openSnackBar('Bedrock Agent Response received', 'Close');
+  //     })
+  //     .catch(error => {
+  //       console.error('Error invoking Bedrock Agent:', error);
+  //       this.openSnackBar('Error invoking Bedrock Agent', 'Close');
+  //     });
+  // }
   // Pagination variables
   pageSize = 100; // Number of items per page
   currentPage = 1;
@@ -48,6 +75,7 @@ export class ProductsComponent {
   constructor(private http: HttpClient) {
     this.  fetchFromExcel();
     this.isLoader= true;
+   /// this.invokeBedrock('show my leave balance details');
   }
   isLoader: boolean = false;
   private _snackBar = inject(MatSnackBar);
@@ -55,47 +83,85 @@ export class ProductsComponent {
   openSnackBar(message: string, action: string) {
     this._snackBar.open(message, action);
   }
-  fetchFromExcel(){
-    this.isLoader= true;
-    // const url = 'https://docs.google.com/spreadsheets/d/1bPXpxkY7K_L0oWqh7YYkrNqOrAb-56FFO3Gpv2pq8cQ/gviz/tq?tqx=out:json&gid=1958443453';
-    // this.http.get(""url"", { responseType: 'text' }).subscribe((res: string) => {
+ @ViewChild(MatPaginator) paginator!: MatPaginator;
+
+   dataSource = new MatTableDataSource<any>([]);
+ ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+  }
+  applyFilter(value: string) {
+  this.dataSource.filter = value.trim().toLowerCase();
+}
+fetchFromExcel() {
+  this.isLoader = true;
+
+  this.http
+    .get<any>("https://supermartspring.vercel.app/api/nexus_supermart/products?page=1&limit=100000")
+    .subscribe(res => {
+
+      this.products = res.data;
+      this.filteredProducts = [...this.products];
+this.dataSource.data= this.products;
+      this.displayedColumns = [
+        'select',  
+        "EANCode",
+        "name",
+        "category",
+        "SellType",
+        "QuantityOnHand",
+        "price",
+        "SalePrice",
+        "action"
+      ];
+
+      this.totalPages = Math.ceil(this.filteredProducts.length / this.pageSize);
+      this.setPage(1);
+
+      this.isLoader = false;
+    });
+}
+
+//   fetchFromExcel(){
+//     this.isLoader= true;
+//     // const url = 'https://docs.google.com/spreadsheets/d/1bPXpxkY7K_L0oWqh7YYkrNqOrAb-56FFO3Gpv2pq8cQ/gviz/tq?tqx=out:json&gid=1958443453';
+//     // this.http.get(""url"", { responseType: 'text' }).subscribe((res: string) => {
      
-    //   debugger;
-    //   const json = JSON.parse(
-    //     res.substring(47).slice(0, -2)
-    //   );
-    //   const rows = json.table.rows;
+//     //   debugger;
+//     //   const json = JSON.parse(
+//     //     res.substring(47).slice(0, -2)
+//     //   );
+//     //   const rows = json.table.rows;
     
      
-    //   this.products = rows.map((row: any) => ({ 
-    //     id: Number(row.c[0]?.v || 0), // Convert id to a number
-    //     name: row.c[1]?.v || '',
-    //     Category: row.c[2]?.v || '',
-    //     quantity: 1,
-    //     UnitDesc:  row.c[4]?.v || '',
-    //     RetailPrice:  row.c[5]?.v || 0,
-    //     SalePrice: row.c[6]?.v || 0,
-    //     MRP:  row.c[7]?.v || 0,
-    //     UnitPrice: row.c[8]?.v || 0,
-    //     EANCode:  row.c[9]?.v || '', 
-    //   }));
-    //   console.log(this.products);
-    this.http.get('https://supermartspring.vercel.app/products').subscribe((res: any) => {
-      this.products = res;
-      console.log(this.products);
-      this.filteredProducts = [...this.products];
- // Build maps for O(1) search
- this.buildLookupMaps();
+//     //   this.products = rows.map((row: any) => ({ 
+//     //     id: Number(row.c[0]?.v || 0), // Convert id to a number
+//     //     name: row.c[1]?.v || '',
+//     //     Category: row.c[2]?.v || '',
+//     //     quantity: 1,
+//     //     UnitDesc:  row.c[4]?.v || '',
+//     //     RetailPrice:  row.c[5]?.v || 0,
+//     //     SalePrice: row.c[6]?.v || 0,
+//     //     MRP:  row.c[7]?.v || 0,
+//     //     UnitPrice: row.c[8]?.v || 0,
+//     //     EANCode:  row.c[9]?.v || '', 
+//     //   }));
+//     //   console.log(this.products);
+//     this.http.get('https://supermartspring.vercel.app/api/nexus_supermart/products?page=1&limit=10').subscribe((res: any) => {
+//       debugger;
+//       this.products = res.data;
+//       console.log(this.products);
+//       this.filteredProducts = [...this.products];
+//  // Build maps for O(1) search
+//  this.buildLookupMaps();
 
- // Initialize pagination
- this.filteredProducts = [...this.products];
- this.totalPages = Math.ceil(this.filteredProducts.length / this.pageSize);
- this.setPage(1);
+//  // Initialize pagination
+//  this.filteredProducts = [...this.products];
+//  this.totalPages = res.total;
+//  this.setPage(res.page);
+//  this.isLoader = false;
+//     });
 
- this.isLoader = false;
-    });
-
-  }
+//   }
 
 ////https://script.google.com/macros/s/AKfycbzekjxHW9Uwf_Gg3U4m4bZaxjFeqbqJ9YNfAG7Z_30SyLMcAFfNe-dsFpgATMC_e3Cp/exec
 buildLookupMaps() {
@@ -109,6 +175,7 @@ buildLookupMaps() {
 }
 
 setPage(page: number) {
+   this.totalPages= this.totalPages/10;
   if (page < 1 || page > this.totalPages) return;
   this.currentPage = page;
 
@@ -129,6 +196,7 @@ setPage(page: number) {
     }
  if(this.editingProduct) {
       // Update existing product
+      debugger;
       this.http.put(`https://supermartspring.vercel.app/products/${this.productForm.id}`, this.productForm).subscribe(res => {
         this.fetchFromExcel(); // Refresh the product list
         this.showSidePanel = false; // Close the side panel after updating
@@ -177,6 +245,37 @@ setPage(page: number) {
     this.sortProducts();
   }
 
+
+  
+selection = new SelectionModel<any>(true, []); // true = multi select
+selectedProducts: any[] = [];
+/** Whether all rows are selected */
+isAllSelected() {
+  
+  const numSelected = this.selection.selected.length;
+  console.log("numSelected------------->"+numSelected);
+  this.selectedProducts = this.selection.selected;
+  console.log("selected------------->"+this.selectedProducts);
+  const numRows = this.pagedProducts.length;
+  return numSelected === numRows;
+}
+
+/** Selects all rows if not all selected; otherwise clear selection */
+masterToggle() {
+  if (this.isAllSelected()) {
+    this.selection.clear();
+  } else {
+    this.pagedProducts.forEach(row => this.selection.select(row));
+  }
+}
+
+/** Checkbox label (optional, accessibility) */
+checkboxLabel(row?: any): string {
+  if (!row) {
+    return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
+  }
+  return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row`;
+}
   filterProducts() {
     let filtered = [...this.products];
 
@@ -219,12 +318,113 @@ setPage(page: number) {
     //   });
     // }
 
+
+
     this.filteredProducts = filtered;
     this.totalPages = Math.ceil(this.filteredProducts.length / this.pageSize);
     this.setPage(1); // Reset to first page after filtering
     this.pagedProducts = this.filteredProducts.slice(0, this.pageSize);
     this.sortProducts();
   }
+ selectedFile!: any;
+
+  private CLOUDINARY_URL =
+    'https://api.cloudinary.com/v1_1/djbelgg05/image/upload';
+
+  private UPLOAD_PRESET = 'kamatchi_products';
+
+
+previewUrl: string | ArrayBuffer | null = null;
+uploadName: string = '';
+onFileSelected(event: any) {
+  const file = event.target.files[0];
+  if (file) {
+    this.setPreview(file);
+  }
+}
+onDragOver(event: DragEvent) {
+  event.preventDefault();
+}
+
+onDragLeave(event: DragEvent) {
+  event.preventDefault();
+}
+
+
+onDrop(event: DragEvent) {
+  event.preventDefault();
+  if (event.dataTransfer?.files.length) {
+    this.setPreview(event.dataTransfer.files[0]);
+  }
+}
+
+setPreview(file: File) {
+  this.selectedFile = file;
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    this.previewUrl = reader.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+
+
+  uploadImage() {
+    if (!this.selectedFile) return;
+if(this.selectedProducts.length==0){
+//this.toastMessage = 'Please select at least one product to upload image';
+return this.openSnackBar('Please select at least one product to upload image', 'Close');
+}
+else{
+  this.isLoader=true;
+    console.log('Uploading image for product:', this.selectedProducts);
+   const formData = new FormData();  
+    formData.append('file', this.selectedFile);                // same as Postman
+    formData.append('upload_preset', this.UPLOAD_PRESET);      // same
+    formData.append('public_id', this.uploadName);                  // same
+    this.http.post(this.CLOUDINARY_URL, formData)
+      .subscribe({
+        next: (res: any) => {
+                  debugger;
+                    this.selection.clear();
+    this.http.put(`https://supermartspring.vercel.app/api/nexus_supermart/products/products/images/bulk`, {"products":this.selectedProducts,"name":this.uploadName}).subscribe(res => {
+                 this.openSnackBar('Image uploaded successfully  ','Close');
+
+      this.fetchFromExcel();
+    }, error => {
+      console.error('Error updating product', error);
+                  this.isLoader=false;
+    });
+    this.uploadName="";
+    this.previewUrl = null;
+   this.selectedFile= null;
+          console.log('Upload success:', res);
+          console.log('Image URL:', res.secure_url);
+                      this.isLoader=false;
+        },
+        error: (err) => {
+            this.isLoader=false;
+          console.error('Upload failed:', err);
+        }
+      });
+    
+
+  
+}
+   
+  }
+  imageUploader(event: any, product: any) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        product.imageSrc = reader.result as string;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
 
   sortProducts() {
     this.filteredProducts.sort((a, b) => {

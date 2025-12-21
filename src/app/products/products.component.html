@@ -1,10 +1,6 @@
-<!-- products.component.html -->
+<!-- LOADER -->
 <div class="loading-container" *ngIf="isLoader">
-  <div class="spinner" id="spinner"></div>
-  <!-- <div class="cart-loader" id="cartLoader">
-      <div class="cart"></div>
-  </div> -->
-
+  <div class="spinner"></div>
   <div class="loading-text">
     Loading Products
     <span class="dots">
@@ -13,328 +9,282 @@
       <span class="dot"></span>
     </span>
   </div>
-  <div class="loading-subtext">Please wait while we Loads your Products your purchase</div>
 </div>
-<div class="products-container">
-  <!-- Search and Filter Bar -->
-  <div class="filters-section">
-    <div class="row g-1">
-      <!-- Search Bar -->
-      <div class="col-md-6">
-        <div class="search-wrapper">
-          <i class="fas fa-search search-icon"></i>
-          <input type="text" class="form-control search-input" placeholder="Search products..." [(ngModel)]="searchTerm"
-            (input)="onSearch()">
-        </div>
+
+<!-- PRODUCTS TABLE -->
+<div *ngIf="!isLoader">
+
+  <div class="filters">
+    <div class="search">
+      <input type="text" placeholder="🔍 Search by name or EAN code" [(ngModel)]="searchTerm"
+        (input)="applyFilter(searchTerm)" />
+    </div>
+
+    <div class="filter-options">
+      <select [(ngModel)]="searchTerm" (change)="filterProducts()">
+        <option value="">All Categories</option>
+        <option *ngFor="let category of categories" [value]="category">
+          {{ category }}
+        </option>
+      </select>
+
+      <select [(ngModel)]="priceRange" (change)="filterProducts()">
+        <option value="">All Prices</option>
+        <option value="0-100">₹0 - ₹100</option>
+        <option value="101-500">₹101 - ₹500</option>
+        <option value="501-1000">₹501 - ₹1000</option>
+        <option value="1001-5000">₹1001 - ₹5000</option>
+        <option value="5001+">₹5001+</option>
+      </select>
+
+      <select [(ngModel)]="stockFilter" (change)="filterProducts()">
+        <option value="">All Stock</option>
+        <option value="inStock">In Stock</option>
+        <option value="outOfStock">Out of Stock</option>
+      </select>
+
+      <select [(ngModel)]="sortBy" (change)="filterProducts()">
+        <option value="name">Sort by Name</option>
+        <option value="priceAsc">Price ↑</option>
+        <option value="priceDesc">Price ↓</option>
+      </select>
+    </div>
+
+
+    <!-- Hidden File Input -->
+    <input type="file" #fileInput accept="image/*" hidden (change)="onFileSelected($event)" />
+
+    <!-- Upload Box -->
+    <div class="upload-box" (click)="fileInput.click()" (dragover)="onDragOver($event)" (drop)="onDrop($event)">
+
+      <!-- Image Preview -->
+      <img *ngIf="previewUrl" [src]="previewUrl" class="image-preview" alt="Preview" />
+
+      <!-- Upload Text -->
+      <ng-container *ngIf="!previewUrl">
+        <mat-icon class="upload-icon">cloud_upload</mat-icon>
+        <p class="upload-text">
+          <span class="highlight">Click to upload</span> or drag and drop
+        </p>
+        <p class="upload-subtext">
+          SVG, PNG, JPG  (MAX. 800×400px)
+        </p>
+      </ng-container>
+
+    </div>
+
+    <!-- Upload Button -->
+   
+    <div class="search">
+      <input type="text" placeholder="Enter Name of the image" [(ngModel)]="uploadName" (input)="filterProducts()" />
+    </div>
+     <button mat-raised-button color="primary" (click)="uploadImage()" [disabled]="!selectedFile">
+      Upload Image
+    </button>
+  </div>
+</div>
+<div class="table-container">
+  <table mat-table [dataSource]="dataSource" class="elite-table" *ngIf="pagedProducts?.length">
+    <!-- SELECT CHECKBOX -->
+    <ng-container matColumnDef="select">
+      <th mat-header-cell *matHeaderCellDef>
+        <mat-checkbox (change)="masterToggle()" [checked]="isAllSelected()"
+          [indeterminate]="selection.hasValue() && !isAllSelected()">
+        </mat-checkbox>
+      </th>
+
+      <td mat-cell *matCellDef="let row">
+        <mat-checkbox (click)="$event.stopPropagation()" (change)="selection.toggle(row)"
+          [checked]="selection.isSelected(row)">
+        </mat-checkbox>
+      </td>
+    </ng-container>
+
+    <!-- EAN Code -->
+    <ng-container matColumnDef="EANCode">
+      <th mat-header-cell *matHeaderCellDef>EAN Code</th>
+      <td mat-cell *matCellDef="let element">
+        {{ element.EANCode }}
+      </td>
+    </ng-container>
+
+    <!-- Name -->
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef>Name</th>
+      <td mat-cell *matCellDef="let element">
+        {{ element.name }}
+      </td>
+    </ng-container>
+
+    <!-- Category -->
+    <ng-container matColumnDef="category">
+      <th mat-header-cell *matHeaderCellDef>Category</th>
+      <td mat-cell *matCellDef="let element">
+        {{ element.category }}
+      </td>
+    </ng-container>
+
+    <!-- Sell Type -->
+    <ng-container matColumnDef="SellType">
+      <th mat-header-cell *matHeaderCellDef>Sell Type</th>
+      <td mat-cell *matCellDef="let element">
+        {{ element.SellType }}
+      </td>
+    </ng-container>
+
+    <!-- Quantity -->
+    <ng-container matColumnDef="QuantityOnHand">
+      <th mat-header-cell *matHeaderCellDef>Stock</th>
+      <td mat-cell *matCellDef="let element">
+        {{ element.QuantityOnHand }}
+      </td>
+    </ng-container>
+
+    <!-- Price -->
+    <ng-container matColumnDef="price">
+      <th mat-header-cell *matHeaderCellDef>Price</th>
+      <td mat-cell *matCellDef="let element">
+        ₹{{ element.price }}
+      </td>
+    </ng-container>
+
+    <!-- Sale Price -->
+    <ng-container matColumnDef="SalePrice">
+      <th mat-header-cell *matHeaderCellDef>Sale Price</th>
+      <td mat-cell *matCellDef="let element">
+        ₹{{ element.SalePrice }}
+      </td>
+    </ng-container>
+
+    <!-- ACTION -->
+    <ng-container matColumnDef="action" sticky>
+      <th mat-header-cell *matHeaderCellDef>Action</th>
+      <td mat-cell *matCellDef="let element">
+        <button mat-icon-button color="primary" (click)="openEditPanel(element)">
+          <mat-icon>edit</mat-icon>
+        </button>
+
+        <button mat-icon-button color="warn" (click)="deleteProduct(element)">
+          <mat-icon>delete</mat-icon>
+        </button>
+
+        <button mat-icon-button color="warn" (click)="deleteProduct(element)">
+          <mat-icon>sync</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" (click)="deleteProduct(element)">
+          <mat-icon>sync_disabled</mat-icon>
+        </button>
+
+        <button mat-icon-button color="warn"  (click)="deleteProduct(element)">
+          <mat-icon>Image Status</mat-icon> </button>
+
+      </td>
+    </ng-container>
+
+    <!-- ROWS -->
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+  <mat-paginator
+  [pageSize]="10"
+  [pageSizeOptions]="[50, 100, 1000]"
+  showFirstLastButtons>
+</mat-paginator>
+
+</div>
+
+
+
+<!-- EMPTY STATE -->
+<div class="empty-state" *ngIf="pagedProducts.length === 0">
+  No products found
+</div>
+
+<!-- PAGINATION -->
+<!-- <div class="pagination" *ngIf="totalPages > 1">
+  <button (click)="setPage(currentPage - 1)" [disabled]="currentPage === 1">
+    Prev
+  </button>
+
+  <span>Page {{ currentPage }} of {{ totalPages }}</span>
+
+  <button (click)="setPage(currentPage + 1)" [disabled]="currentPage === totalPages">
+    Next
+  </button>
+</div> -->
+
+<!-- SIDE PANEL OVERLAY -->
+<div class="side-panel-overlay" [class.active]="showSidePanel" (click)="closeSidePanel()"></div>
+
+<!-- SIDE PANEL -->
+<div class="side-panel" [class.active]="showSidePanel">
+  <div class="side-panel-header">
+    <h3>{{ editingProduct ? 'Edit Product' : 'Add Product' }}</h3>
+    <button class="close-btn" (click)="closeSidePanel()">×</button>
+  </div>
+
+  <div class="side-panel-content">
+    <form>
+
+      <div class="form-group">
+        <label>Product ID</label>
+        <input type="text" [(ngModel)]="productForm.id" name="id" required />
       </div>
 
-      <!-- Category Filter -->
-      <div class="col-md-3">
-        <select class="form-select" [(ngModel)]="selectedCategory" (change)="onCategoryChange()">
-          <option value="">All Categories</option>
-          <option *ngFor="let category of categories" [value]="category">
-            {{ category }}
+      <div class="form-group">
+        <label>Name</label>
+        <input type="text" [(ngModel)]="productForm.name" name="name" required />
+      </div>
+
+      <div class="form-group">
+        <label>Category</label>
+        <select [(ngModel)]="productForm.Category" name="Category">
+          <option *ngFor="let c of categories" [value]="c">
+            {{ c }}
           </option>
         </select>
       </div>
 
-      <!-- Price Range Filter -->
-      <div class="col-md-3">
-        <select class="form-select" [(ngModel)]="priceRange" (change)="onPriceRangeChange()">
-          <option value="">All Prices</option>
-          <option value="0-50">₹0 - ₹50</option>
-          <option value="51-100">₹51 - ₹100</option>
-          <option value="101-200">₹101 - ₹200</option>
-          <option value="201+">₹201+</option>
-        </select>
+      <div class="form-group">
+        <label>MRP</label>
+        <input type="number" [(ngModel)]="productForm.MRP" name="MRP" />
       </div>
 
-      <!-- Stock Filter -->
-      <!-- <div class="col-md-2">
-        <select class="form-select" [(ngModel)]="stockFilter" (change)="onStockFilterChange()">
-          <option value="">All Stock</option>
-          <option value="in-stock">In Stock</option>
-          <option value="low-stock">Low Stock</option>
-          <option value="out-of-stock">Out of Stock</option>
-        </select>
+      <div class="form-group">
+        <label>Sale Price</label>
+        <input type="number" [(ngModel)]="productForm.SalePrice" name="SalePrice" />
       </div>
-      
-      <-- Sort By 
-      <div class="col-md-2">
-        <select class="form-select" [(ngModel)]="sortBy" (change)="onSortChange()">
-          <option value="name">Name</option>
-          <option value="price-low">Price: Low to High</option>
-          <option value="price-high">Price: High to Low</option>
-          <option value="stock">Stock</option>
-        </select>
-      </div>-->
-    </div>
 
-    <!-- Add Product Button -->
-    <div class="add-product-section">
-      <button class="add-btn" (click)="openAddPanel()">
-        <i class="fas fa-plus"></i> Add Product
-      </button>
-    </div>
-  </div>
-
-  <!-- Products Grid -->
-  <!-- <div class="products-grid">
-    <div class="row">
-      <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-4" *ngFor="let product of filteredProducts">
-        <div class="product-card">
-         
-            <div class="stock-badge" [ngClass]="getStockBadgeClass(product.stock)">
-              {{ getStockText(product.stock) }}
-            </div>
-        
-          <div class="product-info">
-            <h5 class="product-name">{{ product.name }}</h5>
-            <p class="product-category">{{ product.category }}</p>
-            <div class="product-price">
-              <span class="current-price">₹{{ product.price }}</span>
-              <span class="original-price" *ngIf="product.originalPrice">₹{{ product.originalPrice }}</span>
-            </div>
-            <p class="product-description">{{ product.description }}</p>
-            
-            <div class="stock-info">
-              <i class="fas fa-box"></i>
-              <span>{{ product.stock }} units available</span>
-            </div>
-          </div>
-          
-          <div class="product-actions">
-            <div class="quantity-controls">
-              <button 
-                class="btn btn-outline-secondary btn-sm quantity-btn" 
-                (click)="decreaseQuantity(product)"
-                [disabled]="product.quantity <= 1">
-                <i class="fas fa-minus"></i>
-              </button>
-              
-              <input 
-                type="number" 
-                class="form-control quantity-input" 
-                [(ngModel)]="product.quantity"
-                min="1"
-                [max]="product.stock"
-                (change)="validateQuantity(product)">
-              
-              <button 
-                class="btn btn-outline-secondary btn-sm quantity-btn" 
-                (click)="increaseQuantity(product)"
-                [disabled]="product.quantity >= product.stock">
-                <i class="fas fa-plus"></i>
-              </button>
-            </div>
-            
-            <div class="action-buttons">
-           
-              
-              <button style="    width: 112px;height: 44px;"
-                class="btn btn-success btn-sm add-to-cart-btn" 
-                (click)="removeFromCart(product)">
-                <i class="fas fa-trash me-1"></i>
-                save
-              </button>
-            </div>
-            
-           
-          </div>
-        </div>
+      <div class="form-group">
+        <label>EAN Code</label>
+        <input type="text" [(ngModel)]="productForm.EANCode" name="EANCode" />
       </div>
-    </div>
+
+      <div class="form-group">
+        <label>Units In Hand</label>
+        <input type="number" [(ngModel)]="productForm.quantity" name="quantity" />
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="save-btn" (click)="openModal()">
+          {{ editingProduct ? 'Update' : 'Save' }}
+        </button>
+        <button type="button" class="cancel-btn" (click)="closeSidePanel()">
+          Cancel
+        </button>
+      </div>
+    </form>
   </div>
-  
-  <div class="empty-state" *ngIf="filteredProducts.length === 0">
-    <i class="fas fa-search"></i>
-    <h3>No products found</h3>
-    <p>Try adjusting your search or filter criteria</p>
-  </div>
-</div> -->
+</div>
 
-
-  <div class="table-container">
-    <table mat-table [dataSource]="pagedProducts" class="elite-table">
-
-      <!-- Position Column -->
-      <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef class="header-cell" style="width: 10%;">
-          <span class="header-text">Code.</span>
-        </th>
-        <td mat-cell *matCellDef="let element" class="data-cell" style="width: 10%;">
-          <span>{{element.id}}</span>
-        </td>
-      </ng-container>
-
-      <!-- Name Column -->
-      <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef class="header-cell" style="width: 40% !important;">
-          <span class="header-text">Name</span>
-        </th>
-        <td mat-cell *matCellDef="let element" class="data-cell name-cell" style="width: 40% !important;">
-          <span class="name-text">{{element.name}}</span>
-        </td>
-      </ng-container>
-
-      <!-- Weight Column -->
-      <ng-container matColumnDef="quantity">
-        <th mat-header-cell *matHeaderCellDef class="header-cell" style="width: 20% !important;">
-          <span class="header-text">Unit Metrics</span>
-        </th>
-        <td mat-cell *matCellDef="let element" class="data-cell" style="width: 20% !important;">
-          <span class="weight-value">{{element.UnitDesc}}</span>
-        </td>
-      </ng-container>
-
-      <!-- Symbol Column -->
-      <ng-container matColumnDef="MRP">
-        <th mat-header-cell *matHeaderCellDef class="header-cell" style="width: 20% !important;">
-          <span class="header-text">Price</span>
-        </th>
-        <td mat-cell *matCellDef="let element" class="data-cell" style="width: 20% !important;">
-          <span>{{element.MRP}}</span>
-        </td>
-      </ng-container>
-      <ng-container matColumnDef="category">
-        <th mat-header-cell *matHeaderCellDef class="header-cell" style="width: 20% !important;">
-          <span class="header-text">category</span>
-        </th>
-        <td mat-cell *matCellDef="let element" class="data-cell" style="width: 20% !important;">
-          <span>{{element.Category}}</span>
-        </td>
-      </ng-container>
-      <ng-container matColumnDef="Action" sticky>
-        <th mat-header-cell *matHeaderCellDef class="header-cell sticky-action" style="width: 10% !important;">
-          <span class="header-text">Action</span>
-        </th>
-        <td mat-cell *matCellDef="let element" class="data-cell sticky-action" style="width: 10% !important;">
-          <div class="action-buttons">
-            <button class="btn-edit" (click)="openEditPanel(element)">
-              <i class="fas fa-edit"></i> Edit
-            </button>
-            <button class="btn-delete" (click)="deleteProduct(element)">
-              <i class="fas fa-trash"></i> Delete
-            </button>
-          </div>
-        </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns" class="header-row"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="data-row"></tr>
-    </table>
-  </div>
-  <div class="pagination">
-    <button (click)="setPage(currentPage - 1)" [disabled]="currentPage === 1">
-      Prev
-    </button>
-
-    <span>Page {{ currentPage }} of {{ totalPages }}</span>
-
-    <button (click)="setPage(currentPage + 1)" [disabled]="currentPage === totalPages">
-      Next
-    </button>
-  </div>
-
-
-
-  <div class="side-panel-overlay" [class.active]="showSidePanel" (click)="closeSidePanel()">
-  </div>
-
-  <div class="side-panel" [class.active]="showSidePanel">
-    <div class="side-panel-header">
-      <h3>{{ editingProduct ? 'Edit Product' : 'Add New Product' }}</h3>
-      <button class="close-btn" (click)="closeSidePanel()">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
-
-    <div class="side-panel-content">
-      <form>
-        <div class="form-group">
-          <label for="productName">Product Id(Barcode)</label>
-          <input type="text" id="productName" [(ngModel)]="productForm.id" name="id" (keydown.enter)="selectInput(productName, $event)"  #productId placeholder="Enter product id"
-            required/>
-        </div>
-        <!-- Product Name -->
-        <div class="form-group">
-          <label for="productName">Product Name</label>
-          <input type="text" id="productName" #productName  (keydown.enter)="selectInput(category, $event)"  [(ngModel)]="productForm.name" name="name"
-            placeholder="Enter product name" required/>
-        </div>
-       
-        <!-- Category -->
-        <div class="form-group">
-          <label for="category">Category</label>
-          <select id="category" [(ngModel)]="productForm.Category" name="category"   (change)="selectInput(price, $event)"   #category required>
-            <option value="">Select Category</option>
-            <option *ngFor="let category of categories" [value]="category" >
-              {{ category }}
-            </option>
-          </select>
-        </div>
-
-        <!-- Price -->
-        <div class="form-group">
-          <label for="price">Price (MRP)</label>
-          <input type="number" id="price" [(ngModel)]="productForm.MRP" (keydown.enter)="selectInput(SalePrice, $event)"   #price name="price" placeholder="0.00" required/>
-        </div>
-        <div class="form-group">
-          <label for="price">Sales Price ()</label>
-          <input type="number" id="price" [(ngModel)]="productForm.SalePrice" #SalePrice (keydown.enter)="selectInput(RetailPrice, $event)" name="price" placeholder="0.00"
-            required/>
-        </div>
-        <div class="form-group">
-          <label for="price">Retail Price ()</label>
-          <input type="number" id="price" [(ngModel)]="productForm.RetailPrice" #RetailPrice (keydown.enter)="selectInput(UnitPrice, $event)" name="price" placeholder="0.00"
-            required/>
-        </div>
-        <div class="form-group">
-          <label for="price">Unit Price ()</label>
-          <input type="number" id="price" [(ngModel)]="productForm.UnitPrice" (keydown.enter)="selectInput(EANCode, $event)" #UnitPrice name="price" placeholder="0.00"
-            required/>
-        </div>
-        <div class="form-group">
-          <label for="price">EAN Code</label>
-          <input type="text" id="EANCode" [(ngModel)]="productForm.EANCode" (keydown.enter)="selectInput(UnitDesc, $event)" #EANCode name="EANCode" placeholder="Enter EAN Code"
-            required/>
-        </div>
-        <!-- Quantity -->
-        <div class="form-group">
-          <label for="quantity">Unit/Metrics</label>
-          <select id="quantity" [(ngModel)]="productForm.UnitDesc"  #UnitDesc  (change)="selectInput(unitinhand, $event)" required>
-            <option *ngFor="let qty of unitDesc" [value]="qty">
-              {{ qty }}
-            </option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="price">Units In Hand</label>
-          <input type="text" id="EANCode" [(ngModel)]="productForm.quantity"  #unitinhand name="quantity" placeholder="Enter Quantity"
-            required/>
-        </div>
-
-        <!-- Confirmation Modal -->
-<div #confirmationModal class="modal-overlay" [class.show]="showModal">
+<!-- CONFIRM MODAL -->
+<div class="modal-overlay" *ngIf="showModal">
   <div class="modal-content">
     <h3>Confirm Save</h3>
-    <p>Are you sure you want to save this product?</p>
+    <p>Are you sure?</p>
     <div class="modal-actions">
-      <div class="yes-btn" (click)="confirmSave()">Yes</div>
-      <div class="yes-btn" style="background-color: red;" (click)="closeModal()">Cancel</div>
+      <button (click)="confirmSave()">Yes</button>
+      <button (click)="closeModal()">Cancel</button>
     </div>
   </div>
 </div>
-        <!-- Action Buttons -->
-        <div class="form-actions">
-          
-          <button type="submit" class="save-btn" (click)="openModal() ">
-            {{ editingProduct ? 'Update' : 'Save' }}
-          </button>
-          <button type="button" class="cancel-btn" (click)="closeSidePanel()">
-            Cancel
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
