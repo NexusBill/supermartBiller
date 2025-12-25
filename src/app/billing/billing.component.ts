@@ -165,7 +165,7 @@ customerPoints: number = 0;
     savings: this.savedAmount,
     date: new Date().toISOString()
   };
-  this.http.post("https://supermartspring.vercel.app/api/orders",body).subscribe( (data:any) =>{
+  this.http.post("https://supermartspring.vercel.app/api/nexus_supermart/orders",body).subscribe( (data:any) =>{
     this.openSnackBar(data.message, 'Close');
     this.selectedProducts = [];
     this.scannedId = '';
@@ -258,8 +258,8 @@ this.openAddPanel();
       this.openSnackBar('F6 is clicked', 'Close');
     }
     if (event.key === ' ' || event.code === 'Space') {
-     // event.preventDefault(); // Prevents scrolling when space is pressed
-     // this.scannedInputRef.nativeElement.focus(); // Reset focus to the scanned input
+     event.preventDefault(); // Prevents scrolling when space is pressed
+     this.scannedInputRef.nativeElement.focus(); // Reset focus to the scanned input
     }
     
 }
@@ -280,54 +280,76 @@ this.openAddPanel();
   this.savedAmount= parseFloat(this.savedAmount.toFixed(2));
   this.totalAmount = parseFloat(this.totalAmount.toFixed(2));   
  }
- 
+ addProductToCart(product: any) {
+  const existing = this.selectedProducts.find(p => p._id === product._id || p.name === product.name);
 
- onCodeResult() {
+  if (existing) {
+    existing.quantity++;
+  } else {
+    this.selectedProducts.push({
+      ...product,
+      quantity: 1
+    });
+  }
+
+  this.totalAmount += product.SalePrice;
+  this.savedAmount += (product.price - product.SalePrice);
+
+  this.totalAmount = +this.totalAmount.toFixed(2);
+  this.savedAmount = +this.savedAmount.toFixed(2);
+
+  this.scannedId = '';
+  this.filteredProducts = [];
+
+  this.focus();
+  setTimeout(() => this.scrollToBottom(), 10);
+}
+
+
+onCodeResult() {
   debugger;
-  this.scannedId = this.scannedId.trim(); // Trim whitespace from scannedId
+  const value = this.scannedId?.trim();
+  if (!value) return;
 
-  // Find product in master list
-  let scannedProduct = this.products.find(product =>
-    product.id.toString() === this.scannedId || product.name === this.scannedId
+  // 🔹 1. SCANNER FLOW (numeric / exact id)
+  const scannedProduct = this.products.find(p =>
+    p._id.toString() === value || p.name.toLowerCase() === value.toLowerCase()
   );
 
-  // Exit if not found or empty
-  if (!scannedProduct || this.scannedId.length === 0) {
-    console.log('Product not found in the list or scannedId is empty');
+  if (scannedProduct) {
+    this.addProductToCart(scannedProduct);
     return;
   }
 
-  console.log('Scanned code:', this.scannedId);
-
-  // Check if product is already present in the selectedProducts array
-  const existingProduct = this.selectedProducts.find(product =>
-    product.id.toString() === this.scannedId || product.name === this.scannedId
-  );
-
-  if (!existingProduct) {
-    // If not present, push with quantity = 1
-    this.selectedProducts.push({ ...scannedProduct, quantity: 1 });
-  } else {
-    // If already present, increase quantity
-    existingProduct.quantity++;
+  // 🔹 2. KEYBOARD FLOW (filtered list)
+  if (this.filteredProducts.length === 1) {
+    this.addProductToCart(this.filteredProducts[0]);
+    return;
   }
 
-  // Update total amount
-  this.totalAmount += scannedProduct.SalePrice;
-  this.savedAmount+=(scannedProduct.MRP-scannedProduct.SalePrice);
-  this.savedAmount= parseFloat(this.savedAmount.toFixed(2));
-  this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
-  setTimeout(() => {
+  // 🔹 3. Exact name match fallback
+  const nameMatch = this.products.find(p =>
+    p.name.toLowerCase() === value.toLowerCase()
+  );
+
+  if (nameMatch) {
+    this.addProductToCart(nameMatch);
+    return;
+  }
+
+  // ❌ Not found
+  this.openSnackBar('Product not found', 'Close');
+}
+
+@ViewChild(MatAutocompleteTrigger) autocompleteTrigger!: MatAutocompleteTrigger;
+
+focus(){
+   setTimeout(() => {
     this.scannedInputRef.nativeElement.focus();
     this.scannedInputRef.nativeElement.select();
   }, 0);
   setTimeout(() => this.scrollToBottom(), 0); // wait for DOM update
-  this.filteredProducts = [];
-
 }
-@ViewChild(MatAutocompleteTrigger) autocompleteTrigger!: MatAutocompleteTrigger;
-
-
 
 holdFunction(){
   if (this.selectedProducts.length === 0) {
@@ -339,26 +361,22 @@ holdFunction(){
   }
 }
 
-filterProducts(): void {
+filterProducts() {
   const search = this.scannedId?.trim().toLowerCase();
 
-  // Exit if nothing is typed
-  if (!search) {
+  if (!search || search.length < 2) {
     this.filteredProducts = [];
     return;
   }
 
-  // Check if input is all digits (number search — allow any length)
-  const isNumeric = /^\d+$/.test(search);
-
-  if (!isNumeric && search.length > 3) {
-    this.filteredProducts = this.products.filter(p =>
-      p.name.toLowerCase().includes(search)
-    );
-  } else {
-    this.filteredProducts = [];
-  }
+  this.filteredProducts = this.products.filter(p =>
+    p.name.toLowerCase().includes(search)
+  );
 }
+addProductFromSuggestion(product: any) {
+  this.addProductToCart(product);
+}
+
 
 
 savedAmount: number = 0;
@@ -384,13 +402,22 @@ scannedId:any;
 
 
  fetchFromExcel(){
-  this.http.get('https://supermartspring.vercel.app/products').subscribe((res: any) => {
-    this.products = res;
+  this.http.get('https://supermartspring.vercel.app/api/nexus_supermart/products?page=1&limit=100000').subscribe((res: any) => {
+    this.products = res.data;
     console.log(this.products);
   });
 
 }
-
+showAllResults() {
+  this.http
+    .get<any>(
+      `https://supermartspring.vercel.app/api/nexus_supermart/products/search?query=${this.scannedId}`
+    )
+    .subscribe(res => {
+      this.products.push(...(res.data));
+      this.filteredProducts = res.data;
+    });
+}
  
 holdList: any[] = [];
 onHold() {
@@ -605,6 +632,97 @@ this.invoiceId = `INV${month}${year}${seq}`;
     });
   }
 
+
+generateBillHTML(): string {
+  let items = '';
+
+  this.selectedProducts.forEach(p => {
+    items += `
+      <div class="item">
+        <div>${p.name}</div>
+        <div class="row">
+          <span>${p.quantity} x ${p.SalePrice}</span>
+          <span>${(p.quantity * p.SalePrice).toFixed(2)}</span>
+        </div>
+      </div>
+    `;
+  });
+
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      width: 80mm;
+      margin: 5mm;
+      font-family: Courier, monospace;
+      font-size: 12px;
+    }
+    .center { text-align: center; }
+    .bold { font-weight: bold; }
+    .row { display: flex; justify-content: space-between; }
+    hr { border-top: 1px dashed #000; }
+    .item { margin-bottom: 4px; }
+    @page { margin: 0; }
+  </style>
+</head>
+<body>
+
+  <div class="center bold">SHRI KAMATCHI SUPER MART</div>
+  <div class="center">Madurai</div>
+  <hr>
+
+  <div class="row"><span>Invoice</span><span>${this.invoiceId}</span></div>
+  <div class="row"><span>Date</span><span>${new Date().toLocaleString()}</span></div>
+
+  <hr>
+  ${items}
+  <hr>
+
+  <div class="row bold">
+    <span>TOTAL</span>
+    <span>₹${this.totalAmount.toFixed(2)}</span>
+  </div>
+
+  <div class="row">
+    <span>You Saved</span>
+    <span>₹${this.savedAmount.toFixed(2)}</span>
+  </div>
+
+  <hr>
+  <div class="center">
+   
+        Thank you! Visit again 😊</div>
+         © 2025-30 Copyright:
+    <div class="center">     <a class="text-body" href="#">Nexusbills </a></div>
+
+</body>
+</html>
+`;
+}
+printThermalBill() {
+  const iframe = document.createElement('iframe');
+
+  iframe.style.position = 'absolute';
+  iframe.style.width = '0';
+  iframe.style.height = '0';
+  iframe.style.border = 'none';
+
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentWindow!.document;
+  doc.open();
+  doc.write(this.generateBillHTML());
+  doc.close();
+
+  iframe.contentWindow!.focus();
+  iframe.contentWindow!.print();
+
+  setTimeout(() => {
+    document.body.removeChild(iframe);
+  }, 500);
+}
 
 
 

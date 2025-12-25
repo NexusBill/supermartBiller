@@ -88,9 +88,10 @@ editCustomer(customer: any) {
 
 
   getCustomers() {
-    this.http.get('https://supermartspring.vercel.app/customers').subscribe((response: any) => {
+    this.http.get('https://supermartspring.vercel.app/api/nexus_supermart/customers?page=1&limit=100000').subscribe((response: any) => {
 
-      this.customerData = response;
+      console.log('Customers fetched successfully', response);
+      this.customerData = response.data;
       this.customerData.forEach((customer: any) => {
         customer.name = customer.name || 'Guest';
         customer.email = customer.email || 'Please provide email';

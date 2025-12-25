@@ -18,14 +18,15 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 interface Product {
   id: number;
   name: string;
-  Category: string;
+  category: string;
   MRP: number;
   UnitPrice?: number;
-  UnitDesc?: string;
+  SellType?: string;
   EANCode?: string;
   RetailPrice?: number;
   SalePrice?: number;
   QuantityOnHand?: number;
+  price?: number;
 }
 @Component({
   selector: 'app-products',
@@ -73,7 +74,8 @@ export class ProductsComponent {
   totalPages = 0;
   pagedProducts: any[] = [];
   constructor(private http: HttpClient) {
-    this.  fetchFromExcel();
+    this.fetchFromExcel();
+    this.getCategories();
     this.isLoader= true;
    /// this.invokeBedrock('show my leave balance details');
   }
@@ -92,6 +94,15 @@ export class ProductsComponent {
   }
   applyFilter(value: string) {
   this.dataSource.filter = value.trim().toLowerCase();
+}
+  getCategories() {
+    this.http.get<any>('https://supermartspring.vercel.app/api/nexus_supermart/categories?page=1&limit=100000')
+      .subscribe((response) => {
+        console.log('Categories fetched successfully', response);
+        this.categories = response.data;
+      }, (error) => {
+        console.error('Error fetching categories', error);
+      });
 }
 fetchFromExcel() {
   this.isLoader = true;
@@ -190,15 +201,15 @@ setPage(page: number) {
   addNewProduct() {
     debugger;
     this.showSidePanel = true;
-    let a = this.idMap.get(this.productForm.id);
+    let a = this.idMap.get(this.productForm.name);
     if (a) {
-      this.openSnackBar('Product with this ID already exists', 'Close') ;
+      this.openSnackBar('Product with this name already exists', 'Close') ;
       return;
     }
  if(this.editingProduct) {
       // Update existing product
       debugger;
-      this.http.put(`https://supermartspring.vercel.app/products/${this.productForm.id}`, this.productForm).subscribe(res => {
+      this.http.put(`https://supermartspring.vercel.app/products/${this.productForm.name}`, this.productForm).subscribe(res => {
         this.fetchFromExcel(); // Refresh the product list
         this.showSidePanel = false; // Close the side panel after updating
         console.log('Product updated successfully', res);
@@ -487,68 +498,20 @@ else{
   }
   
 
-  categories =[
-    'Stationary',
-    'plastic',
-    'Rice',
-    'snacks',
-    'Food',
-    'Balm',
-    'Pooja Items',
-    'Mob',
-    'Cleaning',
-    'Health item',
-    'Mosquito',
-    'oil',
-    'soap',
-    'Ice Cream',
-    'Naga',
-    'tea',
-    'washing',
-    'Face Cream',
-    'Battery',
-    'Vegtebles',
-    'Jawin',
-    'Talc Power',
-    'Cosmetics',
-    'Shaving',
-    'Tooth paste',
-    'Tooth Brush',
-    'Milk Item',
-    'Hair Dye',
-    'agarbattis',
-    'Playing Items',
-    'Baby Item',
-    'Spray',
-    'Choclate',
-    'Own packing',
-    'Scissors',
-    'Surfe',
-    'Cooldrings',
-    'Fiama',
-    'Annai brand',
-    'Fire Sick',
-    'Vicks',
-    'Udhayam',
-    'Bread',
-    'Sunfeast',
-    'Nestle',
-    'paste',
-    'Birthday'
-  ]
-  ;
-  unitDesc = ['Nos', "Kg", "Dozen", 'Ltr', 'Packet', 'Bottle', 'Box', 'Pouch', 'Tin', 'Piece'];
+  categories :any= [];
+  
+  unitDesc = ['Nos', "Unit","Kg", "Dozen", 'Ltr', 'Packet', 'Bottle', 'Box', 'Pouch', 'Tin', 'Piece'];
 
   showSidePanel = false;
   editingProduct: Product | null = null;
   
   // Form data
   productForm = {
-    id:'',
+  
     name: '',
     Category: '',
     price: 0,
-    UnitDesc: '',
+    SellType: '',
     RetailPrice: 0, 
     SalePrice: 0,
     MRP: 0,
@@ -593,17 +556,16 @@ else{
     this.showSidePanel = true;
     this.editingProduct = product;
     this.productForm = {
-      name: product.name,
-      UnitDesc: product.UnitDesc || '',
-      RetailPrice: product.RetailPrice || 0,
-      SalePrice: product.SalePrice || 0,
-      MRP: product.MRP || 0,
-      UnitPrice: product.UnitPrice || 0,
-      EANCode: product.EANCode || '',
-      Category: product.Category,
-      price: product.MRP,
-      id: product.id.toString(), // Ensure id is a string for the form
-      quantity: product.QuantityOnHand || 10 // Default to 10 if not provided
+      name: product?.name,
+      SellType: product?.SellType || '',
+      RetailPrice: product?.RetailPrice || 0,
+      SalePrice: product?.SalePrice || 0,
+      MRP: product?.MRP || 0,
+      UnitPrice: product?.UnitPrice || 0,
+      EANCode: product?.EANCode || '',
+      Category: product?.category,
+      price: product?.price || 0,
+      quantity: product?.QuantityOnHand || 10 // Default to 10 if not provided
 
     };
   }
@@ -657,9 +619,8 @@ else{
   }
   private resetForm() {
     this.productForm = {
-      id:'',
       name: '',
-      UnitDesc: '',
+      SellType: '',
       RetailPrice: 0,
       SalePrice: 0,
       MRP: 0,

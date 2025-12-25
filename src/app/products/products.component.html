@@ -84,6 +84,11 @@
   </div>
 </div>
 <div class="table-container">
+    <mat-paginator
+  [pageSize]="10"
+  [pageSizeOptions]="[50, 100, 1000]"
+  showFirstLastButtons>
+</mat-paginator>
   <table mat-table [dataSource]="dataSource" class="elite-table" *ngIf="pagedProducts?.length">
     <!-- SELECT CHECKBOX -->
     <ng-container matColumnDef="select">
@@ -185,11 +190,7 @@
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
   </table>
-  <mat-paginator
-  [pageSize]="10"
-  [pageSizeOptions]="[50, 100, 1000]"
-  showFirstLastButtons>
-</mat-paginator>
+
 
 </div>
 
@@ -228,7 +229,7 @@
 
       <div class="form-group">
         <label>Product ID</label>
-        <input type="text" [(ngModel)]="productForm.id" name="id" required />
+        <input type="text" [(ngModel)]="productForm.name" name="id" required />
       </div>
 
       <div class="form-group">
@@ -239,15 +240,15 @@
       <div class="form-group">
         <label>Category</label>
         <select [(ngModel)]="productForm.Category" name="Category">
-          <option *ngFor="let c of categories" [value]="c">
-            {{ c }}
+          <option *ngFor="let c of categories" [value]="c.name">
+            {{ c.name }}
           </option>
         </select>
       </div>
 
       <div class="form-group">
         <label>MRP</label>
-        <input type="number" [(ngModel)]="productForm.MRP" name="MRP" />
+        <input type="number" [(ngModel)]="productForm.price" name="price" />
       </div>
 
       <div class="form-group">
@@ -264,7 +265,14 @@
         <label>Units In Hand</label>
         <input type="number" [(ngModel)]="productForm.quantity" name="quantity" />
       </div>
-
+  <div class="form-group">
+        <label>Sell Type</label>
+        <select [(ngModel)]="productForm.SellType" name="SellType">
+          <option *ngFor="let c of unitDesc" [value]="c">
+            {{ c }}
+          </option>
+        </select>
+      </div>
       <div class="form-actions">
         <button type="button" class="save-btn" (click)="openModal()">
           {{ editingProduct ? 'Update' : 'Save' }}

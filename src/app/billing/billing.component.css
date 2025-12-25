@@ -1,4 +1,41 @@
 
+@media print {
+
+  /* 1️⃣ Hide EVERYTHING */
+  body * {
+    visibility: hidden !important;
+  }
+
+  /* 2️⃣ Show ONLY invoice */
+  #invoice-container,
+  #invoice-container * {
+    visibility: visible !important;
+  }
+
+  /* 3️⃣ Position invoice at top-left */
+  #invoice-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 80mm;
+  }
+
+  /* 4️⃣ Thermal page setup */
+  body {
+    margin: 0;
+    padding: 0;
+    width: 80mm;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+  }
+
+  /* 5️⃣ Remove page header/footer */
+  @page {
+    size: auto;
+    margin: 0;
+  }
+}
+  
 .container {
     max-width: 100% !important;
     margin: 0px;
@@ -45,6 +82,35 @@
     border-radius: 50%;
     border: 3px solid white;
 }
+@media print {
+  body {
+    width: 80mm;
+    margin: 0;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+  }
+
+  .thermal-print {
+    width: 80mm;
+    padding: 5px;
+  }
+
+  /* hide UI */
+  body * {
+    visibility: hidden;
+  }
+
+  #print-host, #print-host * {
+    visibility: visible;
+  }
+
+  #print-host {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+}
+
 
 .empty-state h2 {
     color: #2c3e50;
