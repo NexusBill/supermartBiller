@@ -181,7 +181,8 @@
         </button>
 
         <button mat-icon-button color="warn" *ngIf="element?.isImageUploaded" (click)="deleteProduct(element)">
-          <mat-icon>Image Status</mat-icon> </button>
+          <img src="../../assets/view_icon.svg" height="20px" width="20px" alt="delete" style="cursor: pointer; margin: 0px 5px;"/>
+        </button>
 
       </td>
     </ng-container>
@@ -274,7 +275,7 @@
         </select>
       </div>
       <div class="form-actions">
-        <button type="button" class="save-btn" (click)="openModal()">
+        <button type="button" class="save-btn" (click)="onSave(productForm)">
           {{ editingProduct ? 'Update' : 'Save' }}
         </button>
         <button type="button" class="cancel-btn" (click)="closeSidePanel()">

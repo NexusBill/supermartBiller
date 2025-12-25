@@ -17,6 +17,7 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 
 interface Product {
   id: number;
+  _id?: string;
   name: string;
   category: string;
   MRP: number;
@@ -73,7 +74,7 @@ export class ProductsComponent {
   currentPage = 1;
   totalPages = 0;
   pagedProducts: any[] = [];
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient,private toasterService : ToastrService) {
     this.fetchFromExcel();
     this.getCategories();
     this.isLoader= true;
@@ -104,6 +105,35 @@ export class ProductsComponent {
         console.error('Error fetching categories', error);
       });
 }
+updateProductStock(product: any) {
+  
+    if (!product || !product._id) {
+      this.openSnackBar('Invalid product', 'Close');
+      return;
+    } 
+    this.http.put(`https://supermartspring.vercel.app/api/nexus_supermart/products/${product._id}`, {
+     "name": product.name,
+    "SellType": product.SellType,
+    "RetailPrice": product.RetailPrice,
+    "SalePrice": product.SalePrice,
+    "MRP": product.MRP,
+    "UnitPrice": product.UnitPrice,
+    "EANCode": product.EANCode,
+    "Category": product.Category,
+    "price": product.price,
+    "quantity": product.QuantityOnHand
+    }).subscribe(res => {
+      debugger;
+      this.closeSidePanel(); // Close the side panel after updating
+      this.toasterService.success('Product stock updated successfully');
+      this.fetchFromExcel(); // Refresh the product list
+    }
+    , error => {
+      console.error('Error updating product stock', error);
+      this.toasterService.error('Error updating product stock');
+    }
+    );
+  }
 fetchFromExcel() {
   this.isLoader = true;
 
@@ -509,6 +539,7 @@ else{
   productForm = {
   
     name: '',
+    _id: '',
     Category: '',
     price: 0,
     SellType: '',
@@ -524,10 +555,13 @@ else{
   showModal = false;
 
   // Open the modal
-  openModal() {
-    this.showModal = true;
+  onSave(productForm:any) {
+    if(this.editingProduct) {
+      this.updateProductStock(productForm);
+    } else {
+      this.addNewProduct();
   }
-
+  }
   // Close the modal
   closeModal() {
     this.showModal = false;
@@ -556,6 +590,7 @@ else{
     this.showSidePanel = true;
     this.editingProduct = product;
     this.productForm = {
+      _id: product?._id || '',
       name: product?.name,
       SellType: product?.SellType || '',
       RetailPrice: product?.RetailPrice || 0,
@@ -620,6 +655,7 @@ else{
   private resetForm() {
     this.productForm = {
       name: '',
+      _id: '',
       SellType: '',
       RetailPrice: 0,
       SalePrice: 0,

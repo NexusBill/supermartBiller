@@ -52,7 +52,19 @@ onRejectOrder() {
     this.orderComment = ''; // Clear the comment input
 
   }
- 
+ getStatusClass(status: string): string {
+  switch (status?.toLowerCase()) {
+    case 'completed':
+      return 'status-completed';
+    case 'pending':
+      return 'status-pending';
+    case 'cancelled':
+      return 'status-cancelled';
+    default:
+      return 'status-default';
+  }
+}
+
 selection = new SelectionModel<any>(true, []); // true = multi select
 selectedProducts: any[] = [];
 pagedProducts: any[] = [];

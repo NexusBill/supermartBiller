@@ -567,6 +567,8 @@ background: #555;
   background: transparent;
   border-collapse: separate;
   border-spacing: 0;
+  min-height: 70vh !important;
+  box-shadow: #0000001a 0px 4px 12px;
 }
 
 /* Header Styling */
@@ -2003,6 +2005,39 @@ span{
   font-size: 13px;
   padding: 8px;
   border-bottom: 1px solid #e5e7eb;
+}
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+/* Completed – GREEN */
+.status-completed {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+/* Pending – ORANGE */
+.status-pending {
+  background-color: #fff3e0;
+  color: #ef6c00;
+}
+
+/* Cancelled – RED */
+.status-cancelled {
+  background-color: #fdecea;
+  color: #c62828;
+}
+th{
+  background-color: #007bff87;
+}
+
+.status-default {
+  background-color: #eeeeee;
+  color: #424242;
 }
 
 /* COMMENTS */

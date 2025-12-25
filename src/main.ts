@@ -9,7 +9,13 @@ bootstrapApplication(AppComponent, {
   providers: [
     importProvidersFrom(
       BrowserAnimationsModule,
-      ToastrModule.forRoot()
+     ToastrModule.forRoot({
+      timeOut: 3000,
+      positionClass: 'toast-top-right',
+      preventDuplicates: true,
+      closeButton: true,
+      progressBar: true
+    })
     ),
     provideRouter(routes) // 👈 Register routes here
   ]

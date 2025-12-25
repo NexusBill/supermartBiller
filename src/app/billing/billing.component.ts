@@ -657,7 +657,7 @@ generateBillHTML(): string {
       width: 80mm;
       margin: 5mm;
       font-family: Courier, monospace;
-      font-size: 12px;
+      font-size: 15px;
     }
     .center { text-align: center; }
     .bold { font-weight: bold; }
@@ -670,11 +670,11 @@ generateBillHTML(): string {
 <body>
 
   <div class="center bold">SHRI KAMATCHI SUPER MART</div>
-  <div class="center">Madurai</div>
+  <div class="center bold">Theni Main Road, Checkanurani, Madurai - 625514</div>
   <hr>
 
-  <div class="row"><span>Invoice</span><span>${this.invoiceId}</span></div>
-  <div class="row"><span>Date</span><span>${new Date().toLocaleString()}</span></div>
+  <div class="row bold"><span>Invoice</span><span>${this.invoiceId}</span></div>
+  <div class="row bold"><span>Date</span><span>${new Date().toLocaleString()}</span></div>
 
   <hr>
   ${items}
@@ -685,15 +685,14 @@ generateBillHTML(): string {
     <span>₹${this.totalAmount.toFixed(2)}</span>
   </div>
 
-  <div class="row">
+  <div class="row bold">
     <span>You Saved</span>
     <span>₹${this.savedAmount.toFixed(2)}</span>
   </div>
 
   <hr>
   <div class="center">
-   
-        Thank you! Visit again 😊</div>
+        Thank you! Visit again 😊</div><br>
          © 2025-30 Copyright:
     <div class="center">     <a class="text-body" href="#">Nexusbills </a></div>
 

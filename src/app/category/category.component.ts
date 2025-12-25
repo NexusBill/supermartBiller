@@ -3,13 +3,14 @@ import { TableviewComponent } from "../tableview/tableview.component";
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 
 import { ToastrModule,ToastrService } from 'ngx-toastr';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-category',
-  imports: [TableviewComponent,CommonModule,FormsModule,ToastrModule,HttpClientModule],
+  imports: [CommonModule,FormsModule,ToastrModule,HttpClientModule, MatTableModule],
   templateUrl: './category.component.html',
   standalone: true,
   styleUrl: './category.component.css'
@@ -55,16 +56,12 @@ validateCategory(){
   return true;
 }
 
-  categoryData = [
-    { name: 'Stationary', description: 'Devices and gadgets' },  
-    { name: 'Electronics', description: 'Electronic items' },
-    { name: 'Groceries', description: 'Daily needs' },
-    { name: 'Clothing', description: 'Apparel and accessories' },
-    { name: 'Furniture', description: 'Home and office furniture' }
+  categoryData :any= [
+   
   ];
-  ColumnHeaders = ['Category Name', 'Description'];
-  displayedColumns = ['name', 'description'];
-
+  ColumnHeaders = ['Category Name', 'Action'];
+  displayedColumns = ['name', 'action'];
+   dataSource = new MatTableDataSource<any>([]);
 
   getCategories() {
     this.http.get<any>('https://supermartspring.vercel.app/api/nexus_supermart/categories?page=1&limit=100000')
@@ -74,5 +71,15 @@ validateCategory(){
       }, (error) => {
         console.error('Error fetching categories', error);
       });
+}
+getStatusClass(status: string): string {
+  switch (status?.toLowerCase()) {
+    case 'active':
+      return 'status-active';
+    case 'inactive':
+      return 'status-inactive';
+    default:
+      return 'status-default';
+  }
 }
 }
