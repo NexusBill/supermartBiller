@@ -14,7 +14,7 @@
 <!-- PRODUCTS TABLE -->
 <div *ngIf="!isLoader">
 
-  <div class="filters">
+  <!-- <div class="filters">
     <div class="search">
       <input type="text" placeholder="🔍 Search by name or EAN code" [(ngModel)]="searchTerm"
         (input)="applyFilter(searchTerm)" />
@@ -51,44 +51,35 @@
     </div>
 
 
-    <!-- Hidden File Input -->
-    <input type="file" #fileInput accept="image/*" hidden (change)="onFileSelected($event)" />
 
-    <!-- Upload Box -->
-    <div class="upload-box" (click)="fileInput.click()" (dragover)="onDragOver($event)" (drop)="onDrop($event)">
-
-      <!-- Image Preview -->
-      <img *ngIf="previewUrl" [src]="previewUrl" class="image-preview" alt="Preview" />
-
-      <!-- Upload Text -->
-      <ng-container *ngIf="!previewUrl">
-        <mat-icon class="upload-icon">cloud_upload</mat-icon>
-        <p class="upload-text">
-          <span class="highlight">Click to upload</span> or drag and drop
-        </p>
-        <p class="upload-subtext">
-          SVG, PNG, JPG  (MAX. 800×400px)
-        </p>
-      </ng-container>
-
-    </div>
-
-    <!-- Upload Button -->
-   
-    <div class="search">
-      <input type="text" placeholder="Enter Name of the image" [(ngModel)]="uploadName" (input)="filterProducts()" />
-    </div>
-     <button mat-raised-button color="primary" (click)="uploadImage()" [disabled]="!selectedFile">
-      Upload Image
-    </button>
-  </div>
+  </div> -->
 </div>
+  <div class="toolbar" style="margin-top: 5%;">
+    <!-- LEFT -->
+    <div class="search left-icon">
+      <input type="text" placeholder="🔍 Search by name or EAN code" [(ngModel)]="searchTerm"
+        (input)="applyFilter(searchTerm)" />
+    </div>
+
+   
+    <!-- RIGHT GROUP -->
+    <div class="right-actions">
+       <img src="../../assets/plus-solid-full.svg" height="30" width="30" alt="Products" (click)="showSidePanel = true"
+      style="cursor: pointer; margin-left: 15px;" />
+
+       <img src="../../assets/images-regular-full.svg" height="30" width="30" alt="Products" (click)="imageUpload = true"
+      style="cursor: pointer; margin-left: 15px;" />
+
+      <img src="../../assets/arrow-up-from-bracket-solid-full.svg" height="30" width="30" alt="Upload"
+        (click)="openUploadModal()" style="cursor: pointer;" />
+
+      <mat-paginator [pageSize]="10" [pageSizeOptions]="[50, 100, 1000]" showFirstLastButtons>
+      </mat-paginator>
+    </div>
+  </div>
 <div class="table-container">
-    <mat-paginator
-  [pageSize]="10"
-  [pageSizeOptions]="[50, 100, 1000]"
-  showFirstLastButtons>
-</mat-paginator>
+
+
   <table mat-table [dataSource]="dataSource" class="elite-table" *ngIf="pagedProducts?.length">
     <!-- SELECT CHECKBOX -->
     <ng-container matColumnDef="select">
@@ -180,8 +171,9 @@
           <mat-icon>sync_disabled</mat-icon>
         </button>
 
-        <button mat-icon-button color="warn" *ngIf="element?.isImageUploaded" (click)="deleteProduct(element)">
-          <img src="../../assets/view_icon.svg" height="20px" width="20px" alt="delete" style="cursor: pointer; margin: 0px 5px;"/>
+        <button mat-icon-button color="warn" *ngIf="element?.isImageUploaded" (click)="showimage(element)">
+          <img src="../../assets/view_icon.svg" height="20px" width="20px" alt="delete"
+            style="cursor: pointer; margin: 0px 5px;" />
         </button>
 
       </td>
@@ -228,10 +220,10 @@
   <div class="side-panel-content">
     <form>
 
-      <div class="form-group">
+      <!-- <div class="form-group">
         <label>Product ID</label>
         <input type="text" [(ngModel)]="productForm.name" name="id" required />
-      </div>
+      </div> -->
 
       <div class="form-group">
         <label>Name</label>
@@ -266,7 +258,7 @@
         <label>Units In Hand</label>
         <input type="number" [(ngModel)]="productForm.quantity" name="quantity" />
       </div>
-  <div class="form-group">
+      <div class="form-group">
         <label>Sell Type</label>
         <select [(ngModel)]="productForm.SellType" name="SellType">
           <option *ngFor="let c of unitDesc" [value]="c">
@@ -287,7 +279,7 @@
 </div>
 
 <!-- CONFIRM MODAL -->
-<div class="modal-overlay" *ngIf="showModal">
+<!-- <div class="modal-overlay" *ngIf="showModal">
   <div class="modal-content">
     <h3>Confirm Save</h3>
     <p>Are you sure?</p>
@@ -295,5 +287,104 @@
       <button (click)="confirmSave()">Yes</button>
       <button (click)="closeModal()">Cancel</button>
     </div>
+  </div>
+</div> -->
+
+
+<div class="modal-overlay" *ngIf="showModal">
+  <div class="modal-content">
+    <img [src]="'https://res.cloudinary.com/djbelgg05/image/upload/' + modalImageUrl + '.jpg'" alt="Product Image"
+      class="modal-image" />
+    <div class="modal-actions">
+      <button (click)="closeModal()">Close</button>
+    </div>
+  </div>
+</div>
+<!-- Upload Modal -->
+<div class="modal-overlay" *ngIf="bulkUploadModalOpen">
+  <div class="upload-modal">
+
+    <h3 class="modal-title">Bulk Upload Products</h3>
+
+    <!-- Upload Box -->
+    <div class="upload-box" (click)="fileInput.click()">
+      <input type="file" #fileInput hidden accept=".xlsx,.xls,.csv" (change)="onFileSelected($event)" />
+
+      <div *ngIf="!selectedFile">
+        <div class="upload-icon">☁️</div>
+        <div class="upload-text">
+          <span class="highlight">Click to upload</span> or drag and drop
+        </div>
+        <div class="upload-subtext">
+          Excel or CSV only
+        </div>
+      </div>
+
+      <div *ngIf="selectedFile">
+        <strong>{{ selectedFile }}</strong>
+        <div class="upload-subtext">Ready to upload</div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="modal-actions">
+      <button class="btn-outline" (click)="downloadTemplate()">
+        Download Template
+      </button>
+
+      <button class="btn-primary" [disabled]="!selectedFile">
+        Upload File
+      </button>
+
+      <button class="btn-danger" (click)="bulkUploadModalOpen = false">
+        Cancel
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="imageUpload">
+  <div class="upload-modal" style="width: 50%;">
+
+    <h5 class="modal-title">Bulk Upload Images 
+
+    </h5>
+
+    <!-- Hidden File Input -->
+    <input type="file" #fileInput accept="image/*" hidden (change)="onFileSelected($event)" />
+
+    <!-- Upload Box -->
+    <div class="upload-box" (click)="fileInput.click()" (dragover)="onDragOver($event)" (drop)="onDrop($event)">
+
+      <!-- Image Preview -->
+      <img *ngIf="previewUrl" [src]="previewUrl" class="image-preview" alt="Preview" />
+
+      <!-- Upload Text -->
+      <ng-container *ngIf="!previewUrl">
+        <mat-icon class="upload-icon">cloud_upload</mat-icon>
+        <p class="upload-text">
+          <span class="highlight">Click to upload</span> or drag and drop
+        </p>
+        <p class="upload-subtext">
+          SVG, PNG, JPG (MAX. 800×400px)
+        </p>
+      </ng-container>
+
+    </div>
+
+    <!-- Upload Button -->
+
+    <div class="search" style="align-items: center; display: flex; margin-bottom: 16px;margin-top: 15px;gap: 8px;">
+      <input type="text" placeholder="Enter Name of the image" [(ngModel)]="uploadName" (input)="filterProducts()" style="width: 60%;" />
+       <button mat-raised-button color="primary" style="align-items: center;display: flex;align-content: center; margin-bottom: 16px;margin-top: 15px;" (click)="uploadImage()" [disabled]="!selectedFile">
+      Upload Image
+    </button>
+    <button class="btn-danger" style="display: flex;align-content: right !important; margin-bottom: 16px;margin-top: 15px;" (click)="imageUpload = false">
+        Cancel
+      </button>
+    </div>
+   
+    
   </div>
 </div>

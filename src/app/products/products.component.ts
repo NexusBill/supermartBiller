@@ -14,6 +14,8 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ToastrService } from 'ngx-toastr';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import alasql from 'alasql';
+import * as XLSX from 'xlsx';
 
 interface Product {
   id: number;
@@ -74,11 +76,26 @@ export class ProductsComponent {
   currentPage = 1;
   totalPages = 0;
   pagedProducts: any[] = [];
+  bulkUploadModalOpen = false;
   constructor(private http: HttpClient,private toasterService : ToastrService) {
-    this.fetchFromExcel();
-    this.getCategories();
+   
     this.isLoader= true;
    /// this.invokeBedrock('show my leave balance details');
+  }
+  ngOnInit() {
+    this.fetchFromExcel();
+    this.getCategories();
+      (window as any).XLSX = XLSX;
+
+  }
+  imageUpload: boolean = false;
+
+  ngOnChanges() {
+    this.fetchFromExcel();
+    this.getCategories();
+  }
+  openUploadModal() {
+    this.bulkUploadModalOpen = true;
   }
   isLoader: boolean = false;
   private _snackBar = inject(MatSnackBar);
@@ -104,6 +121,49 @@ export class ProductsComponent {
       }, (error) => {
         console.error('Error fetching categories', error);
       });
+}
+modalImageUrl: string = '';
+showimage(product:any){
+  debugger;
+  this.modalImageUrl= product.imageName;
+  this.showModal= true;
+}
+downloadTemplate() {
+  const headers = [{
+    'EAN Code': '',
+    'Name': '',
+    'Category': '',
+    'Sell Type': '',
+    'Stock': '',
+    'Price': '',
+    'Sale Price': ''
+  }];
+
+  alasql(
+    'SELECT * INTO XLSX("product_upload_template.xlsx",{headers:true}) FROM ?',
+    [headers]
+  );
+}
+selectedFile: File | null = null;
+  uploadedItems: any[] = [];
+/* ⭐ READ FILE USING ALASQL */
+readFileWithAlaSQL() {
+  if (!this.selectedFile) return;
+
+  // alasql(
+  //   'SELECT * FROM FILE(?,{headers:true})',
+  //   [this.selectedFile],
+  //   (data: any[]) => {
+  //     this.uploadedItems = data;
+
+  //     console.log('Array from Excel/CSV:', this.uploadedItems);
+
+  //     // example:
+  //     // send this.uploadedItems to API
+
+  //     //this.closeUploadModal();
+  //   }
+  // );
 }
 updateProductStock(product: any) {
   
@@ -236,32 +296,31 @@ setPage(page: number) {
       this.openSnackBar('Product with this name already exists', 'Close') ;
       return;
     }
- if(this.editingProduct) {
-      // Update existing product
-      debugger;
-      this.http.put(`https://supermartspring.vercel.app/products/${this.productForm.name}`, this.productForm).subscribe(res => {
-        this.fetchFromExcel(); // Refresh the product list
-        this.showSidePanel = false; // Close the side panel after updating
-        console.log('Product updated successfully', res);
-        this.openSnackBar('Product updated successfully', 'Close');
-      }, error => {
-        console.error('Error updating product', error);
-        this.openSnackBar('Error updating product', 'Close');
-      });
- }
- else {
-    this.http.post('https://supermartspring.vercel.app/products', this.productForm).subscribe(res => {
+ 
+    this.http.post('https://supermartspring.vercel.app/api/nexus_supermart/products', {
+      "name": this.productForm.name,
+    "SellType": this.productForm.SellType,
+    "RetailPrice": this.productForm.RetailPrice,
+    "SalePrice": this.productForm.SalePrice,
+    "MRP": this.productForm.MRP,
+    "UnitPrice": this.productForm.UnitPrice,
+    "EANCode": this.productForm.EANCode,
+    "Category": this.productForm.Category,
+    "price": this.productForm.price,
+    "quantity": this.productForm.quantity
+
+    }).subscribe(res => {
       debugger;
       this.fetchFromExcel(); // Refresh the product list
       this.showSidePanel = false; // Close the side panel after adding
       console.log('New product added to Google Sheet', res);
-      this.openSnackBar('New product added successfully', 'Close');
+      this.toasterService.success('New product added successfully');
     }, error => {
       console.error('Error adding new product', error);
       this.openSnackBar('Error adding new product', 'Close');
     });
     this.resetForm();
-  }
+  
   }
   products: any[] = [];
   filteredProducts: any[] = [];
@@ -368,7 +427,6 @@ checkboxLabel(row?: any): string {
     this.pagedProducts = this.filteredProducts.slice(0, this.pageSize);
     this.sortProducts();
   }
- selectedFile!: any;
 
   private CLOUDINARY_URL =
     'https://api.cloudinary.com/v1_1/djbelgg05/image/upload';
