@@ -8,7 +8,7 @@ import { CategoryComponent } from './category/category.component';
 import { OrdersComponent } from './orders/orders.component';
 
 export const routes: Routes = [
-    {path: '', component: DashboardComponent},
+    {path: '', component: AppComponent},
   { path: 'products', component: ProductsComponent },
   { path: 'billing', component: BillingComponent },
   {path: 'dashboard', component: DashboardComponent},

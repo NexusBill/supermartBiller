@@ -1,1 +1,23 @@
-<p>login works!</p>
+<div class="login-wrapper">
+  <div class="login-card">
+    <div class="logo" style="text-align: center;color: #007bff;">
+      <h1>SuperMart</h1>
+      <p>Login to manage your store</p>
+    </div>
+
+    <div class="form-group">
+      <label>Email / Username</label>
+      <input type="text" [(ngModel)]="loginData.id" placeholder="Enter your email or username" />
+    </div>
+
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" [(ngModel)]="loginData.pass" placeholder="Enter your password" />
+    </div>
+
+
+    <button style="background-color: #007bff;" (click)="login()">Login</button>
+
+   
+  </div>
+</div>

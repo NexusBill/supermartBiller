@@ -1,16 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, Output, output } from '@angular/core';
 import { Router, RouterOutlet, Routes } from '@angular/router';
-import { ProductsComponent } from "./products/products.component";
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { BillingComponent } from './billing/billing.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
 import { MatIconModule } from '@angular/material/icon';
-import { ProductService } from './shared/product.service';
+import { LoginComponent } from "./login/login.component";
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet,CommonModule,FormsModule,RouterOutlet,MatIconModule],
+  imports: [RouterOutlet, CommonModule, FormsModule, RouterOutlet, MatIconModule, LoginComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
@@ -23,13 +20,17 @@ export class AppComponent {
   sortField: string = 'date';
   sortDirection: 'asc' | 'desc' = 'desc';
   selectedSales: number[] = [];
+  tenantName: string = 'SuperMart';
 
   constructor(private router: Router) {
 // this.productService.getProducts().subscribe(products => {
 //       console.log('Products from service:', products);
 //     });
   }
-
+  isLoggedIn: boolean = false;
+tenantSelected(tenant: string) {
+    this.tenantName = tenant;
+  }
   sales = [
     {
       id: 1001,
@@ -122,9 +123,9 @@ navigateEnabler(){
 }
 
   ngOnInit() {
-    this.isLoader = true;
-    this.filterAndPaginate();
-    this.isOrdersActive();
+    // this.isLoader = true;
+    // this.filterAndPaginate();
+    // this.isOrdersActive();
   }
 
   onSearch() {

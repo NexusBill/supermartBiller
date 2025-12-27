@@ -56,31 +56,16 @@ export class ProductsComponent {
   displayedColumns:any[] = [];
   idMap = new Map<string, any>();
   nameMap = new Map<string, any>();
-
+products: any[] = [];
+  filteredProducts: any[] = [];
   userMessage: string = '';
-  // invokeBedrock(prompt: string) {
-  //   debugger;
-  //   const sessionId = 'session-' + new Date().getTime();
-  //   this.bedrockService.invokeAgent(prompt, sessionId)
-  //     .then(response => {
-  //       console.log('Bedrock Agent Response:', response);
-  //       this.openSnackBar('Bedrock Agent Response received', 'Close');
-  //     })
-  //     .catch(error => {
-  //       console.error('Error invoking Bedrock Agent:', error);
-  //       this.openSnackBar('Error invoking Bedrock Agent', 'Close');
-  //     });
-  // }
-  // Pagination variables
   pageSize = 100; // Number of items per page
   currentPage = 1;
   totalPages = 0;
   pagedProducts: any[] = [];
   bulkUploadModalOpen = false;
   constructor(private http: HttpClient,private toasterService : ToastrService) {
-   
     this.isLoader= true;
-   /// this.invokeBedrock('show my leave balance details');
   }
   ngOnInit() {
     this.fetchFromExcel();
@@ -290,10 +275,12 @@ setPage(page: number) {
 
   addNewProduct() {
     debugger;
-    this.showSidePanel = true;
+    this.showSidePanel = false;
+    this.isLoader= true;
     let a = this.idMap.get(this.productForm.name);
     if (a) {
-      this.openSnackBar('Product with this name already exists', 'Close') ;
+      this.toasterService.error('Product with this name already exists');
+      this.isLoader= false;
       return;
     }
  
@@ -312,18 +299,17 @@ setPage(page: number) {
     }).subscribe(res => {
       debugger;
       this.fetchFromExcel(); // Refresh the product list
-      this.showSidePanel = false; // Close the side panel after adding
       console.log('New product added to Google Sheet', res);
       this.toasterService.success('New product added successfully');
     }, error => {
       console.error('Error adding new product', error);
-      this.openSnackBar('Error adding new product', 'Close');
+      this.toasterService.error('Error adding new product');
+      this.isLoader= false;
     });
     this.resetForm();
   
   }
-  products: any[] = [];
-  filteredProducts: any[] = [];
+  
 
   // Method implementations
   onSearch() {
@@ -474,7 +460,7 @@ setPreview(file: File) {
     if (!this.selectedFile) return;
 if(this.selectedProducts.length==0){
 //this.toastMessage = 'Please select at least one product to upload image';
-return this.openSnackBar('Please select at least one product to upload image', 'Close');
+this.toasterService.error('Please select at least one product to upload image');
 }
 else{
   this.isLoader=true;
@@ -489,8 +475,7 @@ else{
                   debugger;
                     this.selection.clear();
     this.http.put(`https://supermartspring.vercel.app/api/nexus_supermart/products/products/images/bulk`, {"products":this.selectedProducts,"name":this.uploadName}).subscribe(res => {
-                 this.openSnackBar('Image uploaded successfully  ','Close');
-
+this.toasterService.success('Image uploaded and products updated successfully');
       this.fetchFromExcel();
     }, error => {
       console.error('Error updating product', error);

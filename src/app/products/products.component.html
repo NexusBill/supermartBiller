@@ -64,13 +64,13 @@
    
     <!-- RIGHT GROUP -->
     <div class="right-actions">
-       <img src="../../assets/plus-solid-full.svg" height="30" width="30" alt="Products" (click)="showSidePanel = true"
+       <img src="../../assets/plus-solid-full.svg" height="30" width="30" title="Add Single Product" alt="Add Products" (click)="showSidePanel = true" 
       style="cursor: pointer; margin-left: 15px;" />
 
-       <img src="../../assets/images-regular-full.svg" height="30" width="30" alt="Products" (click)="imageUpload = true"
+       <img src="../../assets/images-solid-full.svg" height="30" width="30" title="Bulk Upload Images" alt="Upload Images" (click)="imageUpload = true" 
       style="cursor: pointer; margin-left: 15px;" />
 
-      <img src="../../assets/arrow-up-from-bracket-solid-full.svg" height="30" width="30" alt="Upload"
+      <img src="../../assets/arrow-up-from-bracket-solid-full.svg" height="30" width="30" title="Bulk Upload Products" alt="Upload Buk Products" 
         (click)="openUploadModal()" style="cursor: pointer;" />
 
       <mat-paginator [pageSize]="10" [pageSizeOptions]="[50, 100, 1000]" showFirstLastButtons>

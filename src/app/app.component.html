@@ -3,14 +3,11 @@
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
     <div class="container-fluid">
       <!-- Mobile Menu Toggle -->
-      <button class="navbar-toggler me-3" type="button">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      
+  
       <!-- Brand/Logo -->
       <a class="navbar-brand fw-bold">
-        <i class="fa-solid fa-bars" (click)="navigateEnabler()"></i>
-        SuperMart
+        <i class="fa-solid fa-bars" (click)="navigateEnabler()" style="cursor: pointer;"></i>
+        {{ tenantName }}
       </a>
       
       <!-- Right side nav items -->
@@ -41,7 +38,7 @@
       <div class="sidebar-content">
         <ul class="nav flex-column">
           <li class="nav-item">
-            <a class="nav-link" [ngClass]="isDashboard ? 'active' : ''"   (click)="isDashboardActive()">
+            <a class="nav-link" [ngClass]="isDashboard ? 'active' : ''"   (click)="isDashboardActive()" >
               <i class="fas fa-tachometer"></i>
 
               Dashboard
@@ -81,9 +78,15 @@
       </div>
     </nav>
   </div>
-  <div class="col-12">
+  <div class="col-12" *ngIf="isLoggedIn">
     <div class="content-container" >
       <router-outlet></router-outlet>
+    </div>
+  </div>
+
+   <div class="col-12" *ngIf="!isLoggedIn">
+    <div class="content-container" >
+     <app-login (tenantSelected)="tenantName = $event; isLoggedIn = true; isProductsActive()"></app-login>
     </div>
   </div>
   
