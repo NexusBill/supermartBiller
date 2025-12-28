@@ -302,15 +302,15 @@
 </div>
 <!-- Upload Modal -->
 <div class="modal-overlay" *ngIf="bulkUploadModalOpen">
-  <div class="upload-modal">
+  <div class="upload-modal" style="width: 50%;">
 
     <h3 class="modal-title">Bulk Upload Products</h3>
 
     <!-- Upload Box -->
     <div class="upload-box" (click)="fileInput.click()">
-      <input type="file" #fileInput hidden accept=".xlsx,.xls,.csv" (change)="onFileSelected($event)" />
+      <input type="file" #fileInput hidden accept=".xlsx,.xls,.csv" (change)="productsInputChanged($event)" />
 
-      <div *ngIf="!selectedFile">
+      <div *ngIf="!uploadedCSV">
         <div class="upload-icon">☁️</div>
         <div class="upload-text">
           <span class="highlight">Click to upload</span> or drag and drop
@@ -320,8 +320,8 @@
         </div>
       </div>
 
-      <div *ngIf="selectedFile">
-        <strong>{{ selectedFile }}</strong>
+      <div *ngIf="uploadedCSV">
+        <strong>{{ uploadedCSV.name }}</strong>
         <div class="upload-subtext">Ready to upload</div>
       </div>
     </div>
@@ -331,8 +331,10 @@
       <button class="btn-outline" (click)="downloadTemplate()">
         Download Template
       </button>
-
-      <button class="btn-primary" [disabled]="!selectedFile">
+  <button class="btn-primary" [disabled]="!uploadedCSV" (click)="isDataPresent = true; ">
+        Preview File
+      </button>
+      <button class="btn-primary" [disabled]="!uploadedCSV" (click)="processBulkUpload()">
         Upload File
       </button>
 
@@ -343,7 +345,26 @@
 
   </div>
 </div>
-
+<div class="modal-overlay" *ngIf="isDataPresent">
+  <div class="modal-content" style="width: 50%; max-height: 80vh; overflow-y: auto;">
+    <h3>Preview Data</h3>
+    <table class="preview-table"  style=" width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+      <thead style="background-color: rgb(83, 83, 83);color: white;">
+        <tr>
+          <th *ngFor="let header of previewHeaders">{{ header }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let row of previewData">
+          <td *ngFor="let header of previewHeaders" style="border: 1px solid #ddd; padding: 8px;font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;">{{ row[header] }}</td>
+        </tr>
+      </tbody>
+    </table>
+      <button class="btn-danger" (click)="isDataPresent = false">
+        Cancel
+      </button>
+</div>
+</div>
 <div class="modal-overlay" *ngIf="imageUpload">
   <div class="upload-modal" style="width: 50%;">
 

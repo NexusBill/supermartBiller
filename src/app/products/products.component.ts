@@ -132,24 +132,84 @@ downloadTemplate() {
 selectedFile: File | null = null;
   uploadedItems: any[] = [];
 /* ⭐ READ FILE USING ALASQL */
-readFileWithAlaSQL() {
-  if (!this.selectedFile) return;
+// readFileWithAlaSQL() {
+//   if (!this.uploadedCSV) return;
 
-  // alasql(
-  //   'SELECT * FROM FILE(?,{headers:true})',
-  //   [this.selectedFile],
-  //   (data: any[]) => {
-  //     this.uploadedItems = data;
+//   alasql(
+//     'SELECT * FROM FILE(?,{headers:true})',
+//     [this.uploadedCSV],
+//     (data: any[]) => {
+//       this.uploadedItems = data;
 
-  //     console.log('Array from Excel/CSV:', this.uploadedItems);
+//       console.log('Array from Excel/CSV:', this.uploadedItems);
 
-  //     // example:
-  //     // send this.uploadedItems to API
+//       // example:
+//       // send this.uploadedItems to API
 
-  //     //this.closeUploadModal();
-  //   }
-  // );
+//       //this.closeUploadModal();
+//     }
+//   );
+// }
+uploadedCSV:any;
+productsInputChanged(event: any) {
+  const file: File = event.target.files[0];
+  if (file) {
+    this.uploadedCSV = file;
+     const reader = new FileReader();
+
+  reader.onload = (e: any) => {
+    const buffer = e.target.result;
+    const workbook = XLSX.read(buffer, { type: 'array' });
+
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+
+    const data: any[] = XLSX.utils.sheet_to_json(sheet);
+
+    console.log(data); // ✅ Excel data as array of objects
+
+    // Preview the headers and data
+    this.previewHeaders = Object.keys(data[0]);
+    this.previewData = data;
+    this.uploadedItems = data;
+  };
+
+  reader.readAsArrayBuffer(file);
+  }
 }
+previewHeaders: string[] = [];
+previewData: any[] = [];
+processBulkUpload(): void {
+  const file: File = this.uploadedCSV;
+  if (!file) return;
+  else{
+    this.isLoader= true;
+    const productsToUpload = this.uploadedItems.map(item => ({
+      EANCode: item['EAN Code'] || '',
+      name: item['Name'] || '',
+      category: item['Category'] || '',
+      SellType: item['Sell Type'] || '',
+      QuantityOnHand: item['Stock'] || 0,
+      price: item['Price'] || 0,
+      SalePrice: item['Sale Price'] || 0
+    }));
+
+    // Send the productsToUpload array to your API for bulk upload
+    this.http.post('https://supermartspring.vercel.app/api/nexus_supermart/products/bulk', { products: productsToUpload })
+      .subscribe(response => {
+        this.toasterService.success('Bulk upload successful');
+        this.fetchFromExcel(); // Refresh the product list
+        console.log('Bulk upload successful', response);
+        this.isDataPresent = true;
+        this.isLoader = false;
+      }, error => {
+        this.toasterService.error('Error during bulk upload');
+        console.error('Error during bulk upload', error);
+        this.isLoader = false;
+      });
+  }
+}
+isDataPresent: boolean = false;
 updateProductStock(product: any) {
   
     if (!product || !product._id) {
@@ -166,7 +226,7 @@ updateProductStock(product: any) {
     "EANCode": product.EANCode,
     "Category": product.Category,
     "price": product.price,
-    "quantity": product.QuantityOnHand
+    "QuantityOnHand": product.QuantityOnHand
     }).subscribe(res => {
       debugger;
       this.closeSidePanel(); // Close the side panel after updating
