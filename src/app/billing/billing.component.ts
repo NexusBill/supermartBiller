@@ -281,7 +281,7 @@ this.openAddPanel();
   this.totalAmount = parseFloat(this.totalAmount.toFixed(2));   
  }
  addProductToCart(product: any) {
-  const existing = this.selectedProducts.find(p => p._id === product._id || p.name === product.name);
+  const existing = this.selectedProducts.find(p => p._id === product._id || p.name === product.name || p?.EANCode === product?.EANCode);
 
   if (existing) {
     existing.quantity++;
@@ -370,7 +370,8 @@ filterProducts() {
   }
 
   this.filteredProducts = this.products.filter(p =>
-    p.name.toLowerCase().includes(search)
+    p.name.toLowerCase().includes(search) || 
+    p.EANCode?.toLowerCase().includes(search)
   );
 }
 addProductFromSuggestion(product: any) {
