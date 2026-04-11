@@ -165,7 +165,7 @@ customerPoints: number = 0;
     savings: this.savedAmount,
     date: new Date().toISOString()
   };
-  this.http.post("https://supermartspring.vercel.app/api/nexus_supermart/orders",body).subscribe( (data:any) =>{
+  this.http.post("/orders",body).subscribe( (data:any) =>{
     this.openSnackBar(data.message, 'Close');
     this.selectedProducts = [];
     this.scannedId = '';
@@ -403,7 +403,7 @@ scannedId:any;
 
 
  fetchFromExcel(){
-  this.http.get('https://supermartspring.vercel.app/api/nexus_supermart/products?page=1&limit=100000').subscribe((res: any) => {
+  this.http.get('/products?page=1&limit=100000').subscribe((res: any) => {
     this.products = res.data;
     console.log(this.products);
   });
@@ -412,7 +412,7 @@ scannedId:any;
 showAllResults() {
   this.http
     .get<any>(
-      `https://supermartspring.vercel.app/api/nexus_supermart/products/search?query=${this.scannedId}`
+      `/products/search?query=${this.scannedId}`
     )
     .subscribe(res => {
       this.products.push(...(res.data));
@@ -606,7 +606,7 @@ this.isPrinting = true;
     }
   }
   fetchCustomers(){
-    this.http.get('https://supermartspring.vercel.app/customers').subscribe((res: any) => {
+    this.http.get('http://localhost:3000/customers').subscribe((res: any) => {
       this.customers = res;
       console.log(this.customers);
     });
@@ -616,7 +616,7 @@ this.isPrinting = true;
   
   lastOrder() {
     debugger;
-    this.http.get('https://supermartspring.vercel.app/api/orders').subscribe((res: any) => {
+    this.http.get('http://localhost:3000/api/orders').subscribe((res: any) => {
       debugger
       const now = new Date();
   
@@ -633,6 +633,9 @@ this.invoiceId = `INV${month}${year}${seq}`;
     });
   }
 
+  clientName: string = 'Supermart';
+  clientAddress: string = 'No 1,Nethaji nagar,P.V. Kalahur road,Puduppakkam,Chennai-603202';
+  contactInfo: string = 'Phone: 9791196869';
 
 generateBillHTML(): string {
   let items = '';
@@ -670,8 +673,9 @@ generateBillHTML(): string {
 </head>
 <body>
 
-  <div class="center bold">SHRI KAMATCHI SUPER MART</div>
-  <div class="center bold">Theni Main Road, Checkanurani, Madurai - 625514</div>
+  <div class="center bold">${this.clientName}</div>
+  <div class="center bold">${this.clientAddress}</div>
+  <div class="center bold" style="font-size: 12px;left: 2;">${this.contactInfo}</div>
   <hr>
 
   <div class="row bold"><span>Invoice</span><span>${this.invoiceId}</span></div>
@@ -695,7 +699,7 @@ generateBillHTML(): string {
   <div class="center">
         Thank you! Visit again 😊</div><br>
          © 2025-30 Copyright:
-    <div class="center">     <a class="text-body" href="#">Nexusbills </a></div>
+       <a class="text-body" href="#">Nexusbills </a>
 
 </body>
 </html>

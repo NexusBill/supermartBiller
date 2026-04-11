@@ -33,7 +33,7 @@ export class CustomerComponent {
     }
     else {
       this.customerData = [...this.customerData, { name: this.customerName, email: this.customerEmail, phone: this.customerPhone }];
-      this.http.post('https://supermartspring.vercel.app/customers', {
+      this.http.post('http://localhost:3000/customers', {
         name: this.customerName,
         email: this.customerEmail,
         phone: this.customerPhone,
@@ -70,7 +70,7 @@ editCustomer(customer: any) {
     this.customerAddress = customer.address;
     this.customerCity = customer.city;
     this.customerPoints = customer.points;
-    this.http.put(`https://supermartspring.vercel.app/customers/${customer.id}`, {
+    this.http.put(`http://localhost:3000/customers/${customer.id}`, {
       name: this.customerName,
       email: this.customerEmail,
       phone: this.customerPhone,
@@ -88,7 +88,7 @@ editCustomer(customer: any) {
 
 
   getCustomers() {
-    this.http.get('https://supermartspring.vercel.app/api/nexus_supermart/customers?page=1&limit=100000').subscribe((response: any) => {
+    this.http.get('/customers?page=1&limit=100000').subscribe((response: any) => {
 
       console.log('Customers fetched successfully', response);
       this.customerData = response.data;

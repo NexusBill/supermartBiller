@@ -25,14 +25,15 @@ export class LoginComponent {
   }
 
   login() {
+    debugger
     if (!this.loginData.id || !this.loginData.pass) {
       this.toastr.error('Please enter both ID and Password');
       return;
     }
-    this.http.post('https://supermartspring.vercel.app/api/tenant/login', this.loginData).subscribe((response: any) => {
+    this.http.post('http://localhost:3000/api/tenant/login', this.loginData).subscribe((response: any) => {
       this.toastr.success('Login successful');
       console.log('Login successful', response);
-      this.setStorage(response.id);
+      this.setStorage(response?.tenant);
       this.tenantSelected.emit(response.name);
     }, error => {
       this.toastr.error('Login failed');

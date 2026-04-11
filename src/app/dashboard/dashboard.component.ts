@@ -8,11 +8,16 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatChipsModule } from "@angular/material/chips";
 import { MatAutocompleteModule } from "@angular/material/autocomplete";
+import { BaseChartDirective } from 'ng2-charts';
+import { Chart, ChartData, registerables } from 'chart.js';
+
+Chart.register(...registerables);
+
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule, MatDatepickerModule, MatNativeDateModule, MatFormFieldModule, MatInputModule, MatChipsModule, MatAutocompleteModule],
+  imports: [ CommonModule,BaseChartDirective, FormsModule, HttpClientModule, MatDatepickerModule, MatNativeDateModule, MatFormFieldModule, MatInputModule, MatChipsModule, MatAutocompleteModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
   providers: [HttpClient, HttpClientModule],
@@ -32,11 +37,43 @@ export class DashboardComponent {
   filteredSales = [...this.sales];
   paginatedSales: any[] = [];
   totalPages: number = 0;
+summary: any;
 
   ngOnInit() {
     this.filterAndPaginate();
     this.fetchCustomers();
+    this.topProducts();
+    this.fetchDateRange();
   }
+  data: ChartData<'bar'> = {
+  labels: ['Jan', 'Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+  datasets: [
+    {
+      data: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120],
+      label: 'Sales'
+    }
+  ]
+};
+
+payData: ChartData<'bar'> = {
+  labels: ['Payment Methods'],
+  datasets: [
+   
+  ]
+};
+barChartLabels = this.data.datasets.map(d => d.label);
+
+barChartData = [
+  {
+    data: this.data.datasets.map(d => d.data).flat(),
+    label: 'Sales'
+  }
+];
+
+barChartOptions = {
+  responsive: true
+};
+
 
   onSearch() {
     this.currentPage = 1;
@@ -60,21 +97,36 @@ export class DashboardComponent {
     this.currentPage = 1;
     this.filterAndPaginate();
   }
-
+topProducts(){
+  this.startDateFomatted = "2025-01-01";
+  this.endDateFormatted = "2026-12-31";
+  this.http.get('/orders/top-selling-range?from=' + this.startDateFomatted + '&to=' + this.endDateFormatted).subscribe((res: any) => {
+    this.payData.datasets = res.data;
+    console.log(this.summary);
+  });
+}
+startDateFomatted:any;
+endDateFormatted:any;
+  fetchDateRange() {
+    if (this.startDate && this.endDate) {
+      const start = this.formatDate(this.startDate);
+      const end = this.formatDate(this.endDate);
+    }
+    this.fetchOrdersBetweenDates(this.formatDate(this.startDate!), this.formatDate(this.endDate!));
+  }
   onDateChange() {
     debugger;
     if (this.startDate && this.endDate) {
       debugger;
-      const start = this.formatDate(this.startDate);
-      const end = this.formatDate(this.endDate);
+      const start =this.startDateFomatted= this.formatDate(this.startDate);
+      const end = this.endDateFormatted = this.formatDate(this.endDate);
 
       this.fetchOrdersBetweenDates(start, end);
     }
   }
   fetchOrdersBetweenDates(start: string, end: string) {
-    this.http.get(`https://supermartspring.vercel.app/api/orders/date-range?start=${start}&end=${end}`).subscribe((res: any) => {
+    this.http.get(`/orders/orders-by-date-range?from=${start}&to=${end}&page=1&limit=10`).subscribe((res: any) => {
       this.sales = res.map((item: any) => ({
-
         id: item.invoice,
         customer: item.customer,
         product: item.products,
@@ -90,6 +142,7 @@ export class DashboardComponent {
       this.filterAndPaginate();
     });
   }
+
 
   sort(field: string) {
     if (this.sortField === field) {
@@ -203,7 +256,7 @@ export class DashboardComponent {
     }
   }
   fetchCustomers(){
-    this.http.get('https://supermartspring.vercel.app/customers').subscribe((res: any) => {
+    this.http.get('http://localhost:3000/customers').subscribe((res: any) => {
       this.customers = res;
       console.log(this.customers);
     });
@@ -248,7 +301,7 @@ export class DashboardComponent {
   selectedCustomer: string = '';
   fetchFromExcel() {
     debugger;
-    this.http.get('https://supermartspring.vercel.app/api/orders').subscribe((res: any) => {
+    this.http.get('http://localhost:3000/api/orders').subscribe((res: any) => {
       debugger
       this.sales = res.map((item: any) => ({
 
@@ -285,7 +338,7 @@ this.filteredSales = [...this.sales];
     return `${year}-${month}-${day}`;
   }
 
-
+  
 
 
 }

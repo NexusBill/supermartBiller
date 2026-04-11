@@ -3,6 +3,7 @@
   <div class="container-fluid">
     <!-- Welcome Section -->
     <div class="row">
+
       <!-- <mat-chip-set aria-label="Fish selection" style="justify-content: space-between;">
         <mat-chip style="height: 70px; width: 220px;">Montly Sales <h2>{{monthlySalesAmount}}</h2>
         </mat-chip>
@@ -25,6 +26,129 @@
           <h3 class="welcome-title" style="margin-top: 7px;">{{monthlyProfitAmount}}</h3>
         </div>
       </div>
+       <div class="row">
+      <div class="status-container">
+
+        <!-- Card 1 -->
+        <div class="status-card">
+          <div class="count">48</div>
+
+          <div class="status-info">
+            <span class="label">Customers</span>
+
+            <span class="trend up">
+              ▲ 89%
+            </span>
+          </div>
+        </div>
+
+        <div class="status-card">
+          <div class="count">48987897</div>
+
+          <div class="status-info">
+            <span class="label">Sales</span>
+
+            <span class="trend up">
+              ▲ 89%
+            </span>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="status-card">
+
+          <div class="count danger">5657</div>
+
+          <div class="status-info">
+            <span class="label">ROI</span>
+
+            <span class="trend down">
+              ▼ -1%
+            </span>
+          </div>
+
+        </div>
+        <div class="col-3 date-range-container">
+
+          <mat-form-field appearance="outline" class="date-range-field">
+
+            <mat-label>Select date range</mat-label>
+
+            <mat-date-range-input [rangePicker]="picker">
+
+              <input matStartDate placeholder="Start date" [(ngModel)]="startDate" (dateChange)="onDateChange()">
+
+              <input matEndDate placeholder="End date" [(ngModel)]="endDate" (dateChange)="onDateChange()">
+
+            </mat-date-range-input>
+
+            <mat-datepicker-toggle matSuffix [for]="picker">
+            </mat-datepicker-toggle>
+
+            <mat-date-range-picker #picker></mat-date-range-picker>
+
+          </mat-form-field>
+
+        </div>
+
+      </div>
+
+
+
+
+    </div>
+
+    <div class="dashboard-container">
+
+      <!-- KPI Cards -->
+      <div class="card-row">
+
+        <div class="analytics-card">
+          <p>Today's Sale</p>
+          <h2>₹ {{summary?.todaySales}}</h2>
+        </div>
+
+        <div class="analytics-card">
+          <p>Today's Profit</p>
+          <h2>₹ {{summary?.todayProfit}}</h2>
+        </div>
+
+        <div class="analytics-card">
+          <p>Total Orders</p>
+          <h2>{{summary?.orders}}</h2>
+        </div>
+
+        <div class="analytics-card alert">
+          <p>Low Stock</p>
+          <h2>{{summary?.lowStock}}</h2>
+        </div>
+
+      </div>
+
+      <!-- Charts -->
+      <div class="chart-row">
+
+        <div class="chart-card">
+          <h3>Sales Trend</h3>
+          <div style="display: flex; gap: 30px;">
+            <canvas baseChart [data]="data" [type]="'bar'">
+            </canvas>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <h3>Payment Methods</h3>
+  <div style="display: flex; gap: 30px;">
+            <canvas baseChart [data]="payData" [type]="'bar'">
+            </canvas>
+          </div>         
+        </div>
+
+      </div>
+
+      <!-- Tables -->
+
+    </div>
       <div class="col-3" style="margin-top: 5px;">
         <mat-form-field appearance="outline" style="margin-right: 10px;">
           <mat-label>Customer Name</mat-label>

@@ -5,6 +5,8 @@ import { ToastrModule } from 'ngx-toastr';
 import { AppComponent } from './app/app.component';
 import { provideRouter } from '@angular/router';
 import { routes } from './app/app.routes'; // Adjust the path as needed
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { requestInterceptor } from './app/request.interceptor';
 bootstrapApplication(AppComponent, {
   providers: [
     importProvidersFrom(
@@ -16,6 +18,9 @@ bootstrapApplication(AppComponent, {
       closeButton: true,
       progressBar: true
     })
+    ),
+     provideHttpClient(
+      withInterceptors([requestInterceptor])
     ),
     provideRouter(routes) // 👈 Register routes here
   ]

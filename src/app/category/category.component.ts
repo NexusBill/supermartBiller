@@ -32,7 +32,7 @@ ngOnInit(){
 }
 addCategory() {
   if(this.validateCategory()){
-    this.http.post('https://supermartspring.vercel.app/api/nexus_supermart/categories', {
+    this.http.post('/categories', {
       name: this.categoryName,
       description: this.categoryDescription
     }).subscribe((response) => {  
@@ -64,7 +64,7 @@ validateCategory(){
    dataSource = new MatTableDataSource<any>([]);
 
   getCategories() {
-    this.http.get<any>('https://supermartspring.vercel.app/api/nexus_supermart/categories?page=1&limit=100000')
+    this.http.get<any>('/categories?page=1&limit=100000')
       .subscribe((response) => {
         console.log('Categories fetched successfully', response);
         this.categoryData = response.data;

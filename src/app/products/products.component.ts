@@ -33,7 +33,7 @@ interface Product {
 }
 @Component({
   selector: 'app-products',
-  imports: [CommonModule,HttpClientModule,FormsModule,MatTableModule, MatFormFieldModule,
+  imports: [CommonModule,FormsModule,MatTableModule, MatFormFieldModule,
     MatExpansionModule,
    MatDialogModule,
   MatButtonModule,
@@ -42,8 +42,7 @@ interface Product {
   
 MatCheckboxModule],
   templateUrl: './products.component.html',
-  styleUrl: './products.component.css',
-  providers: [HttpClient],
+  styleUrl: './products.component.css'
 })
 
 
@@ -99,7 +98,7 @@ products: any[] = [];
   this.dataSource.filter = value.trim().toLowerCase();
 }
   getCategories() {
-    this.http.get<any>('https://supermartspring.vercel.app/api/nexus_supermart/categories?page=1&limit=100000')
+    this.http.get<any>('/categories?page=1&limit=100000')
       .subscribe((response) => {
         console.log('Categories fetched successfully', response);
         this.categories = response.data;
@@ -195,7 +194,7 @@ processBulkUpload(): void {
     }));
 
     // Send the productsToUpload array to your API for bulk upload
-    this.http.post('https://supermartspring.vercel.app/api/nexus_supermart/products/bulk', { products: productsToUpload })
+    this.http.post('/products/bulk', { products: productsToUpload })
       .subscribe(response => {
         this.toasterService.success('Bulk upload successful');
         this.fetchFromExcel(); // Refresh the product list
@@ -216,7 +215,7 @@ updateProductStock(product: any) {
       this.openSnackBar('Invalid product', 'Close');
       return;
     } 
-    this.http.put(`https://supermartspring.vercel.app/api/nexus_supermart/products/${product._id}`, {
+    this.http.put(`/products/${product._id}`, {
      "name": product.name,
     "SellType": product.SellType,
     "RetailPrice": product.RetailPrice,
@@ -242,15 +241,17 @@ updateProductStock(product: any) {
 fetchFromExcel() {
   this.isLoader = true;
 
-  this.http
-    .get<any>("https://supermartspring.vercel.app/api/nexus_supermart/products?page=1&limit=100000")
-    .subscribe(res => {
-
+this.http
+  .get<any>("/products?page=1&limit=100000")
+  .subscribe({
+    next: (res) => {
+      debugger
       this.products = res.data;
       this.filteredProducts = [...this.products];
-this.dataSource.data= this.products;
+      this.dataSource.data = this.products;
+
       this.displayedColumns = [
-        'select',  
+        'select',
         "EANCode",
         "name",
         "category",
@@ -265,7 +266,19 @@ this.dataSource.data= this.products;
       this.setPage(1);
 
       this.isLoader = false;
-    });
+    },
+
+    error: (err) => {
+      console.error('API Error:', err);
+
+      // stop loader
+      this.isLoader = false;
+      this.toasterService.error('Something went wrong while fetching products');
+
+      // optional: show toaster here if not using interceptor
+      // this.toastr.error('Failed to load products');
+    }
+  });
 }
 
 //   fetchFromExcel(){
@@ -293,7 +306,7 @@ this.dataSource.data= this.products;
 //     //     EANCode:  row.c[9]?.v || '', 
 //     //   }));
 //     //   console.log(this.products);
-//     this.http.get('https://supermartspring.vercel.app/api/nexus_supermart/products?page=1&limit=10').subscribe((res: any) => {
+//     this.http.get('/products?page=1&limit=10').subscribe((res: any) => {
 //       debugger;
 //       this.products = res.data;
 //       console.log(this.products);
@@ -323,7 +336,7 @@ buildLookupMaps() {
 
 setPage(page: number) {
    this.totalPages= this.totalPages/10;
-  if (page < 1 || page > this.totalPages) return;
+  //if (page < 1 || page > this.totalPages) return;
   this.currentPage = page;
 
   const startIndex = (page - 1) * this.pageSize;
@@ -344,7 +357,7 @@ setPage(page: number) {
       return;
     }
  
-    this.http.post('https://supermartspring.vercel.app/api/nexus_supermart/products', {
+    this.http.post('/products', {
       "name": this.productForm.name,
     "SellType": this.productForm.SellType,
     "RetailPrice": this.productForm.RetailPrice,
@@ -534,7 +547,7 @@ else{
         next: (res: any) => {
                   debugger;
                     this.selection.clear();
-    this.http.put(`https://supermartspring.vercel.app/api/nexus_supermart/products/products/images/bulk`, {"products":this.selectedProducts,"name":this.uploadName}).subscribe(res => {
+    this.http.put(`/products/products/images/bulk`, {"products":this.selectedProducts,"name":this.uploadName}).subscribe(res => {
 this.toasterService.success('Image uploaded and products updated successfully');
       this.fetchFromExcel();
     }, error => {
@@ -742,7 +755,7 @@ this.toasterService.success('Image uploaded and products updated successfully');
       this.openSnackBar('Invalid product', 'Close');
       return;
     }
-    this.http.delete(`https://supermartspring.vercel.app/products/${product._id}`).subscribe(res => {
+    this.http.delete(`http://localhost:3000/products/${product._id}`).subscribe(res => {
       this.openSnackBar('Product deleted successfully', 'Close');
       this.fetchFromExcel(); // Refresh the product list
     }, error => {

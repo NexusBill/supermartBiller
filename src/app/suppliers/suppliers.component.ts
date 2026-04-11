@@ -63,7 +63,7 @@ export class SuppliersComponent {
   displayedColumns = ['name', 'contactPerson', 'phone', 'email',  'address', 'state', 'city', 'pincode', 'paymentTerms', 'items', 'active', 'actions'];
 suppliers: any[] = [];
   getSupplierData() {
-    this.http.get('https://supermartspring.vercel.app/suppliers').subscribe((response: any) => {
+    this.http.get('http://localhost:3000/suppliers').subscribe((response: any) => {
       console.log('Suppliers fetched successfully', response);
       this.suppliers = response;
     }, (error) => {
@@ -73,7 +73,7 @@ suppliers: any[] = [];
   editSupplier(supplier: any) {
     this.supplierForm.patchValue(supplier);
     this.initialData = supplier; // set initial data for edit
-    this.http.put(`https://supermartspring.vercel.app/suppliers/${supplier.id}`, this.supplierForm.value).subscribe((response) => {
+    this.http.put(`http://localhost:3000/suppliers/${supplier.id}`, this.supplierForm.value).subscribe((response) => {
       console.log('Supplier updated successfully', response);
       this.getSupplierData(); // Refresh the list after update
     }, (error) => {
@@ -81,7 +81,7 @@ suppliers: any[] = [];
     });
   } 
   deleteSupplier(supplierId: string) {
-    this.http.delete(`https://supermartspring.vercel.app/suppliers/${supplierId}`).subscribe((response) => {
+    this.http.delete(`http://localhost:3000/suppliers/${supplierId}`).subscribe((response) => {
       console.log('Supplier deleted successfully', response);
       this.getSupplierData(); // Refresh the list after deletion
     }, (error) => {

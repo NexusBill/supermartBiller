@@ -39,7 +39,7 @@ openSidebar: boolean = false;
 onRejectOrder() {
     // Logic to reject the order
     this.selectedOrder.status = 'cancelled';
-     this.httpClient.put(`https://supermartspring.vercel.app/api/nexus_supermart/orders/status-update/${this.selectedOrder?.orderId}`, this.selectedOrder).subscribe((data:any) => {
+     this.httpClient.put(`/orders/status-update/${this.selectedOrder?.orderId}`, this.selectedOrder).subscribe((data:any) => {
       console.log('Order updated successfully:', data);
       this.closeSidebar();
     });
@@ -186,12 +186,12 @@ products: any[] = [
 }
   
   getOrders() {
-    return this.httpClient.get('https://supermartspring.vercel.app/api/nexus_supermart/orders').subscribe((data:any) => {
+    return this.httpClient.get('/orders').subscribe((data:any) => {
       this.dataSource.data = data.data;
     });
   }
   updateOrderStatus(){
-    this.httpClient.put(`https://supermartspring.vercel.app/api/nexus_supermart/orders/status-update/${this.selectedOrder?.orderId}`, this.selectedOrder).subscribe((data:any) => {
+    this.httpClient.put(`/orders/status-update/${this.selectedOrder?.orderId}`, this.selectedOrder).subscribe((data:any) => {
       console.log('Order updated successfully:', data);
       this.closeSidebar();
     });
