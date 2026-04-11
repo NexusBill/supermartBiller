@@ -13,7 +13,7 @@ debugger
    
 debugger
       const toastr = ToastrService;
-      const updatedUrl = 'http://localhost:3000/api/'+clientCode+ req.url
+      const updatedUrl = 'https://supermartspring.vercel.app/api/' + clientCode + req.url
 
     const clonedReq = req.clone({
       url: updatedUrl
