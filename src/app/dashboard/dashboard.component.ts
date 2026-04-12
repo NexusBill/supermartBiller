@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -17,10 +17,9 @@ Chart.register(...registerables);
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [ CommonModule,BaseChartDirective, FormsModule, HttpClientModule, MatDatepickerModule, MatNativeDateModule, MatFormFieldModule, MatInputModule, MatChipsModule, MatAutocompleteModule],
+  imports: [ CommonModule,BaseChartDirective, FormsModule, MatDatepickerModule, MatNativeDateModule, MatFormFieldModule, MatInputModule, MatChipsModule, MatAutocompleteModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
-  providers: [HttpClient, HttpClientModule],
 })
 export class DashboardComponent {
   title = 'supermart';
@@ -256,7 +255,7 @@ endDateFormatted:any;
     }
   }
   fetchCustomers(){
-    this.http.get('http://localhost:3000/customers').subscribe((res: any) => {
+    this.http.get('/customers').subscribe((res: any) => {
       this.customers = res;
       console.log(this.customers);
     });

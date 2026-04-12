@@ -6,22 +6,32 @@ import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-login',
-  imports: [HttpClientModule,CommonModule,FormsModule],
+  imports: [HttpClientModule, CommonModule, FormsModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
 
 
-  constructor(private http: HttpClient,private toastr: ToastrService) { }
+  constructor(private http: HttpClient, private toastr: ToastrService) { 
+    
+  }
   @Output() tenantSelected = new EventEmitter<string>();
+  loader: boolean = false;
+  products: any[] = [];
+  filteredProducts: any[] = [];
+  displayedColumns: string[] = []
+  dataSource: any;
+  pageSize: number = 10;
+  totalPages: number = 0;
+  isLoader: boolean = false;
 
   loginData = {
     id: '',
     pass: ''
   };
   setStorage(id: string) {
-    localStorage.setItem('clientCode', id);
+    sessionStorage.setItem('clientCode', id);
   }
 
   login() {
@@ -40,4 +50,5 @@ export class LoginComponent {
       console.error('Login failed', error);
     });
   }
+ 
 }

@@ -6,8 +6,8 @@ import { throwError } from 'rxjs';
 ///const toastr = inject(ToastrService);
 export const requestInterceptor: HttpInterceptorFn = (req, next) => {
 
-  const clientCode = localStorage.getItem('clientCode');
-  console.log('Client Code from localStorage:', clientCode);
+  const clientCode = sessionStorage.getItem('clientCode');
+  console.log('Client Code from sessionStorage:', clientCode);
 debugger
   if (clientCode) {
    

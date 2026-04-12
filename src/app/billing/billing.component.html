@@ -13,7 +13,7 @@
 
 
             <!-- Customer Name Field -->
-            <mat-form-field appearance="outline" style="margin-right: 10px;">
+            <!-- <mat-form-field appearance="outline" style="margin-right: 10px;">
                 <mat-label>Customer Name</mat-label>
                 <i class="fa-solid fa-user" matPrefix style="margin:0px 8px; color: #666;"></i>
                 <input matInput placeholder="Select Customer" [(ngModel)]="selectedCustomer" (ngModelChange)="onCustomerChange($event)"
@@ -23,12 +23,11 @@
                         {{ customer.name }}
                     </mat-option>
                 </mat-autocomplete>
-            </mat-form-field>
+            </mat-form-field> -->
 
             <mat-form-field appearance="outline" style="margin-right: 10px;">
                 <mat-label>Mobile Number</mat-label>
 
-                <!-- Using matPrefix for proper Angular Material integration -->
                 <i class="fa-solid fa-phone" matPrefix style="margin: 0px 8px; color: #666;"></i>
 
                 <input matInput placeholder="Select Customer" [(ngModel)]="MobileNumber" [matAutocomplete]="auto" />
@@ -83,10 +82,10 @@
                             <mat-autocomplete #productAuto="matAutocomplete">
                                 <mat-option *ngFor="let suggestion of filteredProducts" [value]="suggestion.name"  (keydown.enter)="onCodeResult()" (click)="addProductFromSuggestion(suggestion)"
 >
-                                    {{ suggestion.name }} ({{ suggestion.id }})
+                                    {{ suggestion.name }} ({{ suggestion.id || 'N/A' }})
                                 </mat-option>
                                 <mat-option 
-                                    *ngIf="filteredProducts.length === 0 && scannedId.length>3"
+                                    *ngIf="filteredProducts.length === 0 && scannedId?.trim().length > 2"
                                     disabled>
                                     <a>No matches</a>
                                 </mat-option>
@@ -110,10 +109,10 @@
                         </div>
                     </div>
 
-                    <div class="add-products"
+                    <!-- <div class="add-products"
                         (click)="saveOrder() ">WhatsApp <em> </em><i class="fa-brands fa-square-whatsapp"
                             style="size: 15px;"></i>
-                    </div>
+                    </div> -->
 
                     <div class="add-products"  ngxPrint
   printSectionId="invoice-container"

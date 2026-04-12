@@ -120,7 +120,8 @@ downloadTemplate() {
     'Sell Type': '',
     'Stock': '',
     'Price': '',
-    'Sale Price': ''
+    'Sale Price': '',
+    'MRP': '',
   }];
 
   alasql(
@@ -190,7 +191,8 @@ processBulkUpload(): void {
       SellType: item['Sell Type'] || '',
       QuantityOnHand: item['Stock'] || 0,
       price: item['Price'] || 0,
-      SalePrice: item['Sale Price'] || 0
+      SalePrice: item['Sale Price'] || 0,
+      MRP: item['MRP'] || 0
     }));
 
     // Send the productsToUpload array to your API for bulk upload
@@ -216,13 +218,13 @@ updateProductStock(product: any) {
       return;
     } 
     this.http.put(`/products/${product._id}`, {
-     "name": product.name,
-    "SellType": product.SellType,
-    "RetailPrice": product.RetailPrice,
-    "SalePrice": product.SalePrice,
-    "MRP": product.MRP,
-    "UnitPrice": product.UnitPrice,
-    "EANCode": product.EANCode,
+     "name": product?.name,
+    "SellType": product?.SellType,
+    "RetailPrice": product?.RetailPrice,
+    "SalePrice": product?.SalePrice,
+    "MRP": product?.MRP,
+    "UnitPrice": product?.UnitPrice,
+    "EANCode": product?.EANCode,
     "Category": product.Category,
     "price": product.price,
     "QuantityOnHand": product.QuantityOnHand

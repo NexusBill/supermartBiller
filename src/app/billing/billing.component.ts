@@ -4,8 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { NgxPrintModule } from 'ngx-print';
 import { Router } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
-import {ChangeDetectionStrategy, signal} from '@angular/core';
-import {MatExpansionModule} from '@angular/material/expansion';
+import { ChangeDetectionStrategy, signal } from '@angular/core';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
@@ -15,12 +15,12 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { trigger, state, style, transition, animate } from '@angular/animations';
-import {MatChipsModule} from '@angular/material/chips';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { HttpClient } from '@angular/common/http';
 
 
-import {MatSnackBar} from '@angular/material/snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 export interface Order {
   id: string;
@@ -39,7 +39,7 @@ export interface Order {
 
 @Component({
   selector: 'app-billing',
-  imports: [CommonModule, FormsModule,NgxPrintModule,MatTableModule,MatFormFieldModule,
+  imports: [CommonModule, FormsModule, NgxPrintModule, MatTableModule, MatFormFieldModule,
     MatInputModule,
     MatIconModule,
     MatChipsModule,
@@ -47,9 +47,8 @@ export interface Order {
     MatButtonModule,
     MatExpansionModule,
     MatProgressSpinnerModule,
-    HttpClientModule,
     MatSelectModule,
-    
+
     MatCardModule,
     MatAutocompleteModule,
     MatButtonModule,
@@ -78,14 +77,14 @@ export class BillingComponent {
   //  displayedColumns: string[] = ['id',	'name',	'Category',	'QuantityOnHand'	,'UnitDesc',	'RetailPrice',	'SalePrice',	'MRP'	,'UnitPrice',	'EANCode','Action'];
 
   displayedColumns: string[] = ['name', 'mrp', 'unit', 'quantity', 'price', 'action'];
-   panelOpenState = signal(false);
-   showSidePanel:boolean = false;
-   isPanelExpanded: boolean = false;
-   loader: boolean = false;
-   selectedProducts: any[] = [];
-   invoiceId: string = 'INV001';
-   intervalId: any;
-   ngOnInit() {
+  panelOpenState = signal(false);
+  showSidePanel: boolean = false;
+  isPanelExpanded: boolean = false;
+  loader: boolean = false;
+  selectedProducts: any[] = [];
+  invoiceId: string = 'INV001';
+  intervalId: any;
+  ngOnInit() {
     this.loader = true;
     this.fetchFromExcel();
     this.fetchCustomers();
@@ -94,10 +93,10 @@ export class BillingComponent {
       this.currentDate = new Date();
     }, 1000);
     this.scannedId = '';
-    this.holdList=localStorage.getItem('holdList') ? JSON.parse(localStorage.getItem('holdList') || '[]') : [];
-   }
+    this.holdList = sessionStorage.getItem('holdList') ? JSON.parse(sessionStorage.getItem('holdList') || '[]') : [];
+  }
 
-   
+
   ngAfterViewInit() {
     setTimeout(() => {
       this.scannedInputRef.nativeElement.focus();
@@ -106,376 +105,383 @@ export class BillingComponent {
   }
 
 
- 
-
-   private _snackBar = inject(MatSnackBar);
-
-   openSnackBar(message: string, action: string) {
-     this._snackBar.open(message, action);
-   }
-   filteredProducts: any[] = [];
-
-   @ViewChild('productAuto') productAuto!: MatAutocomplete;
-
- paymentMethod: any;
-   discountValue!: number ; // Holds the discount value
-   discountType: string = '%'; 
-decreaseQuantity(product: any) {
-  debugger
-  
-   if (this.selectedProducts.find(p => p.id === product.id).quantity > 1) {
-     this.selectedProducts.find(p => p.id === product.id).quantity--;
-     this.totalAmount -= product.MRP; // Update total amount
-     this.totalAmount = parseFloat(this.totalAmount.toFixed(2)); // Ensure two decimal places
-   } else {
-     // If quantity is 1, remove the product from selectedProducts
-     this.selectedProducts = this.selectedProducts.filter(p => p.id !== product.id);
-   }
-   this.totalAmount = this.selectedProducts.reduce((sum, p) => sum + (p.SalePrice * p.quantity), 0);
-    this.savedAmount = this.selectedProducts.reduce((sum, p) => sum + (p.MRP - p.SalePrice) * p.quantity, 0);
-   this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
-   console.log(this.selectedProducts);
- }
- order = new FormData();
-customerPoints: number = 0;
- saveOrder(){
-  debugger;
-  // if (this.selectedProducts.length === 0) {
-  //   this.openSnackBar('Please add products to the order', 'Close');
-  //   return;
-  // }
-  // if (!this.selectedCustomer) {
-  //   this.openSnackBar('Please select a customer', 'Close');
-  //   return;
-  // }
-  // if (!this.MobileNumber) {
-  //   this.openSnackBar('Please enter a mobile number', 'Close');
-  //   return;
-  // }
-  // if (this.totalAmount <= 0) {
-  //   this.openSnackBar('Total amount must be greater than zero', 'Close');
-  //   return;
-  // }
-  const body = {
-    invoiceId: this.invoiceId,
-    customer: this.selectedCustomer ? this.selectedCustomer.name : 'Guest',
-    mobile: this.MobileNumber || 'N/A',
-    amount: this.totalAmount,
-    products: this.selectedProducts,
-    savings: this.savedAmount,
-    date: new Date().toISOString()
-  };
-  this.http.post("/orders",body).subscribe( (data:any) =>{
-    this.openSnackBar(data.message, 'Close');
-    this.selectedProducts = [];
-    this.scannedId = '';
-    this.totalAmount = 0;
-    this.savedAmount = 0; 
-    this.discountAmount = 0;
-    this.discountValue = 0;
-    this.isDiscountApplied = false;
-    this.order = new FormData(); // Reset the order FormData
-    this.scannedInputRef.nativeElement.focus(); // Reset focus to the scanned input
-  })
- }
- formatDate(date: Date): string {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0'); // 01-12
-  const day = String(date.getDate()).padStart(2, '0'); // 01-31
-  return `${year}-${month}-${day}`;
-}
 
 
- isDiscountApplied: boolean = false;
- applyDiscount() {
-  debugger;
-if(this.discountValue && !this.isDiscountApplied){
-    if (this.discountType === '%') {
-      if (this.discountValue < 0 || this.discountValue > 100) {
-        this.openSnackBar('Please enter a valid discount percentage (0-100)', 'Close');
-        return;
-      }
-      this.discountAmount = (this.totalAmount * this.discountValue) / 100;
-    } else if (this.discountType === 'Rs') {
-      if (this.discountValue < 0 || this.discountValue >= this.totalAmount) {
-        this.openSnackBar('Please enter a valid discount amount', 'Close');
-        return;
-      }
-      this.discountAmount = this.discountValue;
-    } else {
-      this.discountAmount = 0; // Default to 0 if no valid type is selected
-    }
-    this.isDiscountApplied=true;
-    this.totalAmount -= this.discountAmount; // Apply discount to total amount
-    this.openSnackBar(`Discount of ${this.discountValue} ${this.discountType} applied`, 'Close');
-    this.totalAmount = parseFloat(this.totalAmount.toFixed(2)); // Ensure two decimal places
-    }
-  else{
-    if(this.isDiscountApplied){
-      this.totalAmount += this.discountAmount; // Revert discount from total amount
-      this.openSnackBar(`Discount of ${this.discountValue} ${this.discountType} Applied Already`, 'Close');
-      this.isDiscountApplied = false;
-      this.discountAmount = 0; // Reset discount amount
-    } else {  
-this.openSnackBar('Please enter a valid discount value', 'Close');
-this.discountAmount = 0; // Reset discount amount
-this.discountValue = 0; // Reset discount value
-}
+  private _snackBar = inject(MatSnackBar);
+
+  openSnackBar(message: string, action: string) {
+    this._snackBar.open(message, action);
   }
-}
+  filteredProducts: any[] = [];
+
+  @ViewChild('productAuto') productAuto!: MatAutocomplete;
+
+  paymentMethod: any;
+  discountValue!: number; // Holds the discount value
+  discountType: string = '%';
+  decreaseQuantity(product: any) {
+    debugger
+
+    if (this.selectedProducts.find(p => p.id === product.id).quantity > 1) {
+      this.selectedProducts.find(p => p.id === product.id).quantity--;
+      this.totalAmount -= product.MRP; // Update total amount
+      this.totalAmount = parseFloat(this.totalAmount.toFixed(2)); // Ensure two decimal places
+    } else {
+      // If quantity is 1, remove the product from selectedProducts
+      this.selectedProducts = this.selectedProducts.filter(p => p.id !== product.id);
+    }
+    this.totalAmount = this.selectedProducts.reduce((sum, p) => sum + (p.SalePrice * p.quantity), 0);
+    this.savedAmount = this.selectedProducts.reduce((sum, p) => sum + (p.MRP - p.SalePrice) * p.quantity, 0);
+    this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
+    console.log(this.selectedProducts);
+  }
+  order = new FormData();
+  customerPoints: number = 0;
+  saveOrder() {
+    debugger;
+    // if (this.selectedProducts.length === 0) {
+    //   this.openSnackBar('Please add products to the order', 'Close');
+    //   return;
+    // }
+    // if (!this.selectedCustomer) {
+    //   this.openSnackBar('Please select a customer', 'Close');
+    //   return;
+    // }
+    // if (!this.MobileNumber) {
+    //   this.openSnackBar('Please enter a mobile number', 'Close');
+    //   return;
+    // }
+    // if (this.totalAmount <= 0) {
+    //   this.openSnackBar('Total amount must be greater than zero', 'Close');
+    //   return;
+    // }
+    const body = {
+      invoiceId: this.invoiceId,
+      customer: this.selectedCustomer ? this.selectedCustomer.name : 'Guest',
+      mobile: this.MobileNumber || 'N/A',
+      amount: this.totalAmount,
+      products: this.selectedProducts,
+      savings: this.savedAmount,
+      date: new Date().toISOString()
+    };
+    this.http.post("/orders", body).subscribe((data: any) => {
+      this.openSnackBar(data.message, 'Close');
+      this.selectedProducts = [];
+      this.scannedId = '';
+      this.totalAmount = 0;
+      this.savedAmount = 0;
+      this.discountAmount = 0;
+      this.discountValue = 0;
+      this.isDiscountApplied = false;
+      this.order = new FormData(); // Reset the order FormData
+      this.scannedInputRef.nativeElement.focus(); // Reset focus to the scanned input
+    })
+  }
+  formatDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // 01-12
+    const day = String(date.getDate()).padStart(2, '0'); // 01-31
+    return `${year}-${month}-${day}`;
+  }
 
 
-@HostListener('window:keydown', ['$event'])
-handleKeyDown(event: KeyboardEvent) {
-  // Detect F5 (some browsers use key === 'F5', others use keyCode 116)
-  if (event.key === 'F5' || event.keyCode === 116) {
-    event.preventDefault(); // Stops the browser from refreshing
-this.openSnackBar('F5 is clicked', 'Close');
-if(this.selectedProducts.length === 0) {
-this.openAddPanel();
+  isDiscountApplied: boolean = false;
+  applyDiscount() {
+    debugger;
+    if (this.discountValue && !this.isDiscountApplied) {
+      if (this.discountType === '%') {
+        if (this.discountValue < 0 || this.discountValue > 100) {
+          this.openSnackBar('Please enter a valid discount percentage (0-100)', 'Close');
+          return;
+        }
+        this.discountAmount = (this.totalAmount * this.discountValue) / 100;
+      } else if (this.discountType === 'Rs') {
+        if (this.discountValue < 0 || this.discountValue >= this.totalAmount) {
+          this.openSnackBar('Please enter a valid discount amount', 'Close');
+          return;
+        }
+        this.discountAmount = this.discountValue;
+      } else {
+        this.discountAmount = 0; // Default to 0 if no valid type is selected
+      }
+      this.isDiscountApplied = true;
+      this.totalAmount -= this.discountAmount; // Apply discount to total amount
+      this.openSnackBar(`Discount of ${this.discountValue} ${this.discountType} applied`, 'Close');
+      this.totalAmount = parseFloat(this.totalAmount.toFixed(2)); // Ensure two decimal places
+    }
+    else {
+      if (this.isDiscountApplied) {
+        this.totalAmount += this.discountAmount; // Revert discount from total amount
+        this.openSnackBar(`Discount of ${this.discountValue} ${this.discountType} Applied Already`, 'Close');
+        this.isDiscountApplied = false;
+        this.discountAmount = 0; // Reset discount amount
+      } else {
+        this.openSnackBar('Please enter a valid discount value', 'Close');
+        this.discountAmount = 0; // Reset discount amount
+        this.discountValue = 0; // Reset discount value
+      }
+    }
+  }
+
+
+  @HostListener('window:keydown', ['$event'])
+  handleKeyDown(event: KeyboardEvent) {
+    // Detect F5 (some browsers use key === 'F5', others use keyCode 116)
+    if (event.key === 'F5' || event.keyCode === 116) {
+      event.preventDefault(); // Stops the browser from refreshing
+      this.openSnackBar('F5 is clicked', 'Close');
+      if (this.selectedProducts.length === 0) {
+        this.openAddPanel();
+        return;
+      }
+      else if (this.selectedProducts.length > 0) {
+        this.onHold();
+      }
+    }
+
+    // Detect Escape
+    if (event.key === 'Escape' || event.keyCode === 27) {
+      this.selectedProducts = [];
+      this.scannedId = '';
+      this.totalAmount = 0;
+      this.savedAmount = 0;
+      this.discountAmount = 0;
+      this.discountValue = 0;
+      this.isDiscountApplied = false;
+    //  this.openSnackBar('Escape is clicked, form reset', 'Close');
+      this.scannedInputRef.nativeElement.focus(); // Reset focus to the scanned input
+    //  this.openSnackBar('F5 is clicked', 'Close');
+    }
+    if (event.key === 'F6' || event.keyCode === 117) {
+      event.preventDefault(); // Stops the browser from refreshing
+    //  this.downloadPDF();
+      this.printThermalBill();
+    //  this.openSnackBar('F6 is clicked', 'Close');
+    }
+    if (event.key === ' ' || event.code === 'Space') {
+      event.preventDefault(); // Prevents scrolling when space is pressed
+      this.scannedInputRef.nativeElement.focus(); // Reset focus to the scanned input
+    }
+
+  }
+
+
+  increaseQuantity(product: any) {
+    debugger
+
+    if (!this.selectedProducts.find(p => p.id === product.id)) {
+      this.selectedProducts.push({ ...product, quantity: 1 });
+    }
+    // Increment the quantity of the product in the selectedProducts array
+    else {
+      this.selectedProducts.find(p => p.id === product.id).quantity++;
+    }
+    this.totalAmount += product.SalePrice;
+    this.savedAmount += (product.MRP - product.SalePrice);
+    this.savedAmount = parseFloat(this.savedAmount.toFixed(2));
+    this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
+  }
+  addProductToCart(product: any) {
+    debugger
+    const existing = this.selectedProducts.find(p => p._id === product._id || p.name === product.name || p?.EANCode === product?.EANCode);
+
+    if (existing) {
+      existing.quantity++;
+    } else {
+      this.selectedProducts.push({
+        ...product,
+        quantity: 1
+      });
+    }
+
+    this.totalAmount += product.SalePrice;
+    this.savedAmount += (product.price - product.SalePrice);
+
+    this.totalAmount = +this.totalAmount.toFixed(2);
+    this.savedAmount = +this.savedAmount.toFixed(2);
+
+    this.scannedId = '';
+    // this.filteredProducts = [];
+
+    this.focus();
+    setTimeout(() => this.scrollToBottom(), 10);
+  }
+
+
+  onCodeResult() {
+    debugger;
+    const value = this.scannedId?.trim();
+    if (!value) return;
+
+    // 🔹 1. SCANNER FLOW (numeric / exact id)
+    const scannedProduct = this.products.find(p =>
+      p._id.toString() === value || p.name.toLowerCase() === value.toLowerCase()
+    );
+
+    if (scannedProduct) {
+      this.addProductToCart(scannedProduct);
       return;
     }
-    else if(this.selectedProducts.length > 0) {
+
+    // 🔹 2. KEYBOARD FLOW (filtered list)
+    if (this.filteredProducts.length === 1) {
+      this.addProductToCart(this.filteredProducts[0]);
+      return;
+    }
+
+    // 🔹 3. Exact name match fallback
+    const nameMatch = this.products.find(p =>
+      p.name.toLowerCase() === value.toLowerCase()
+    );
+
+    if (nameMatch) {
+      this.addProductToCart(nameMatch);
+      return;
+    }
+
+    // ❌ Not found
+    this.openSnackBar('Product not found', 'Close');
+  }
+
+  @ViewChild(MatAutocompleteTrigger) autocompleteTrigger!: MatAutocompleteTrigger;
+
+  focus() {
+    setTimeout(() => {
+      this.scannedInputRef.nativeElement.focus();
+      this.scannedInputRef.nativeElement.select();
+    }, 0);
+    setTimeout(() => this.scrollToBottom(), 0); // wait for DOM update
+  }
+
+  holdFunction() {
+    if (this.selectedProducts.length === 0) {
+      this.openAddPanel(); // Open the side panel if no products are selected
+      return;
+    }
+    else {
       this.onHold();
     }
-}
+  }
 
-  // Detect Escape
-  if (event.key === 'Escape' || event.keyCode === 27) {
+  filterProducts() {
+    debugger;
+    if(this.scannedId?.trim().length >2){
+    const search = this.scannedId?.trim().toLowerCase();
+
+    if (!search || search.length < 2) {
+      this.filteredProducts = [];
+      return;
+    }
+
+    this.filteredProducts = this.products.filter(p =>
+      p?.name?.toLowerCase().includes(search) ||
+      p?.EANCode?.toLowerCase().includes(search)
+    );
+  }
+  }
+  addProductFromSuggestion(product: any) {
+    this.addProductToCart(product);
+  
+  }
+
+
+
+  savedAmount: number = 0;
+  discountAmount: number = 0;
+
+
+
+
+  newProduct: any = {
+    id: 'P001',
+    name: 'Product 1',
+    Category: 'General',
+    quantity: 1,
+    UnitDesc: 'pcs',
+    RetailPrice: 100,
+    SalePrice: 90,
+    MRP: 120,
+    UnitPrice: 85
+  };
+
+
+  scannedId: any;
+
+
+  fetchFromExcel() {
+    this.http.get('/products?page=1&limit=100000').subscribe((res: any) => {
+      this.products = res.data;
+      console.log(this.products);
+    });
+
+  }
+  showAllResults() {
+    this.http
+      .get<any>(
+        `/products/search?query=${this.scannedId}`
+      )
+      .subscribe(res => {
+        this.products.push(...(res.data));
+        this.filteredProducts = res.data;
+      });
+  }
+
+  holdList: any[] = [];
+  onHold() {
+    if (this.selectedProducts.length === 0) {
+      this.openSnackBar('No products selected to hold', 'Close');
+      this.openAddPanel(); // Open the side panel if no products are selected
+      return;
+    }
+    const holdItem = {
+      invoice: 'Invoice 1',
+      products: [...this.selectedProducts],
+      amount: this.totalAmount,
+      discount: this.discountAmount,
+      savings: this.savedAmount,
+      date: new Date().toLocaleString(),
+      customer: this.selectedCustomer ? this.selectedCustomer.name : 'Guest',
+      mobile: this.MobileNumber || 'N/A' // Ensure mobile number is included
+    };
+    debugger
+    this.holdList.push(holdItem); // Now push a plain object instead of FormData
+    sessionStorage.setItem('holdList', JSON.stringify(this.holdList));
     this.selectedProducts = [];
     this.scannedId = '';
     this.totalAmount = 0;
     this.savedAmount = 0;
-    this.discountAmount = 0;
-    this.discountValue = 0;
-    this.isDiscountApplied = false;
-    this.openSnackBar('Escape is clicked, form reset', 'Close');
-    this.scannedInputRef.nativeElement.focus(); // Reset focus to the scanned input
-    this.openSnackBar('F5 is clicked', 'Close');}
-    if (event.key === 'F6' || event.keyCode === 117) {
-      event.preventDefault(); // Stops the browser from refreshing
-      this.downloadPDF();
-      this.openSnackBar('F6 is clicked', 'Close');
-    }
-    if (event.key === ' ' || event.code === 'Space') {
-     event.preventDefault(); // Prevents scrolling when space is pressed
-     this.scannedInputRef.nativeElement.focus(); // Reset focus to the scanned input
-    }
-    
-}
-
-
- increaseQuantity(product: any) {
-   debugger
- 
-   if (!this.selectedProducts.find(p => p.id === product.id)) {
-     this.selectedProducts.push({ ...product, quantity: 1 });
-   }
-   // Increment the quantity of the product in the selectedProducts array
-  else{
-   this.selectedProducts.find(p => p.id === product.id).quantity++;
+    this.openSnackBar('Products on hold', 'Close');
   }
- this.totalAmount += product.SalePrice;
-  this.savedAmount+=(product.MRP-product.SalePrice);
-  this.savedAmount= parseFloat(this.savedAmount.toFixed(2));
-  this.totalAmount = parseFloat(this.totalAmount.toFixed(2));   
- }
- addProductToCart(product: any) {
-  const existing = this.selectedProducts.find(p => p._id === product._id || p.name === product.name || p?.EANCode === product?.EANCode);
+  resumeHold(index: number) {
+    const holdItem = this.holdList[index];
 
-  if (existing) {
-    existing.quantity++;
-  } else {
-    this.selectedProducts.push({
-      ...product,
-      quantity: 1
-    });
+    this.selectedProducts = [...holdItem.products];
+    this.totalAmount = holdItem.amount;
+    this.savedAmount = holdItem.savings || 0;
+    this.discountAmount = holdItem.discount || 0;
+    this.selectedCustomer = { name: holdItem.customer }; // Make sure this matches your actual customer structure
+
+    // Remove the resumed item from the hold list
+    this.holdList.splice(index, 1);
+
+    this.openSnackBar('Resumed held invoice', 'Close');
+    this.closeSidePanel();
   }
 
-  this.totalAmount += product.SalePrice;
-  this.savedAmount += (product.price - product.SalePrice);
-
-  this.totalAmount = +this.totalAmount.toFixed(2);
-  this.savedAmount = +this.savedAmount.toFixed(2);
-
-  this.scannedId = '';
-  this.filteredProducts = [];
-
-  this.focus();
-  setTimeout(() => this.scrollToBottom(), 10);
-}
 
 
-onCodeResult() {
-  debugger;
-  const value = this.scannedId?.trim();
-  if (!value) return;
-
-  // 🔹 1. SCANNER FLOW (numeric / exact id)
-  const scannedProduct = this.products.find(p =>
-    p._id.toString() === value || p.name.toLowerCase() === value.toLowerCase()
-  );
-
-  if (scannedProduct) {
-    this.addProductToCart(scannedProduct);
-    return;
-  }
-
-  // 🔹 2. KEYBOARD FLOW (filtered list)
-  if (this.filteredProducts.length === 1) {
-    this.addProductToCart(this.filteredProducts[0]);
-    return;
-  }
-
-  // 🔹 3. Exact name match fallback
-  const nameMatch = this.products.find(p =>
-    p.name.toLowerCase() === value.toLowerCase()
-  );
-
-  if (nameMatch) {
-    this.addProductToCart(nameMatch);
-    return;
-  }
-
-  // ❌ Not found
-  this.openSnackBar('Product not found', 'Close');
-}
-
-@ViewChild(MatAutocompleteTrigger) autocompleteTrigger!: MatAutocompleteTrigger;
-
-focus(){
-   setTimeout(() => {
-    this.scannedInputRef.nativeElement.focus();
-    this.scannedInputRef.nativeElement.select();
-  }, 0);
-  setTimeout(() => this.scrollToBottom(), 0); // wait for DOM update
-}
-
-holdFunction(){
-  if (this.selectedProducts.length === 0) {
-    this.openAddPanel(); // Open the side panel if no products are selected
-    return;
-  }
-  else{
-    this.onHold();
-  }
-}
-
-filterProducts() {
-  const search = this.scannedId?.trim().toLowerCase();
-
-  if (!search || search.length < 2) {
-    this.filteredProducts = [];
-    return;
-  }
-
-  this.filteredProducts = this.products.filter(p =>
-    p.name.toLowerCase().includes(search) || 
-    p.EANCode?.toLowerCase().includes(search)
-  );
-}
-addProductFromSuggestion(product: any) {
-  this.addProductToCart(product);
-}
-
-
-
-savedAmount: number = 0;
-discountAmount: number = 0;
-
-
-
-
-    newProduct :any = {
-     id: 'P001',
-     name: 'Product 1',
-     Category: 'General',
-     quantity: 1,
-     UnitDesc: 'pcs',
-     RetailPrice: 100,
-     SalePrice: 90,
-     MRP: 120,
-     UnitPrice: 85
-   };
-   
-
-scannedId:any;
-
-
- fetchFromExcel(){
-  this.http.get('/products?page=1&limit=100000').subscribe((res: any) => {
-    this.products = res.data;
-    console.log(this.products);
-  });
-
-}
-showAllResults() {
-  this.http
-    .get<any>(
-      `/products/search?query=${this.scannedId}`
-    )
-    .subscribe(res => {
-      this.products.push(...(res.data));
-      this.filteredProducts = res.data;
-    });
-}
- 
-holdList: any[] = [];
-onHold() {
-  if (this.selectedProducts.length === 0) {
-    this.openSnackBar('No products selected to hold', 'Close');
-    this.openAddPanel(); // Open the side panel if no products are selected
-    return;
-  }
-  const holdItem = {
-    invoice: 'Invoice 1',
-    products: [...this.selectedProducts],
-    amount: this.totalAmount,
-    discount: this.discountAmount,
-    savings:this.savedAmount,
-    date: new Date().toLocaleString(),
-    customer: this.selectedCustomer ? this.selectedCustomer.name : 'Guest',
-    mobile: this.MobileNumber || 'N/A' // Ensure mobile number is included
-  };
-debugger
-  this.holdList.push(holdItem); // Now push a plain object instead of FormData
-  localStorage.setItem('holdList', JSON.stringify(this.holdList));
-  this.selectedProducts = [];
-  this.scannedId = '';
-  this.totalAmount = 0;
-  this.savedAmount = 0;
-  this.openSnackBar('Products on hold', 'Close');
-}
-resumeHold(index: number) {
-  const holdItem = this.holdList[index];
-
-  this.selectedProducts = [...holdItem.products];
-  this.totalAmount = holdItem.amount;
-  this.savedAmount = holdItem.savings || 0;
-  this.discountAmount = holdItem.discount || 0;
-  this.selectedCustomer = { name: holdItem.customer }; // Make sure this matches your actual customer structure
-
-  // Remove the resumed item from the hold list
-  this.holdList.splice(index, 1);
-
-  this.openSnackBar('Resumed held invoice', 'Close');
-  this.closeSidePanel();
-}
-
-
-
-@ViewChild('scannedInput') scannedInputRef!: ElementRef;
-//@ViewChild('scannedInput') scannedInputRef!: ElementRef;
+  @ViewChild('scannedInput') scannedInputRef!: ElementRef;
+  //@ViewChild('scannedInput') scannedInputRef!: ElementRef;
   // Reset focus and select input text
- 
 
 
-selectInput(input: HTMLInputElement): void {
-  setTimeout(() => input.select(), 0); // Helps scanners overwrite
-}
+
+  selectInput(input: HTMLInputElement): void {
+    setTimeout(() => input.select(), 0); // Helps scanners overwrite
+  }
 
   products: any[] = [
-   
+
   ];
   editingProduct: any = null;
   onQuantityChange(product: any) {
@@ -492,26 +498,26 @@ selectInput(input: HTMLInputElement): void {
       this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
     } else {
       this.selectedProducts.push({ ...product }); // Add new product with updated quantity
-      this.totalAmount += product.SalePrice * product.quantity; 
+      this.totalAmount += product.SalePrice * product.quantity;
       this.savedAmount += (product.MRP - product.SalePrice) * product.quantity;
       this.savedAmount = parseFloat(this.savedAmount.toFixed(2));
       this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
     }
   }
-  enterProduct(){
-    let product={
-      "name":this.productsName,
-      "MRP":this.price,
-      "quantity":this.quantity,
-      "salesPrice":0,
-      "id":this.selectedProducts.length
+  enterProduct() {
+    let product = {
+      "name": this.productsName,
+      "MRP": this.price,
+      "quantity": this.quantity,
+      "salesPrice": 0,
+      "id": this.selectedProducts.length
     }
     this.addToCart(product);
-    this.productsName=''
-    this.price=0;
-    this.quantity=0;
+    this.productsName = ''
+    this.price = 0;
+    this.quantity = 0;
   }
-  quantity!:number;
+  quantity!: number;
   deleteProduct(product: any) {
     this.discountAmount = 0; // Reset discount amount when deleting a product
     this.discountValue = 0; // Reset discount value when deleting a product
@@ -520,31 +526,31 @@ selectInput(input: HTMLInputElement): void {
     this.totalAmount -= product.SalePrice * product.quantity;
     this.savedAmount -= (product.MRP - product.SalePrice) * product.quantity;
     this.savedAmount = parseFloat(this.savedAmount.toFixed(2));
-    this.totalAmount = parseFloat(this.totalAmount.toFixed(2));     
+    this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
   }
   addToCart(product: any) {
     debugger
     let productExists = this.selectedProducts.find(p => p.id === product.id);
     if (productExists) {
       product.stock -= product.quantity;
-      productExists.quantity +=1;
-      this.totalAmount += product.MRP ;
+      productExists.quantity += 1;
+      this.totalAmount += product.MRP;
       this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
       return;
     }
-   else{
+    else {
       debugger
       product.stock -= product.quantity;
       this.selectedProducts = [...this.selectedProducts, product];
-      this.totalAmount += product.MRP ;
+      this.totalAmount += product.MRP;
       this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
     }
   }
   resetForm() {
     this.editingProduct = null;
   }
-  
-  
+
+
   openAddPanel() {
     // if(this.holdList.length === 0) {
     //   this.openSnackBar('No hold items available', 'Close');
@@ -559,24 +565,24 @@ selectInput(input: HTMLInputElement): void {
     this.editingProduct = null;
     this.resetForm();
   }
-   onPanelOpened(): void {
-     this.isPanelExpanded = true;
-   }
- 
-   closeProductsPanel(): void {
-     this.isPanelExpanded = false;
-     this.showSidePanel = false;
-     this.editingProduct = null;
-     this.resetForm();
-   }
-   onPanelClosed(): void {
-     this.isPanelExpanded = false;
-   }
- 
+  onPanelOpened(): void {
+    this.isPanelExpanded = true;
+  }
+
+  closeProductsPanel(): void {
+    this.isPanelExpanded = false;
+    this.showSidePanel = false;
+    this.editingProduct = null;
+    this.resetForm();
+  }
+  onPanelClosed(): void {
+    this.isPanelExpanded = false;
+  }
+
   editProduct(product: any) {
     this.editingProduct = { ...product }; // Create a copy of the product for editing
     this.showSidePanel = true;
-  } 
+  }
   customers: any[] = [];
   isPrinting: boolean = false;
   isDiscountApplicable: boolean = false;
@@ -588,8 +594,8 @@ selectInput(input: HTMLInputElement): void {
     const container = this.scrollContainer.nativeElement;
     container.scrollTop = container.scrollHeight;
   }
-  downloadPDF(){
-this.isPrinting = true;
+  downloadPDF() {
+    this.isPrinting = true;
   }
   currentDate: Date = new Date();
   selectedCustomer: any = null;
@@ -605,43 +611,37 @@ this.isPrinting = true;
       this.customerPoints = 0; // Reset points if no customer is selected
     }
   }
-  fetchCustomers(){
-    this.http.get('http://localhost:3000/customers').subscribe((res: any) => {
-      this.customers = res;
+  fetchCustomers() {
+    this.http.get('/customers').subscribe((res: any) => {
+      this.customers = res.data || [];
       console.log(this.customers);
     });
   }
 
 
-  
+
   lastOrder() {
     debugger;
-    this.http.get('http://localhost:3000/api/orders').subscribe((res: any) => {
+    this.http.get('/orders').subscribe((res: any) => {
       debugger
       const now = new Date();
-  
-      // Short month name like "Sep"
       const month = now.toLocaleString("en-US", { month: "short" });
-    
-      // Year like "2025"
       const year = now.getFullYear();
-    
-      // Sequence = current count + 1
       const seq = res.length + 1;
-    
-this.invoiceId = `INV${month}${year}${seq}`;
+
+      this.invoiceId = `INV${month}${year}${seq}`;
     });
   }
 
-  clientName: string = 'Supermart';
+  clientName: string = 'VKS Supermarkett';
   clientAddress: string = 'No 1,Nethaji nagar,P.V. Kalahur road,Puduppakkam,Chennai-603202';
   contactInfo: string = 'Phone: 9791196869';
 
-generateBillHTML(): string {
-  let items = '';
+  generateBillHTML(): string {
+    let items = '';
 
-  this.selectedProducts.forEach(p => {
-    items += `
+    this.selectedProducts.forEach(p => {
+      items += `
       <div class="item">
         <div>${p.name}</div>
         <div class="row">
@@ -650,9 +650,9 @@ generateBillHTML(): string {
         </div>
       </div>
     `;
-  });
+    });
 
-  return `
+    return `
 <!DOCTYPE html>
 <html>
 <head>
@@ -704,43 +704,43 @@ generateBillHTML(): string {
 </body>
 </html>
 `;
-}
-printThermalBill() {
-  const iframe = document.createElement('iframe');
+  }
+  printThermalBill() {
+    const iframe = document.createElement('iframe');
 
-  iframe.style.position = 'absolute';
-  iframe.style.width = '0';
-  iframe.style.height = '0';
-  iframe.style.border = 'none';
+    iframe.style.position = 'absolute';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = 'none';
 
-  document.body.appendChild(iframe);
+    document.body.appendChild(iframe);
 
-  const doc = iframe.contentWindow!.document;
-  doc.open();
-  doc.write(this.generateBillHTML());
-  doc.close();
+    const doc = iframe.contentWindow!.document;
+    doc.open();
+    doc.write(this.generateBillHTML());
+    doc.close();
 
-  iframe.contentWindow!.focus();
-  iframe.contentWindow!.print();
+    iframe.contentWindow!.focus();
+    iframe.contentWindow!.print();
 
-  setTimeout(() => {
-    document.body.removeChild(iframe);
-  }, 500);
-}
-
-
+    setTimeout(() => {
+      document.body.removeChild(iframe);
+    }, 500);
+  }
 
 
- confirmAction(){
 
- }
- closeModal(){
-  
- }
-isSpeaking: boolean = false;
 
-productsName:string="";
-price!:number;
+  confirmAction() {
+
+  }
+  closeModal() {
+
+  }
+  isSpeaking: boolean = false;
+
+  productsName: string = "";
+  price!: number;
 
   constructor(private router: Router, private http: HttpClient) {
   }

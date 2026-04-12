@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { LoginComponent } from "./login/login.component";
+import { HttpClient } from '@angular/common/http';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-root',
@@ -22,7 +24,7 @@ export class AppComponent {
   selectedSales: number[] = [];
   tenantName: string = 'SuperMart';
 
-  constructor(private router: Router) {
+  constructor(private router: Router,private http: HttpClient, private toastr: ToastrService) {
 // this.productService.getProducts().subscribe(products => {
 //       console.log('Products from service:', products);
 //     });
@@ -123,11 +125,32 @@ navigateEnabler(){
 }
 
   ngOnInit() {
-    // this.isLoader = true;
-    // this.filterAndPaginate();
-    // this.isOrdersActive();
+    if(sessionStorage.getItem('clientCode')){
+      this.isLoggedIn = true;
+      this.isBillingActive();
+    }
+  
+    //this.isOrdersActive();
   }
+  products: any[] = [];
+ fetchFromExcel() {
+    this.isLoader = true;
 
+    this.http
+      .get<any>("/products?page=1&limit=100000")
+      .subscribe({
+        next: (res) => {
+          debugger
+          this.products = res.data;
+        },
+
+        error: (err) => {
+          console.error('API Error:', err);
+          this.isLoader = false;
+          this.toastr.error('Something went wrong while fetching products');
+        }
+      });
+  }
   onSearch() {
     this.currentPage = 1;
     this.filterAndPaginate();
