@@ -44,7 +44,7 @@ summary: any;
     this.topProducts();
     this.fetchDateRange();
   }
-  data: ChartData<'bar'> = {
+data: ChartData<'bar'> = {
   labels: ['Jan', 'Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
   datasets: [
     {
@@ -57,7 +57,26 @@ summary: any;
 payData: ChartData<'bar'> = {
   labels: ['Payment Methods'],
   datasets: [
-   
+    {
+      label: 'Cash',
+      data: [1000],
+      backgroundColor: '#FF6384'
+    },
+    {
+      label: 'Card',
+      data: [200],
+      backgroundColor: '#36A2EB'
+    },
+    {
+      label: 'UPI',
+      data: [1500],
+      backgroundColor: '#FFCE56'
+    },
+    {
+      label: 'Net Banking',
+      data: [500],
+      backgroundColor: '#4BC0C0'
+    }
   ]
 };
 barChartLabels = this.data.datasets.map(d => d.label);

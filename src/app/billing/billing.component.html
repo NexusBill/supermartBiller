@@ -5,8 +5,8 @@
     <div class="main-content" style="display: flex; flex-direction: column;">
         <mat-expansion-panel>
             <mat-expansion-panel-header>
-                <mat-panel-title> Customer Details </mat-panel-title>
-                <mat-panel-description>
+                <mat-panel-title> Customer Details {{"Billing For : "+selectedCustomeretails?.name || 'No Customer Selected'}}
+   </mat-panel-title>               <mat-panel-description>
                     <div class="select">Bill No : </div> {{ invoiceId }}
                 </mat-panel-description>
             </mat-expansion-panel-header>
@@ -30,11 +30,11 @@
 
                 <i class="fa-solid fa-phone" matPrefix style="margin: 0px 8px; color: #666;"></i>
 
-                <input matInput placeholder="Select Customer" [(ngModel)]="MobileNumber" [matAutocomplete]="auto" />
+                <input matInput placeholder="Select Customer" (input)="searchCustomer()" [(ngModel)]="MobileNumber" [matAutocomplete]="auto" />
 
                 <mat-autocomplete #auto="matAutocomplete">
-                    <mat-option *ngFor="let customer of customers" [value]="customer.name">
-                        {{ customer.name }}
+                    <mat-option *ngFor="let customer of filteredCustomers" (click)="onCustomerSelection(customer)" [value]="customer.name">
+                        {{ customer.name + " - " }} {{ customer?.mobile }}
                     </mat-option>
                 </mat-autocomplete>
             </mat-form-field>
@@ -82,7 +82,7 @@
                             <mat-autocomplete #productAuto="matAutocomplete">
                                 <mat-option *ngFor="let suggestion of filteredProducts" [value]="suggestion.name"  (keydown.enter)="onCodeResult()" (click)="addProductFromSuggestion(suggestion)"
 >
-                                    {{ suggestion.name }} ({{ suggestion.id || 'N/A' }})
+                                 {{"Barcode : "+suggestion.EANCode+" : "}}   {{ suggestion.name }} ({{ 'Rs.' + suggestion.SalePrice || 'N/A' }})
                                 </mat-option>
                                 <mat-option 
                                     *ngIf="filteredProducts.length === 0 && scannedId?.trim().length > 2"
@@ -118,7 +118,7 @@
   printSectionId="invoice-container"
   printTitle="Invoice"
   [useExistingCss]="true"
-                        (click)="printThermalBill()">Print (F6)<em> </em><i class="fa-solid fa-print"></i>
+                        (click)="saveOrder();printThermalBill()">Print (F6)<em> </em><i class="fa-solid fa-print"></i>
                     </div>
                 </div>
 
@@ -150,7 +150,7 @@
                                     <!-- <td class="data-cell name-cell"><span class="name-text">{{ element.id }}</span> -->
                                     <td class="data-cell name-cell"><span class="name-text">{{ element.name }}</span>
                                     </td>
-                                    <td class="data-cell">{{ element.price }}</td>
+                                    <td class="data-cell">{{ element.SalePrice }}</td>
                                     <td class="data-cell">
                                         <div class="d-flex align-items-center">
                                             <input #quantity type="text" [(ngModel)]="element.quantity"

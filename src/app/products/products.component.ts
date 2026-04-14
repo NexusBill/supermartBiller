@@ -95,6 +95,7 @@ products: any[] = [];
     this.dataSource.paginator = this.paginator;
   }
   applyFilter(value: string) {
+    debugger
   this.dataSource.filter = value.trim().toLowerCase();
 }
   getCategories() {
@@ -114,13 +115,13 @@ showimage(product:any){
 }
 downloadTemplate() {
   const headers = [{
-    'EAN Code': '',
-    'Name': '',
+    'EANCode': '',
+    'name': '',
     'Category': '',
-    'Sell Type': '',
-    'Stock': '',
-    'Price': '',
-    'Sale Price': '',
+    'SellType': '',
+    'QuantityOnHand': '',
+    'price': '',
+    'SalePrice': '',
     'MRP': '',
   }];
 
@@ -185,13 +186,13 @@ processBulkUpload(): void {
   else{
     this.isLoader= true;
     const productsToUpload = this.uploadedItems.map(item => ({
-      EANCode: item['EAN Code'] || '',
-      name: item['Name'] || '',
-      category: item['Category'] || '',
-      SellType: item['Sell Type'] || '',
-      QuantityOnHand: item['Stock'] || 0,
-      price: item['Price'] || 0,
-      SalePrice: item['Sale Price'] || 0,
+      EANCode: item['EANCode'] || '',
+      name: item['name'] || '',
+      category: item['category'] || '',
+      SellType: item['SellType'] || '',
+      QuantityOnHand: item['QuantityOnHand'] || 0,
+      price: item['price'] || 0,
+      SalePrice: item['SalePrice'] || 0,
       MRP: item['MRP'] || 0
     }));
 
@@ -220,14 +221,13 @@ updateProductStock(product: any) {
     this.http.put(`/products/${product._id}`, {
      "name": product?.name,
     "SellType": product?.SellType,
-    "RetailPrice": product?.RetailPrice,
     "SalePrice": product?.SalePrice,
     "MRP": product?.MRP,
     "UnitPrice": product?.UnitPrice,
     "EANCode": product?.EANCode,
-    "Category": product.Category,
-    "price": product.price,
-    "QuantityOnHand": product.QuantityOnHand
+    "category": product?.category,
+    "price": product?.price,
+    "QuantityOnHand": product?.QuantityOnHand
     }).subscribe(res => {
       debugger;
       this.closeSidePanel(); // Close the side panel after updating
@@ -362,12 +362,12 @@ setPage(page: number) {
     this.http.post('/products', {
       "name": this.productForm.name,
     "SellType": this.productForm.SellType,
-    "RetailPrice": this.productForm.RetailPrice,
+    "RetailPrice": this.productForm?.RetailPrice,
     "SalePrice": this.productForm.SalePrice,
     "MRP": this.productForm.MRP,
     "UnitPrice": this.productForm.UnitPrice,
     "EANCode": this.productForm.EANCode,
-    "Category": this.productForm.Category,
+    "Category": this.productForm.category,
     "price": this.productForm.price,
     "quantity": this.productForm.quantity
 
@@ -658,7 +658,7 @@ this.toasterService.success('Image uploaded and products updated successfully');
   
     name: '',
     _id: '',
-    Category: '',
+    category: '',
     price: 0,
     SellType: '',
     RetailPrice: 0, 
@@ -716,7 +716,7 @@ this.toasterService.success('Image uploaded and products updated successfully');
       MRP: product?.MRP || 0,
       UnitPrice: product?.UnitPrice || 0,
       EANCode: product?.EANCode || '',
-      Category: product?.category,
+      category: product?.category,
       price: product?.price || 0,
       quantity: product?.QuantityOnHand || 10 // Default to 10 if not provided
 
@@ -780,7 +780,7 @@ this.toasterService.success('Image uploaded and products updated successfully');
       MRP: 0,
       UnitPrice: 0,
       EANCode: '',
-      Category: '',
+      category: '',
       price: 0,
       quantity: 10
     };

@@ -157,8 +157,8 @@ export class BillingComponent {
     // }
     const body = {
       invoiceId: this.invoiceId,
-      customer: this.selectedCustomer ? this.selectedCustomer.name : 'Guest',
-      mobile: this.MobileNumber || 'N/A',
+      customer: this.selectedCustomeretails ? this.selectedCustomeretails?.name : 'Guest',
+      mobile: this.selectedCustomeretails?.mobile || 'N/A',
       amount: this.totalAmount,
       products: this.selectedProducts,
       savings: this.savedAmount,
@@ -295,10 +295,10 @@ export class BillingComponent {
     }
 
     this.totalAmount += product.SalePrice;
-    this.savedAmount += (product.price - product.SalePrice);
+    this.savedAmount += (product.MRP - product.SalePrice);
 
-    this.totalAmount = +this.totalAmount.toFixed(2);
-    this.savedAmount = +this.savedAmount.toFixed(2);
+    this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
+    this.savedAmount = parseFloat(this.savedAmount.toFixed(2));
 
     this.scannedId = '';
     // this.filteredProducts = [];
@@ -368,14 +368,14 @@ export class BillingComponent {
     if(this.scannedId?.trim().length >2){
     const search = this.scannedId?.trim().toLowerCase();
 
-    if (!search || search.length < 2) {
       this.filteredProducts = [];
-      return;
-    }
+    
 
     this.filteredProducts = this.products.filter(p =>
-      p?.name?.toLowerCase().includes(search) ||
-      p?.EANCode?.toLowerCase().includes(search)
+      p?.name?.toString().toLowerCase() == (search) ||
+      p?.EANCode?.toString().toLowerCase() == (search) ||
+      p?._id?.toString() == (search) ||
+      p?.category?.toString().toLowerCase() == (search)
     );
   }
   }
@@ -411,6 +411,7 @@ export class BillingComponent {
   fetchFromExcel() {
     this.http.get('/products?page=1&limit=100000').subscribe((res: any) => {
       this.products = res.data;
+      this.filteredProducts = res.data;
       console.log(this.products);
     });
 
@@ -527,6 +528,10 @@ export class BillingComponent {
     this.savedAmount -= (product.MRP - product.SalePrice) * product.quantity;
     this.savedAmount = parseFloat(this.savedAmount.toFixed(2));
     this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
+    if (this.selectedProducts.length === 0) {
+      this.savedAmount = 0; // Reset saved amount if no products are selected
+      this.totalAmount = 0; // Reset total amount if no products are selected
+    }
   }
   addToCart(product: any) {
     debugger
@@ -614,11 +619,17 @@ export class BillingComponent {
   fetchCustomers() {
     this.http.get('/customers').subscribe((res: any) => {
       this.customers = res.data || [];
+      this.filteredCustomers = res.data || [];
       console.log(this.customers);
     });
   }
+ selectedCustomeretails: any = null;
 
-
+ onCustomerSelection(customer: any) {
+  this.selectedCustomeretails = customer;
+  this.MobileNumber = customer.mobile;
+  this.customerPoints = customer.points || 0; // Set customer points if available
+}
 
   lastOrder() {
     debugger;
@@ -627,14 +638,14 @@ export class BillingComponent {
       const now = new Date();
       const month = now.toLocaleString("en-US", { month: "short" });
       const year = now.getFullYear();
-      const seq = res.length + 1;
+      const seq = (res.length) || 0 + 1;
 
       this.invoiceId = `INV${month}${year}${seq}`;
     });
   }
 
   clientName: string = 'VKS Supermarkett';
-  clientAddress: string = 'No 1,Nethaji nagar,P.V. Kalahur road,Puduppakkam,Chennai-603202';
+  clientAddress: string = 'Puduppakkam,Chennai-603202';
   contactInfo: string = 'Phone: 9791196869';
 
   generateBillHTML(): string {
@@ -680,6 +691,8 @@ export class BillingComponent {
 
   <div class="row bold"><span>Invoice</span><span>${this.invoiceId}</span></div>
   <div class="row bold"><span>Date</span><span>${new Date().toLocaleString()}</span></div>
+  <div class="row bold"><span>Customer</span><span>${this.selectedCustomeretails?.name}</span></div>
+  <div class="row bold"><span>Mobile</span><span>${this.selectedCustomeretails?.mobile}</span></div>
 
   <hr>
   ${items}
@@ -697,13 +710,23 @@ export class BillingComponent {
 
   <hr>
   <div class="center">
-        Thank you! Visit again 😊</div><br>
-         © 2025-30 Copyright:
-       <a class="text-body" href="#">Nexusbills </a>
+        Thank you! Visit again 😊   <br>Contact us: 9994305384<br></div><br>
+       
+      
 
 </body>
 </html>
 `;
+  }
+  filteredCustomers: any[] = [];
+  searchCustomer(){
+      if(this.MobileNumber?.trim().length >2){
+        this.filteredCustomers= [];
+    const search = this.MobileNumber?.trim().toLowerCase();
+      this.filteredCustomers = this.customers.filter(customer =>
+        customer?.name.toString().toLowerCase().includes(search) || customer?.mobile.toString().toLowerCase().includes(search)
+      );
+      }
   }
   printThermalBill() {
     const iframe = document.createElement('iframe');

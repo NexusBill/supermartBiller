@@ -232,7 +232,7 @@
 
       <div class="form-group">
         <label>Category</label>
-        <select [(ngModel)]="productForm.Category" name="Category">
+        <select [(ngModel)]="productForm.category" name="category">
           <option *ngFor="let c of categories" [value]="c.name">
             {{ c.name }}
           </option>

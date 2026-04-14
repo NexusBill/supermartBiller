@@ -3,12 +3,12 @@ import { TableviewComponent } from '../tableview/tableview.component';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { FormsModule } from '@angular/forms';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-customer',
   standalone: true,
-  imports: [CommonModule,MatTableModule,HttpClientModule ,FormsModule,TableviewComponent],
+  imports: [CommonModule,MatTableModule ,FormsModule,TableviewComponent],
   templateUrl: './customer.component.html',
   styleUrl: './customer.component.css'
 })
@@ -33,7 +33,7 @@ export class CustomerComponent {
     }
     else {
       this.customerData = [...this.customerData, { name: this.customerName, email: this.customerEmail, phone: this.customerPhone }];
-      this.http.post('http://localhost:3000/customers', {
+      this.http.post('/customers', {
         name: this.customerName,
         email: this.customerEmail,
         phone: this.customerPhone,
@@ -70,7 +70,7 @@ editCustomer(customer: any) {
     this.customerAddress = customer.address;
     this.customerCity = customer.city;
     this.customerPoints = customer.points;
-    this.http.put(`http://localhost:3000/customers/${customer.id}`, {
+    this.http.put(`/customers/${customer.id}`, {
       name: this.customerName,
       email: this.customerEmail,
       phone: this.customerPhone,
