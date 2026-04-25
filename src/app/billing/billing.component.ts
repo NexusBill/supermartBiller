@@ -84,6 +84,9 @@ export class BillingComponent {
   selectedProducts: any[] = [];
   invoiceId: string = 'INV001';
   intervalId: any;
+  taxableAmount: any;
+  cgst: any;
+  sgst: any;
   ngOnInit() {
     this.loader = true;
     this.fetchFromExcel();
@@ -648,76 +651,180 @@ export class BillingComponent {
   clientAddress: string = 'Puduppakkam,Chennai-603202';
   contactInfo: string = 'Phone: 9791196869';
 
-  generateBillHTML(): string {
-    let items = '';
+ generateBillHTML(): string {
+  let items = '';
 
-    this.selectedProducts.forEach(p => {
-      items += `
-      <div class="item">
-        <div>${p.name}</div>
-        <div class="row">
-          <span>${p.quantity} x ${p.SalePrice}</span>
-          <span>${(p.quantity * p.SalePrice).toFixed(2)}</span>
-        </div>
-      </div>
-    `;
-    });
+  this.selectedProducts.forEach(p => {
+   items += `
+<tr>
+  <td class="col-product">${p.name}</td>
+  <td class="col-qty">${p.quantity}</td>
+  <td class="col-rate">${p.SalePrice.toFixed(2)}</td>
+  <td class="col-amount">${(p.quantity * p.SalePrice).toFixed(2)}</td>
+</tr>
+`;
+  });
 
-    return `
+  return `
 <!DOCTYPE html>
 <html>
 <head>
   <style>
-    body {
-      width: 80mm;
-      margin: 5mm;
-      font-family: Courier, monospace;
-      font-size: 15px;
-    }
+   body {
+  width: 90mm;
+  font-family: "Courier New", monospace;
+  font-size: 13px;
+}
+
+
     .center { text-align: center; }
     .bold { font-weight: bold; }
-    .row { display: flex; justify-content: space-between; }
-    hr { border-top: 1px dashed #000; }
-    .item { margin-bottom: 4px; }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+        white-space: pre; 
+    }
+
+    hr {
+      border: none;
+      border-top: 1px dashed black;
+      margin: 6px 0;
+    }
+
+    table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 5px;
+    table-layout: fixed; 
+  }
+
+  td {
+    padding: 2px 2px;
+    vertical-align: top;
+    word-wrap: break-word;
+  }
+
+.col-product {
+  width: 60%;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  }
+
+  .col-qty {
+    width: 10%;
+    text-align: center;
+  }
+
+  .col-rate {
+    width: 15%;
+    text-align: right;
+  }
+
+  .col-amount {
+    width: 15%;
+    text-align: right;
+  }
+
     @page { margin: 0; }
   </style>
 </head>
+
 <body>
 
+  <!-- HEADER -->
   <div class="center bold">${this.clientName}</div>
-  <div class="center bold">${this.clientAddress}</div>
-  <div class="center bold" style="font-size: 12px;left: 2;">${this.contactInfo}</div>
-  <hr>
-
-  <div class="row bold"><span>Invoice</span><span>${this.invoiceId}</span></div>
-  <div class="row bold"><span>Date</span><span>${new Date().toLocaleString()}</span></div>
-  <div class="row bold"><span>Customer</span><span>${this.selectedCustomeretails?.name}</span></div>
-  <div class="row bold"><span>Mobile</span><span>${this.selectedCustomeretails?.mobile}</span></div>
+  <div class="center">${this.clientAddress}</div>
+  <div class="center" style="font-size:12px;">${this.contactInfo}</div>
 
   <hr>
-  ${items}
+
+  <!-- BILL INFO -->
+  <div class="row"><span>Invoice</span><span>${this.invoiceId}</span></div>
+  <div class="row"><span>Date</span><span>${new Date().toLocaleString()}</span></div>
+  <div class="row"><span>Customer</span><span>${this.selectedCustomeretails?.name || '---'}</span></div>
+  <div class="row"><span>Mobile</span><span>${this.selectedCustomeretails?.mobile || '---'}</span></div>
+
   <hr>
 
+  <!-- ITEMS TABLE -->
+ <table>
+  <tr class="bold">
+    <td class="col-product">Product</td>
+    <td class="col-qty">Qty</td>
+    <td class="col-rate">Rate</td>
+    <td class="col-amount">Amount</td>
+  </tr>
+</table>
+
+  <hr>
+
+  <table>
+    ${items}
+  </table>
+
+  <hr>
+
+  <!-- TOTAL -->
   <div class="row bold">
-    <span>TOTAL</span>
+    <span>Total Qty:</span>
+    <span>${this.selectedProducts.length}</span>
+  </div>
+
+  <div class="row big">
+    <span>BILL AMT :</span>
     <span>₹${this.totalAmount.toFixed(2)}</span>
   </div>
 
-  <div class="row bold">
-    <span>You Saved</span>
-    <span>₹${this.savedAmount.toFixed(2)}</span>
+  <hr>
+
+  <!-- GST BREAKUP -->
+  <div class="center bold">GST BREAKUP DETAILS</div>
+
+  <table>
+    <tr class="bold">
+      <td>%</td>
+      <td>Taxable</td>
+      <td>CGST</td>
+      <td>SGST</td>
+      <td>Total</td>
+    </tr>
+
+    <tr>
+      <td>5%</td>
+      <td>${this.taxableAmount?.toFixed(2) || '0.00'}</td>
+      <td>${this.cgst?.toFixed(2) || '0.00'}</td>
+      <td>${this.sgst?.toFixed(2) || '0.00'}</td>
+      <td>${this.totalAmount.toFixed(2)}</td>
+    </tr>
+  </table>
+
+  <hr>
+
+  <!-- PAYMENT -->
+  <div class="row">
+    <span>Paid Amt:</span>
+    <span>₹${this.totalAmount.toFixed(2)}</span>
+  </div>
+
+  <div class="row">
+    <span>Returned Amt:</span>
+    <span>₹0.00</span>
   </div>
 
   <hr>
+
+  <!-- FOOTER -->
   <div class="center">
-        Thank you! Visit again 😊   <br>Contact us: 9994305384<br></div><br>
-       
-      
+    Thank you! Visit again 😊<br>
+    Contact us: 9994305384
+  </div>
 
 </body>
 </html>
 `;
-  }
+}
   filteredCustomers: any[] = [];
   searchCustomer(){
       if(this.MobileNumber?.trim().length >2){
