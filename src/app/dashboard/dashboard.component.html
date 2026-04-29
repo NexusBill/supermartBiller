@@ -14,7 +14,7 @@
         </mat-chip>
 
       </mat-chip-set> -->
-      <div class="col-3">
+      <!-- <div class="col-3">
         <div class="welcome-card">
           <h2 class="welcome-title">Montly's Sale : </h2>
           <h3 class="welcome-title" style="margin-top: 7px;">{{monthlySalesAmount}}</h3>
@@ -25,7 +25,7 @@
           <h2 class="welcome-title">Monthly Profit : </h2>
           <h3 class="welcome-title" style="margin-top: 7px;">{{monthlyProfitAmount}}</h3>
         </div>
-      </div>
+      </div> -->
        <div class="row">
       <div class="status-container">
 
@@ -149,7 +149,7 @@
       <!-- Tables -->
 
     </div>
-      <div class="col-3" style="margin-top: 5px;">
+      <!-- <div class="col-3" style="margin-top: 5px;">
         <mat-form-field appearance="outline" style="margin-right: 10px;">
           <mat-label>Customer Name</mat-label>
           <i class="fa-solid fa-user" matPrefix style="margin:0px 8px; color: #666;"></i>
@@ -180,16 +180,15 @@
           <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
           <mat-date-range-picker #picker></mat-date-range-picker>
         </mat-form-field>
-      </div>
+      </div> -->
       
 
     </div>
     
 
     <!-- Router Outlet Container -->
-    <div class="row">
+    <!-- <div class="row">
       <div class="sales-table-container">
-        <!-- Header Section -->
         <div class="table-header">
           <div class="row align-items-center">
             <div class="col-md-6">
@@ -212,7 +211,6 @@
           </div>
         </div>
 
-        <!-- Table Section -->
         <div class="table-wrapper">
           <div class="table-responsive">
             <table class="table table-hover">
@@ -265,11 +263,9 @@
                   </td>
                   <td class="date-cell">
                     <span class="date-value">{{ sale.date }}</span>
-                    <!-- <span class="time-value">{{ sale.Date }}</span> -->
                   </td>
                   <td class="status-cell">
                     <span class="status-badge">
-                      <!-- <i class="fas" [ngClass]="getStatusIcon(sale.status)"></i> -->
                       {{ sale.savings }}
                     </span>
                   </td>
@@ -292,7 +288,6 @@
             </table>
           </div>
 
-          <!-- Empty State -->
           <div class="empty-state" *ngIf="filteredSales.length === 0">
             <i class="fas fa-receipt"></i>
             <h4>No sales found</h4>
@@ -323,6 +318,6 @@
         </div>
         
       </div>
-    </div>
+    </div> -->
   </div>
 </main>

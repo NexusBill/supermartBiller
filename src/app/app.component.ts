@@ -127,6 +127,7 @@ navigateEnabler(){
   ngOnInit() {
     if(sessionStorage.getItem('clientCode')){
       this.isLoggedIn = true;
+      this.tenantName = sessionStorage.getItem('clientCode') || 'SuperMart';
       this.isBillingActive();
     }
   

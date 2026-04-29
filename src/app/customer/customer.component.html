@@ -23,7 +23,7 @@
 
     <div class="main-content" >
         <!-- Customer Addition Form -->
-        <div class="customer-form-section">
+        <div class="customer-form-section" style="max-height: 50%;width: 30%;">
             <h2 class="form-title">Add New Customer</h2>
             <form id="customerForm">
                 <div class="form-group">
@@ -32,7 +32,6 @@
                         [(ngModel)]="customerName" placeholder="Enter customer name" required>
                 </div>
 
-                <div class="form-row">
                     <div class="form-group">
                         <label class="form-label" for="email">Email Address</label>
                         <input type="email" id="email" name="email" class="form-input" [(ngModel)]="customerEmail"
@@ -43,7 +42,6 @@
                         <input type="tel" id="phone" name="phone" class="form-input" [(ngModel)]="customerPhone"
                             placeholder="+1 (555) 123-4567">
                     </div>
-                </div>
                 <div class="form-group">
                     <label class="form-label" for="points">Points</label>
                     <input type="number" id="ponts" name="Points" class="form-input" [(ngModel)]="customerPoints"
@@ -67,7 +65,7 @@
                     </select>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" style="display: flex;">
                     <button type="submit" class="btn btn-primary" (click)="addCustomer()">Add Customer</button>
                     <button type="reset" class="btn btn-secondary" (click)="clear()">Clear Form</button>
                 </div>
@@ -76,7 +74,7 @@
 
         <!-- Customer List -->
         <!-- Customer List -->
-        <div style="max-height: 50%;width: 100%;">
+        <div style="max-height: 50%;width: 70%;">
             <h2 class="form-title">Customer List</h2>
 
             <div class="search-container">
