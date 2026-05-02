@@ -6,11 +6,12 @@ import { BillingComponent } from './billing/billing.component';
 import { CustomerComponent } from './customer/customer.component';
 import { CategoryComponent } from './category/category.component';
 import { OrdersComponent } from './orders/orders.component';
+import { CustomerOrderComponent } from './customer-order/customer-order.component';
 
 export const routes: Routes = [
-    {path: '', component: AppComponent},
-  { path: 'products', component: ProductsComponent },
-  { path: 'billing', component: BillingComponent },
+    {path: '', component: CustomerOrderComponent},
+  { path: 'products', component: CustomerOrderComponent },
+  { path: 'billing', component: CustomerOrderComponent },
   {path: 'dashboard', component: DashboardComponent},
   {path: 'category', component: CategoryComponent},
   {path: 'orders', component: OrdersComponent},

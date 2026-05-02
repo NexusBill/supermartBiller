@@ -1,0 +1,194 @@
+<div class="customer-order-container">
+  <!-- LOADER -->
+  <div class="loading-container" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <div class="loading-text">
+      Loading Products
+      <span class="dots">
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+      </span>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="order-wrapper" *ngIf="!isLoading && !showCart">
+    <!-- LEFT SECTION: PRODUCTS -->
+    <section class="products-section">
+      <div class="section-header">
+        <h2>Available Products</h2>
+        <div class="search-box">
+          <input 
+            type="text" 
+            placeholder="🔍 Search products..." 
+            [(ngModel)]="searchTerm"
+            (input)="filterProducts()"
+          />
+        </div>
+      </div>
+
+      <!-- PRODUCTS GRID -->
+      <div class="products-grid">
+        <div class="product-card" *ngFor="let product of filteredProducts">
+          <div class="product-image">
+            <div class="product-image-placeholder">
+              {{ product.name.charAt(0).toUpperCase() }}
+            </div>
+          </div>
+          
+          <div class="product-content">
+            <h3 class="product-name">{{ product.name }}</h3>
+            <p class="product-category">{{ product.Category }}</p>
+            
+            <div class="product-price">
+              <span class="price">₹{{ product.MRP || product.SalePrice || 0 }}</span>
+            </div>
+
+            <div class="product-quantity">
+              <label>Qty:</label>
+              <div class="qty-control">
+                <button (click)="decreaseQuantity(product)" class="qty-btn">−</button>
+                <input 
+                  type="number" 
+                  [(ngModel)]="product.cartQuantity" 
+                  min="0"
+                  class="qty-input"
+                />
+                <button (click)="increaseQuantity(product)" class="qty-btn">+</button>
+              </div>
+            </div>
+
+            <button 
+              (click)="addToCart(product)" 
+              class="add-to-cart-btn"
+              [disabled]="!product.cartQuantity || product.cartQuantity <= 0"
+            >
+              <i class="cart-icon">🛒</i> Add to Cart
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- NO PRODUCTS MESSAGE -->
+      <div class="no-products" *ngIf="filteredProducts.length === 0 && !isLoading">
+        <p>No products found</p>
+      </div>
+    </section>
+
+    <!-- RIGHT SECTION: CART & CHECKOUT -->
+    <aside class="cart-section" *ngIf="showCart">
+      <!-- CART HEADER -->
+      <div class="cart-header">
+        <h2>🛒 Shopping Cart</h2>
+        <span class="item-count">{{ cartItems.length }} Items</span>
+      </div>
+
+      <!-- CART ITEMS -->
+      <div class="cart-items-container">
+        <div *ngIf="cartItems.length > 0" class="cart-items-list">
+          <div class="cart-item" *ngFor="let item of cartItems; let i = index">
+            <div class="item-details">
+              <h4>{{ item.name }}</h4>
+              <p class="item-category">{{ item.Category }}</p>
+            </div>
+            
+            <div class="item-quantity">
+              <button (click)="removeFromCart(i)" class="remove-btn">−</button>
+              <span>{{ item.cartQuantity }}</span>
+              <button (click)="addMoreToCart(item)" class="add-btn">+</button>
+            </div>
+            
+            <div class="item-price">
+              <span>₹{{ (item.MRP || item.SalePrice || 0) * item.cartQuantity }}</span>
+              <button (click)="deleteFromCart(i)" class="delete-btn" title="Delete">✕</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- EMPTY CART MESSAGE -->
+        <div *ngIf="cartItems.length === 0" class="empty-cart">
+          <p>Your cart is empty</p>
+          <p class="empty-cart-icon">🛒</p>
+        </div>
+      </div>
+
+      <!-- CART SUMMARY -->
+      <div class="cart-summary" *ngIf="cartItems.length > 0">
+        <div class="summary-row">
+          <span>Subtotal:</span>
+          <span>₹{{ calculateSubtotal() }}</span>
+        </div>
+        
+        <div class="summary-row total">
+          <span>Total:</span>
+          <span>₹{{ calculateTotal() }}</span>
+        </div>
+      </div>
+
+      <!-- CHECKOUT FORM -->
+      <div class="checkout-section">
+        <h3>Checkout</h3>
+        
+        <div class="form-group">
+          <label for="username">Customer Name *</label>
+          <input 
+            type="text" 
+            id="username"
+            [(ngModel)]="customerName"
+            placeholder="Enter your name"
+            class="form-input"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email (Optional)</label>
+          <input 
+            type="email" 
+            id="email"
+            [(ngModel)]="customerEmail"
+            placeholder="Enter your email"
+            class="form-input"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Phone (Optional)</label>
+          <input 
+            type="tel" 
+            id="phone"
+            [(ngModel)]="customerPhone"
+            placeholder="Enter your phone"
+            class="form-input"
+          />
+        </div>
+
+        <button 
+          (click)="placeOrder()" 
+          class="checkout-btn"
+          [disabled]="cartItems.length === 0 || !customerName"
+        >
+          Place Order
+        </button>
+
+        <button 
+          (click)="clearCart()" 
+          class="clear-cart-btn"
+          *ngIf="cartItems.length > 0"
+        >
+          Clear Cart
+        </button>
+      </div>
+    </aside>
+  </div>
+
+  <!-- SUCCESS MESSAGE -->
+  <div class="success-message" *ngIf="orderPlaced" @fadeOut>
+    <div class="success-content">
+      <p class="success-icon">✓</p>
+      <h3>Order Placed Successfully!</h3>
+      <p>Order ID: {{ orderId }}</p>
+      <button (click)="resetOrder()" class="reset-btn">Create New Order</button>
+    </div>
+  </div>
+</div>
