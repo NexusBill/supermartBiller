@@ -23,6 +23,7 @@ export class TableviewComponent {
    @Input() columnHeaders: any;     // Column headers
   @Input() tableData:any;              // Table data
   @Output() rowClick = new EventEmitter<any>(); // Event when row is clicked
+  @Output() actionClick = new EventEmitter<{ row: any; action: string }>();
 
   dataSource = new MatTableDataSource<any>();
 
@@ -64,6 +65,11 @@ ngOnInit() {
 
   onRowClick(row: any) {
     this.rowClick.emit(row);
+  }
+
+  onActionClick(event: Event, row: any) {
+    event.stopPropagation();
+    this.actionClick.emit({ row, action: 'edit' });
   }
 
   // When input data changes, update the table

@@ -516,7 +516,8 @@
 .main-content {
     display: flex;
     gap: 5px;
-    min-height: 600px;
+    width: 80%;
+    min-height: 90%;
 }
 
 .products-section {
@@ -791,7 +792,7 @@
     color: #333;
   }
   .add-products {
-    height: 55px;
+    height: 65px;
     width: 200px;
     margin-top: -6px;
     border-radius: 5px 2px;

@@ -18,7 +18,7 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { HttpClient } from '@angular/common/http';
-
+import { NgSelectModule } from '@ng-select/ng-select';
 
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -52,7 +52,8 @@ export interface Order {
     MatCardModule,
     MatAutocompleteModule,
     MatButtonModule,
-    MatExpansionModule,],
+    MatExpansionModule,
+    NgSelectModule,],
   templateUrl: './billing.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
@@ -77,16 +78,19 @@ export class BillingComponent {
   //  displayedColumns: string[] = ['id',	'name',	'Category',	'QuantityOnHand'	,'UnitDesc',	'RetailPrice',	'SalePrice',	'MRP'	,'UnitPrice',	'EANCode','Action'];
 
   displayedColumns: string[] = ['name', 'mrp', 'unit', 'quantity', 'price', 'action'];
+  
   panelOpenState = signal(false);
   showSidePanel: boolean = false;
   isPanelExpanded: boolean = false;
   loader: boolean = false;
   selectedProducts: any[] = [];
-  invoiceId: string = 'INV001';
+  invoiceId: any;
   intervalId: any;
   taxableAmount: any;
   cgst: any;
   sgst: any;
+  customProductName: string = '';
+  customProductPrice: number = 0;
   ngOnInit() {
     this.loader = true;
     this.fetchFromExcel();
@@ -136,10 +140,19 @@ export class BillingComponent {
     this.totalAmount = this.selectedProducts.reduce((sum, p) => sum + (p.SalePrice * p.quantity), 0);
     this.savedAmount = this.selectedProducts.reduce((sum, p) => sum + (p.MRP - p.SalePrice) * p.quantity, 0);
     this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
+    this.updatePointsEarned(); // Update points
     console.log(this.selectedProducts);
   }
   order = new FormData();
   customerPoints: number = 0;
+  pointsEarned: number = 0;
+  pointsToApply: number = 0;
+  showCustomerDropdown: boolean = false;
+
+  get subtotal(): number {
+    return this.selectedProducts.reduce((sum, p) => sum + (p.SalePrice * p.quantity), 0);
+  }
+
   saveOrder() {
     debugger;
     // if (this.selectedProducts.length === 0) {
@@ -180,6 +193,12 @@ export class BillingComponent {
       this.scannedInputRef.nativeElement.focus(); // Reset focus to the scanned input
     })
   }
+
+  gstCalculator() {
+    this.taxableAmount = this.totalAmount / 1.18;
+    this.cgst = this.taxableAmount * 0.09;
+  }
+
   formatDate(date: Date): string {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0'); // 01-12
@@ -226,6 +245,45 @@ export class BillingComponent {
     }
   }
 
+
+  calculatePointsDiscount() {
+    // Validate points to apply
+    if (this.pointsToApply < 0) {
+      this.openSnackBar('Please enter valid points', 'Close');
+      this.pointsToApply = 0;
+      return;
+    }
+
+    if (this.pointsToApply > this.customerPoints) {
+      this.openSnackBar(`You can only use up to ${this.customerPoints} points`, 'Close');
+      this.pointsToApply = this.customerPoints;
+      return;
+    }
+
+    // Points calculation: 100 points = Rs. 10 (0.1 rupee per point)
+    const pointsDiscount = (this.pointsToApply * 10) / 100;
+    
+    // Recalculate total
+    let baseTotal = this.selectedProducts.reduce((sum, p) => sum + (p.SalePrice * p.quantity), 0);
+    
+    // Apply discount if any
+    if (this.isDiscountApplied) {
+      if (this.discountType === '%') {
+        baseTotal -= (baseTotal * this.discountValue) / 100;
+      } else {
+        baseTotal -= this.discountValue;
+      }
+    }
+
+    // Apply points discount
+    this.totalAmount = baseTotal - pointsDiscount;
+    this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
+  }
+
+  updatePointsEarned() {
+    // Calculate points earned: Rs. 10 = 100 points (1 rupee = 10 points)
+    this.pointsEarned = Math.floor(this.totalAmount * 10);
+  }
 
   @HostListener('window:keydown', ['$event'])
   handleKeyDown(event: KeyboardEvent) {
@@ -283,6 +341,7 @@ export class BillingComponent {
     this.savedAmount += (product.MRP - product.SalePrice);
     this.savedAmount = parseFloat(this.savedAmount.toFixed(2));
     this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
+    this.updatePointsEarned(); // Update points
   }
   addProductToCart(product: any) {
     debugger
@@ -302,6 +361,7 @@ export class BillingComponent {
 
     this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
     this.savedAmount = parseFloat(this.savedAmount.toFixed(2));
+    this.updatePointsEarned(); // Update points when product is added
 
     this.scannedId = '';
     // this.filteredProducts = [];
@@ -310,6 +370,48 @@ export class BillingComponent {
     setTimeout(() => this.scrollToBottom(), 10);
   }
 
+  addCustomProduct() {
+    // Validate input
+    if (!this.customProductName?.trim()) {
+      this.openSnackBar('Please enter a product name', 'Close');
+      return;
+    }
+
+    if (!this.customProductPrice || this.customProductPrice <= 0) {
+      this.openSnackBar('Please enter a valid price', 'Close');
+      return;
+    }
+
+    // Create a custom product object
+    const customProduct = {
+      id: 'custom_' + Date.now(), // Generate unique ID
+      name: this.customProductName,
+      SalePrice: this.customProductPrice,
+      MRP: this.customProductPrice,
+      quantity: 1,
+      EANCode: '',
+      SellType: 'Unit'
+    };
+
+    // Add to selected products
+    this.selectedProducts.push(customProduct);
+
+    // Update totals
+    this.totalAmount += customProduct.SalePrice;
+    this.savedAmount = parseFloat(this.savedAmount.toFixed(2));
+    this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
+    this.updatePointsEarned(); // Update points when custom product is added
+
+    // Clear input fields
+    this.customProductName = '';
+    this.customProductPrice = 0;
+
+    // Show success message
+    this.openSnackBar('Product added successfully', 'Close');
+    
+    // Scroll to bottom to see the new product
+    setTimeout(() => this.scrollToBottom(), 10);
+  }
 
   onCodeResult() {
     debugger;
@@ -500,12 +602,14 @@ export class BillingComponent {
       this.savedAmount = this.selectedProducts.reduce((sum, p) => sum + (p.MRP - p.SalePrice) * p.quantity, 0);
       this.savedAmount = parseFloat(this.savedAmount.toFixed(2));
       this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
+      this.updatePointsEarned(); // Update points when quantity changes
     } else {
       this.selectedProducts.push({ ...product }); // Add new product with updated quantity
       this.totalAmount += product.SalePrice * product.quantity;
       this.savedAmount += (product.MRP - product.SalePrice) * product.quantity;
       this.savedAmount = parseFloat(this.savedAmount.toFixed(2));
       this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
+      this.updatePointsEarned(); // Update points when product is added
     }
   }
   enterProduct() {
@@ -826,14 +930,8 @@ export class BillingComponent {
 `;
 }
   filteredCustomers: any[] = [];
-  searchCustomer(){
-      if(this.MobileNumber?.trim().length >2){
-        this.filteredCustomers= [];
-    const search = this.MobileNumber?.trim().toLowerCase();
-      this.filteredCustomers = this.customers.filter(customer =>
-        customer?.name.toString().toLowerCase().includes(search) || customer?.mobile.toString().toLowerCase().includes(search)
-      );
-      }
+  customSearchFn(term: string, item: any) {
+    return item.name.toLowerCase().includes(term.toLowerCase()) || item.mobile.toLowerCase().includes(term.toLowerCase());
   }
   printThermalBill() {
     const iframe = document.createElement('iframe');

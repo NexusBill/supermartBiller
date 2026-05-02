@@ -81,7 +81,51 @@
                 <input type="text" id="searchCustomer" class="search-input" placeholder="Search customers...">
             </div>
             <app-tableview [tableData]="customerData" [columnHeaders]="ColumnHeaders"
-                [displayedColumns]="displayedColumns"></app-tableview>
+                [displayedColumns]="displayedColumns" (actionClick)="onTableAction($event)"></app-tableview>
+
+            <div *ngIf="showEditModal" class="modal-overlay" style="position: fixed; inset: 0; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.45); z-index: 1000;">
+                <div class="modal-box" style="width: 520px; background: #fff; border-radius: 12px; padding: 24px; box-shadow: 0 18px 50px rgba(0,0,0,0.25);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
+                        <h3 style="margin:0;">Edit Customer</h3>
+                        <button type="button" (click)="closeEditModal()" style="background: transparent; border: none; font-size: 24px; cursor: pointer;">&times;</button>
+                    </div>
+                    <form (ngSubmit)="saveCustomerEdit()">
+                        <div class="form-group">
+                            <label class="form-label" for="editCustomerName">Customer Name *</label>
+                            <input id="editCustomerName" name="editCustomerName" type="text" class="form-input" [(ngModel)]="editingCustomer.name" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="editCustomerEmail">Email Address</label>
+                            <input id="editCustomerEmail" name="editCustomerEmail" type="email" class="form-input" [(ngModel)]="editingCustomer.email">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="editCustomerPhone">Phone Number</label>
+                            <input id="editCustomerPhone" name="editCustomerPhone" type="tel" class="form-input" [(ngModel)]="editingCustomer.phone">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="editCustomerPoints">Points</label>
+                            <input id="editCustomerPoints" name="editCustomerPoints" type="number" class="form-input" [(ngModel)]="editingCustomer.points">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="editCustomerAddress">Address</label>
+                            <input id="editCustomerAddress" name="editCustomerAddress" type="text" class="form-input" [(ngModel)]="editingCustomer.address">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="editCustomerType">Customer Type</label>
+                            <select id="editCustomerType" name="editCustomerType" class="form-input" [(ngModel)]="editingCustomer.type">
+                                <option value="">Select customer type</option>
+                                <option value="regular">Regular</option>
+                                <option value="premium">Premium</option>
+                                <option value="vip">VIP</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px;">
+                            <button type="button" class="btn btn-secondary" (click)="closeEditModal()">Cancel</button>
+                            <button type="submit" class="btn btn-primary" (click)="saveCustomerEdit()">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
 
         </div>
     </div>

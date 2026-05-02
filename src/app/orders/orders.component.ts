@@ -7,11 +7,11 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatCheckbox } from "@angular/material/checkbox";
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { SelectionModel } from '@angular/cdk/collections';
 @Component({
   selector: 'app-orders',
-  imports: [MatTableModule,HttpClientModule, MatPaginatorModule, MatSortModule, MatFormFieldModule, MatInputModule,CommonModule, FormsModule, MatCheckbox],
+  imports: [MatTableModule, MatPaginatorModule, MatSortModule, MatFormFieldModule, MatInputModule,CommonModule, FormsModule, MatCheckbox],
   templateUrl: './orders.component.html',
   standalone:true,
   styleUrl: './orders.component.css'
