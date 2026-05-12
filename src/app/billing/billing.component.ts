@@ -849,8 +849,8 @@ margin-bottom: 5px;
   <!-- BILL INFO -->
   <div class="row bold"><span>Invoice</span><span>${this.invoiceId}</span></div>
   <div class="row bold"><span>Date</span><span>${new Date().toLocaleString()}</span></div>
-  <div class="row bold"><span>Customer</span><span>${this.selectedCustomeretails?.name || '---'}</span></div>
-  <div class="row bold"><span>Mobile</span><span>${this.selectedCustomeretails?.mobile || '---'}</span></div>
+  <div class="row bold"><span>Customer</span><span>${this.selectedCustomeretails?.name || '--'}</span></div>
+  <div class="row bold"><span>Mobile</span><span>${this.selectedCustomeretails?.mobile || '--'}</span></div>
 
   <hr>
 
