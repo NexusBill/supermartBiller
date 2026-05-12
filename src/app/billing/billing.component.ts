@@ -313,16 +313,16 @@ export class BillingComponent {
       this.scannedInputRef.nativeElement.focus(); // Reset focus to the scanned input
     //  this.openSnackBar('F5 is clicked', 'Close');
     }
-    if (event.key === 'F6' || event.keyCode === 117) {
+    if (event.key === 'F6' || event.keyCode === 117 || event.key === ' ' || event.code === 'Space') {
       event.preventDefault(); // Stops the browser from refreshing
     //  this.downloadPDF();
       this.printThermalBill();
     //  this.openSnackBar('F6 is clicked', 'Close');
     }
-    if (event.key === ' ' || event.code === 'Space') {
-      event.preventDefault(); // Prevents scrolling when space is pressed
-      this.scannedInputRef.nativeElement.focus(); // Reset focus to the scanned input
-    }
+    // if (event.key === ' ' || event.code === 'Space') {
+    //   event.preventDefault(); // Prevents scrolling when space is pressed
+    //   this.scannedInputRef.nativeElement.focus(); // Reset focus to the scanned input
+    // }
 
   }
 
@@ -761,10 +761,10 @@ export class BillingComponent {
   this.selectedProducts.forEach(p => {
    items += `
 <tr>
-  <td class="col-product">${p.name}</td>
-  <td class="col-qty">${p.quantity}</td>
-  <td class="col-rate">${p.SalePrice.toFixed(2)}</td>
-  <td class="col-amount">${(p.quantity * p.SalePrice).toFixed(2)}</td>
+  <td class="col-product bold">${p.name}</td>
+  <td class="col-qty bold">${p.quantity}</td>
+  <td class="col-rate bold">${p.SalePrice.toFixed(2)}</td>
+  <td class="col-amount bold">${(p.quantity * p.SalePrice).toFixed(2)}</td>
 </tr>
 `;
   });
@@ -804,13 +804,15 @@ export class BillingComponent {
   }
 
   td {
-    padding: 2px 2px;
+    padding: 2px 0px;
     vertical-align: top;
     word-wrap: break-word;
   }
-
+tr{
+margin-bottom: 5px;
+}
 .col-product {
-  width: 60%;
+  width: 80%;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -839,16 +841,16 @@ export class BillingComponent {
 
   <!-- HEADER -->
   <div class="center bold">${this.clientName}</div>
-  <div class="center">${this.clientAddress}</div>
-  <div class="center" style="font-size:12px;">${this.contactInfo}</div>
+  <div class="center bold">${this.clientAddress}</div>
+  <div class="center bold" style="font-size:12px;">${this.contactInfo}</div>
 
   <hr>
 
   <!-- BILL INFO -->
-  <div class="row"><span>Invoice</span><span>${this.invoiceId}</span></div>
-  <div class="row"><span>Date</span><span>${new Date().toLocaleString()}</span></div>
-  <div class="row"><span>Customer</span><span>${this.selectedCustomeretails?.name || '---'}</span></div>
-  <div class="row"><span>Mobile</span><span>${this.selectedCustomeretails?.mobile || '---'}</span></div>
+  <div class="row bold"><span>Invoice</span><span>${this.invoiceId}</span></div>
+  <div class="row bold"><span>Date</span><span>${new Date().toLocaleString()}</span></div>
+  <div class="row bold"><span>Customer</span><span>${this.selectedCustomeretails?.name || '---'}</span></div>
+  <div class="row bold"><span>Mobile</span><span>${this.selectedCustomeretails?.mobile || '---'}</span></div>
 
   <hr>
 
@@ -876,7 +878,7 @@ export class BillingComponent {
     <span>${this.selectedProducts.length}</span>
   </div>
 
-  <div class="row big">
+  <div class="row big bold">
     <span>BILL AMT :</span>
     <span>₹${this.totalAmount.toFixed(2)}</span>
   </div>
@@ -895,7 +897,7 @@ export class BillingComponent {
       <td>Total</td>
     </tr>
 
-    <tr>
+    <tr class="bold">
       <td>5%</td>
       <td>${this.taxableAmount?.toFixed(2) || '0.00'}</td>
       <td>${this.cgst?.toFixed(2) || '0.00'}</td>
@@ -907,7 +909,7 @@ export class BillingComponent {
   <hr>
 
   <!-- PAYMENT -->
-  <div class="row">
+  <div class="row bold">
     <span>Paid Amt:</span>
     <span>₹${this.totalAmount.toFixed(2)}</span>
   </div>
@@ -920,7 +922,7 @@ export class BillingComponent {
   <hr>
 
   <!-- FOOTER -->
-  <div class="center">
+  <div class="center bold">
     Thank you! Visit again 😊<br>
     Contact us: 9994305384
   </div>
