@@ -40,15 +40,17 @@ export class LoginComponent {
       this.toastr.error('Please enter both ID and Password');
       return;
     }
-    this.http.post('https://supermartspring.vercel.app/api/tenant/login', this.loginData).subscribe((response: any) => {
-      this.toastr.success('Login successful');
-      console.log('Login successful', response);
-      this.setStorage(response?.tenant);
-      this.tenantSelected.emit(response.name);
-    }, error => {
-      this.toastr.error('Login failed');
-      console.error('Login failed', error);
-    });
+    // this.http.post('https://supermartspring.vercel.app/api/tenant/login', this.loginData).subscribe((response: any) => {
+    //   this.toastr.success('Login successful');
+    //   console.log('Login successful', response);
+    //   this.setStorage(response?.tenant);
+    //   this.tenantSelected.emit(response.name);
+    // }, error => {
+    //   this.toastr.error('Login failed');
+    //   console.error('Login failed', error);
+    // });
+        this.toastr.error('Access Denied');
+
   }
  
 }
