@@ -229,7 +229,40 @@
     transition: all 0.2s ease-in-out;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
   }
-  
+  /* Style the select box itself */
+::ng-deep .ng-select .ng-select-container {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border: 1px solid rgba(68, 68, 68, 0.808) !important;
+  border-radius: 5px !important;
+}
+
+/* Fix the dropdown options panel */
+::ng-deep .ng-dropdown-panel {
+  background: #ffffff !important;
+  border: 1px solid #ccc !important;
+  border-radius: 5px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  z-index: 1000 !important;
+}
+
+::ng-deep .ng-dropdown-panel .ng-dropdown-panel-items .ng-option {
+  background: #ffffff !important;
+  color: #333 !important;
+  padding: 8px 12px;
+}
+::ng-deep .ng-value-container {
+ padding: 10px;
+}
+
+::ng-deep .ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-marked {
+  background: #f0f0f0 !important;
+  color: #000 !important;
+}
+
+::ng-deep .ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-selected {
+  background: #667eea !important;
+  color: #fff !important;
+}
   .discount-input::placeholder {
     color: #9ca3af;
     font-weight: 400;

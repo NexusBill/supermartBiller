@@ -29,28 +29,25 @@ export class CustomerComponent {
   editingCustomer: any = null;
 
   addCustomer() {
-    if (this.customerName.trim() === '' || this.customerEmail.trim() === '' || this.customerPhone.trim() === '') {
+    debugger;
+    if (this.customerName.trim() === ''  || this.customerPhone.trim() === '') {
       this.toasterService.error("Please Fill Mandatoy fields");
-      this.customerData = [...this.customerData, { name: this.customerName, email: this.customerEmail, phone: this.customerPhone }];
       this.clear();
     }
     else {
-      this.customerData = [...this.customerData, { name: this.customerName, email: this.customerEmail, phone: this.customerPhone }];
       this.http.post('/customers', {
         name: this.customerName,
         email: this.customerEmail,
-        phone: this.customerPhone,
+        mobile: this.customerPhone,
         type: this.customertype,
         address: this.customerAddress,
         city: this.customerCity,
         points: this.customerPoints
       }).subscribe((response) => {
-        debugger;
         this.toasterService.success("Customer Added Successfully")
-        console.log('Customer added successfully', response); 
+      this.getCustomers(); // Refresh the customer list after successful update
       }, (error) => {
-        console.error('Error adding customer', error);
-        this.toasterService.error("Error adding customer");
+        this.toasterService.error("Error adding customer "+ error?.error?.error);
       });
       this.customerName = '';
       this.clear();
@@ -69,7 +66,7 @@ export class CustomerComponent {
 editCustomer(customer: any) {
     this.customerName = customer.name;
     this.customerEmail = customer.email;
-    this.customerPhone = customer.phone;
+    this.customerPhone = customer.mobile;
     this.customertype = customer.type;
     this.customerAddress = customer.address;
     this.customerCity = customer.city;
@@ -77,7 +74,7 @@ editCustomer(customer: any) {
     this.http.put(`/customers/${customer.id}`, {
       name: this.customerName,
       email: this.customerEmail,
-      phone: this.customerPhone,
+      mobile: this.customerPhone,
       type: this.customertype,
       address: this.customerAddress,
       city: this.customerCity,
@@ -100,7 +97,7 @@ editCustomer(customer: any) {
       this.customerData.forEach((customer: any) => {
         customer.name = customer.name || 'Guest';
         customer.email = customer.email || 'Please provide email';
-        customer.phone = customer.phone || 'phone';
+        customer.mobile = customer.mobile || 'mobile';
         customer.type = customer.type || 'Regular';
         customer.address = customer.address || 'Please provide address';
         customer.city = customer.city || 'please provide city';
@@ -131,7 +128,7 @@ editCustomer(customer: any) {
     this.http.put(`/customers/${customerId}`, {
       name: this.editingCustomer.name,
       email: this.editingCustomer.email,
-      phone: this.editingCustomer.phone,
+      mobile: this.editingCustomer.mobile,
       type: this.editingCustomer.type,
       address: this.editingCustomer.address,
       city: this.editingCustomer.city,
@@ -144,8 +141,11 @@ editCustomer(customer: any) {
       this.showEditModal = false;
       this.editingCustomer = null;
       console.log('Customer updated successfully', response);
+      this.toasterService.success("Customer updated successfully");
+      this.getCustomers(); // Refresh the customer list after successful update
     }, (error) => {
       console.error('Error updating customer', error);
+      this.toasterService.error("Error updating customer"+ error?.error?.error);
     });
   }
 
@@ -155,6 +155,6 @@ editCustomer(customer: any) {
   }
 
   customerData :any[]= [];
-  ColumnHeaders = ['Customer Name', 'Email', 'Phone', 'Type', 'Address', 'City', 'Points', 'Actions'];
-  displayedColumns = ['name', 'email', 'phone', 'type', 'address', 'city', 'points', 'actions'];
+  ColumnHeaders = ['Customer Name', 'Email', 'Mobile number', 'Type', 'Address', 'City', 'Points', 'Actions'];
+  displayedColumns = ['name', 'email', 'mobile', 'type', 'address', 'city', 'points', 'actions'];
 }

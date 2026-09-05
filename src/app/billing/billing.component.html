@@ -206,21 +206,24 @@
             </div>
 
             <!-- Customer Selection -->
-            <div style="margin-bottom: 15px;">
-                <label style="display: block; margin-bottom: 8px; font-size: 12px; opacity: 0.8; font-weight: 500;">SELECT CUSTOMER</label>
-                <ng-select [items]="customers" bindLabel="name" [(ngModel)]="selectedCustomeretails" (change)="onCustomerSelection($event)" [searchFn]="customSearchFn" placeholder="Search by mobile or name" [clearable]="true" style="padding: 5px;border: 1px solid rgba(68, 68, 68, 0.808);border-radius: 5px;background: rgba(255,255,255,0.15);">
-                    <ng-template ng-option-tmp let-item="item">
-                        <i class="fa-solid fa-user" style="margin-right: 8px; color: #667eea;"></i>
-                        {{ item.name + " - " + item.mobile }}
-                    </ng-template>
-                </ng-select>
-            </div>
-
-            <!-- Selected Customer Info -->
-            <div *ngIf="selectedCustomeretails?.name" style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #4ade80;">
-                <p style="margin: 0; font-size: 12px; opacity: 0.8; margin-bottom: 5px;">CUSTOMER</p>
-                <p style="margin: 0; font-size: 16px; font-weight: 600;">{{ selectedCustomeretails?.name }}</p>
-            </div>
+           <div style="margin-bottom: 15px;">
+    <ng-select 
+    [items]="customers" 
+    bindLabel="name" 
+    [(ngModel)]="selectedCustomeretails" 
+    (change)="onCustomerSelection($event)" 
+    [searchFn]="customSearchFn" 
+    placeholder="Search by mobile or name" 
+    [clearable]="true"
+    appendTo="body"
+    class="custom-select">
+    <ng-template ng-option-tmp let-item="item">
+        <i class="fa-solid fa-user" style="margin-right: 8px; color: #667eea;"></i>
+        {{ item.name + " - " + (item.mobile || 'No mobile') }}
+    </ng-template>
+</ng-select>
+</div>
+         
 
           
 
