@@ -78,7 +78,7 @@ export class BillingComponent {
   //  displayedColumns: string[] = ['id',	'name',	'Category',	'QuantityOnHand'	,'UnitDesc',	'RetailPrice',	'SalePrice',	'MRP'	,'UnitPrice',	'EANCode','Action'];
 
   displayedColumns: string[] = ['name', 'mrp', 'unit', 'quantity', 'price', 'action'];
-  
+
   panelOpenState = signal(false);
   showSidePanel: boolean = false;
   isPanelExpanded: boolean = false;
@@ -126,11 +126,26 @@ export class BillingComponent {
   paymentMethod: any;
   discountValue!: number; // Holds the discount value
   discountType: string = '%';
+  paidAmount: number = 0; // Amount paid for unpaid orders
+  unpaidAmount: number = 0; // Amount remaining unpaid
+
+  onPaymentMethodChange() {
+    if (this.paymentMethod === 'Unpaid') {
+      this.unpaidAmount = this.totalAmount;
+      this.paidAmount = 0; // Reset paid amount
+    } else {
+      this.paidAmount = this.totalAmount;
+      this.unpaidAmount = 0;
+    }
+  }
+
   decreaseQuantity(product: any) {
     debugger
 
     if (this.selectedProducts.find(p => p.id === product.id).quantity > 1) {
-      this.selectedProducts.find(p => p.id === product.id).quantity--;
+      const prod = this.selectedProducts.find(p => p.id === product.id);
+      prod.quantity--;
+      prod.qty = prod.quantity;
       this.totalAmount -= product.MRP; // Update total amount
       this.totalAmount = parseFloat(this.totalAmount.toFixed(2)); // Ensure two decimal places
     } else {
@@ -153,6 +168,17 @@ export class BillingComponent {
     return this.selectedProducts.reduce((sum, p) => sum + (p.SalePrice * p.quantity), 0);
   }
 
+  calculateDiscountAmount() {
+    if (this.discountType === '%') {
+      return (this.subtotal * this.discountValue) / 100;
+    } else if (this.discountType === 'Rs') {
+      return this.discountValue;
+    }
+    else {
+      return this.subtotal;
+    }
+  }
+
   saveOrder() {
     debugger;
     // if (this.selectedProducts.length === 0) {
@@ -172,12 +198,15 @@ export class BillingComponent {
     //   return;
     // }
     const body = {
-      invoiceId: this.invoiceId,
+      invoice: this.invoiceId,
       customer: this.selectedCustomeretails ? this.selectedCustomeretails?.name : 'Guest',
       mobile: this.selectedCustomeretails?.mobile || 'N/A',
       amount: this.totalAmount,
+      paid: this.paidAmount,
+      unPaid: this.unpaidAmount,
       products: this.selectedProducts,
       savings: this.savedAmount,
+      status: 'completed',
       date: new Date().toISOString()
     };
     this.http.post("/orders", body).subscribe((data: any) => {
@@ -186,14 +215,24 @@ export class BillingComponent {
       this.scannedId = '';
       this.totalAmount = 0;
       this.savedAmount = 0;
+      this.paidAmount = 0;
+      this.unpaidAmount = 0;
       this.discountAmount = 0;
       this.discountValue = 0;
       this.isDiscountApplied = false;
       this.order = new FormData(); // Reset the order FormData
       this.scannedInputRef.nativeElement.focus(); // Reset focus to the scanned input
     })
+
+    this.editCustomer(this.selectedCustomeretails); // Update customer points and balance
   }
 
+  paidAmountChange() {
+    this.unpaidAmount = this.totalAmount - this.paidAmount;
+  }
+  upPaidAmountChange() {
+    this.paidAmount = this.totalAmount - this.unpaidAmount;
+  }
   gstCalculator() {
     this.taxableAmount = this.totalAmount / 1.18;
     this.cgst = this.taxableAmount * 0.09;
@@ -262,10 +301,10 @@ export class BillingComponent {
 
     // Points calculation: 100 points = Rs. 10 (0.1 rupee per point)
     const pointsDiscount = (this.pointsToApply * 10) / 100;
-    
+
     // Recalculate total
     let baseTotal = this.selectedProducts.reduce((sum, p) => sum + (p.SalePrice * p.quantity), 0);
-    
+
     // Apply discount if any
     if (this.isDiscountApplied) {
       if (this.discountType === '%') {
@@ -282,7 +321,7 @@ export class BillingComponent {
 
   updatePointsEarned() {
     // Calculate points earned: Rs. 10 = 100 points (1 rupee = 10 points)
-    this.pointsEarned = Math.floor(this.totalAmount * 10);
+    this.pointsEarned = Math.floor((this.totalAmount * 10) / 100);
   }
 
   @HostListener('window:keydown', ['$event'])
@@ -309,15 +348,15 @@ export class BillingComponent {
       this.discountAmount = 0;
       this.discountValue = 0;
       this.isDiscountApplied = false;
-    //  this.openSnackBar('Escape is clicked, form reset', 'Close');
+      //  this.openSnackBar('Escape is clicked, form reset', 'Close');
       this.scannedInputRef.nativeElement.focus(); // Reset focus to the scanned input
-    //  this.openSnackBar('F5 is clicked', 'Close');
+      //  this.openSnackBar('F5 is clicked', 'Close');
     }
     if (event.key === 'F6' || event.keyCode === 117 || event.key === ' ' || event.code === 'Space') {
       event.preventDefault(); // Stops the browser from refreshing
-    //  this.downloadPDF();
+      //  this.downloadPDF();
       this.printThermalBill();
-    //  this.openSnackBar('F6 is clicked', 'Close');
+      //  this.openSnackBar('F6 is clicked', 'Close');
     }
     // if (event.key === ' ' || event.code === 'Space') {
     //   event.preventDefault(); // Prevents scrolling when space is pressed
@@ -331,11 +370,13 @@ export class BillingComponent {
     debugger
 
     if (!this.selectedProducts.find(p => p.id === product.id)) {
-      this.selectedProducts.push({ ...product, quantity: 1 });
+      this.selectedProducts.push({ ...product, quantity: 1, qty: 1 });
     }
     // Increment the quantity of the product in the selectedProducts array
     else {
-      this.selectedProducts.find(p => p.id === product.id).quantity++;
+      const prod = this.selectedProducts.find(p => p.id === product.id);
+      prod.quantity++;
+      prod.qty = prod.quantity;
     }
     this.totalAmount += product.SalePrice;
     this.savedAmount += (product.MRP - product.SalePrice);
@@ -349,10 +390,12 @@ export class BillingComponent {
 
     if (existing) {
       existing.quantity++;
+      existing.qty = existing.quantity;
     } else {
       this.selectedProducts.push({
         ...product,
-        quantity: 1
+        quantity: 1,
+        qty: 1
       });
     }
 
@@ -389,6 +432,7 @@ export class BillingComponent {
       SalePrice: this.customProductPrice,
       MRP: this.customProductPrice,
       quantity: 1,
+      qty: 1,
       EANCode: '',
       SellType: 'Unit'
     };
@@ -408,7 +452,7 @@ export class BillingComponent {
 
     // Show success message
     this.openSnackBar('Product added successfully', 'Close');
-    
+
     // Scroll to bottom to see the new product
     setTimeout(() => this.scrollToBottom(), 10);
   }
@@ -470,23 +514,23 @@ export class BillingComponent {
 
   filterProducts() {
     debugger;
-    if(this.scannedId?.trim().length >2){
-    const search = this.scannedId?.trim().toLowerCase();
+    if (this.scannedId?.trim().length > 2) {
+      const search = this.scannedId?.trim().toLowerCase();
 
       this.filteredProducts = [];
-    
 
-    this.filteredProducts = this.products.filter(p =>
-      p?.name?.toString().toLowerCase() == (search) ||
-      p?.EANCode?.toString().toLowerCase() == (search) ||
-      p?._id?.toString() == (search) ||
-      p?.category?.toString().toLowerCase() == (search)
-    );
-  }
+
+      this.filteredProducts = this.products.filter(p =>
+        p?.name?.toString().toLowerCase() == (search) ||
+        p?.EANCode?.toString().toLowerCase() == (search) ||
+        p?._id?.toString() == (search) ||
+        p?.category?.toString().toLowerCase() == (search)
+      );
+    }
   }
   addProductFromSuggestion(product: any) {
     this.addProductToCart(product);
-  
+
   }
 
 
@@ -561,7 +605,11 @@ export class BillingComponent {
   resumeHold(index: number) {
     const holdItem = this.holdList[index];
 
-    this.selectedProducts = [...holdItem.products];
+    // Ensure qty is set alongside quantity
+    this.selectedProducts = holdItem.products.map((p: any) => ({
+      ...p,
+      qty: p.quantity
+    }));
     this.totalAmount = holdItem.amount;
     this.savedAmount = holdItem.savings || 0;
     this.discountAmount = holdItem.discount || 0;
@@ -598,13 +646,14 @@ export class BillingComponent {
     let productExists = this.selectedProducts.find(p => p.id === product.id);
     if (productExists) {
       productExists.quantity = product.quantity; // Update quantity in selected products
+      productExists.qty = product.quantity; // Also update qty
       this.totalAmount = this.selectedProducts.reduce((sum, p) => sum + (p.SalePrice * p.quantity), 0);
       this.savedAmount = this.selectedProducts.reduce((sum, p) => sum + (p.MRP - p.SalePrice) * p.quantity, 0);
       this.savedAmount = parseFloat(this.savedAmount.toFixed(2));
       this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
       this.updatePointsEarned(); // Update points when quantity changes
     } else {
-      this.selectedProducts.push({ ...product }); // Add new product with updated quantity
+      this.selectedProducts.push({ ...product, qty: product.quantity }); // Add new product with updated quantity and qty
       this.totalAmount += product.SalePrice * product.quantity;
       this.savedAmount += (product.MRP - product.SalePrice) * product.quantity;
       this.savedAmount = parseFloat(this.savedAmount.toFixed(2));
@@ -646,6 +695,7 @@ export class BillingComponent {
     if (productExists) {
       product.stock -= product.quantity;
       productExists.quantity += 1;
+      productExists.qty = productExists.quantity;
       this.totalAmount += product.MRP;
       this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
       return;
@@ -653,7 +703,7 @@ export class BillingComponent {
     else {
       debugger
       product.stock -= product.quantity;
-      this.selectedProducts = [...this.selectedProducts, product];
+      this.selectedProducts = [...this.selectedProducts, { ...product, qty: product.quantity }];
       this.totalAmount += product.MRP;
       this.totalAmount = parseFloat(this.totalAmount.toFixed(2));
     }
@@ -730,14 +780,35 @@ export class BillingComponent {
       console.log(this.customers);
     });
   }
- selectedCustomeretails: any = null;
+  selectedCustomeretails: any = null;
 
- onCustomerSelection(customer: any) {
-  this.selectedCustomeretails = customer;
-  this.MobileNumber = customer.mobile;
-  this.customerPoints = customer.points || 0; // Set customer points if available
-}
+  onCustomerSelection(customer: any) {
+    this.selectedCustomeretails = customer;
+    this.MobileNumber = customer.mobile;
+    this.customerPoints = customer.points || 0; // Set customer points if available
+  }
 
+
+
+  editCustomer(customer: any) {
+    this.selectedCustomeretails.points += this.pointsEarned;
+    this.selectedCustomeretails.balance += this.unpaidAmount;
+this.pointsEarned = this.unpaidAmount=0; // Reset points earned after updating the customer
+    this.http.put(`/customers/${this.selectedCustomeretails._id}`, {
+      address:this.selectedCustomeretails.address || "please provide address",
+      email: this.selectedCustomeretails.email || "please provide email",
+      mobile:this.selectedCustomeretails.mobile || "please provide mobile",
+      name:this.selectedCustomeretails.name || "please provide name",
+      points:this.selectedCustomeretails.points || 0,
+      balance:this.selectedCustomeretails.balance || 0,
+      type:this.selectedCustomeretails.type || "regular",
+    }
+    ).subscribe((response) => {
+      this.selectedCustomeretails = null; // Update the local customer details with the response
+    }, (error) => {
+      console.error('Error updating customer', error);
+    });
+  }
   lastOrder() {
     debugger;
     this.http.get('/orders').subscribe((res: any) => {
@@ -751,15 +822,15 @@ export class BillingComponent {
     });
   }
 
-  clientName: string = 'VKS Supermarkett';
-  clientAddress: string = 'Puduppakkam,Chennai-603202';
-  contactInfo: string = 'Phone: 9791196869';
+  clientName: string = 'VKS Supermarket';
+  clientAddress: string = 'No1,Nethaji Nagar,Puduppakkam, Chengalpattu-603202';
+  contactInfo: string = 'Phone: 9791196869,6384304179';
 
- generateBillHTML(): string {
-  let items = '';
+  generateBillHTML(): string {
+    let items = '';
 
-  this.selectedProducts.forEach(p => {
-   items += `
+    this.selectedProducts.forEach(p => {
+      items += `
 <tr>
   <td class="col-product bold">${p.name}</td>
   <td class="col-qty bold">${p.quantity}</td>
@@ -767,9 +838,9 @@ export class BillingComponent {
   <td class="col-amount bold">${(p.quantity * p.SalePrice).toFixed(2)}</td>
 </tr>
 `;
-  });
+    });
 
-  return `
+    return `
 <!DOCTYPE html>
 <html>
 <head>
@@ -911,7 +982,7 @@ margin-bottom: 5px;
   <!-- PAYMENT -->
   <div class="row bold">
     <span>Paid Amt:</span>
-    <span>₹${this.totalAmount.toFixed(2)}</span>
+    <span>₹${this.paidAmount.toFixed(2)}</span>
   </div>
 
   <div class="row">
@@ -930,7 +1001,7 @@ margin-bottom: 5px;
 </body>
 </html>
 `;
-}
+  }
   filteredCustomers: any[] = [];
   customSearchFn(term: string, item: any) {
     return item.name.toLowerCase().includes(term.toLowerCase()) || item.mobile.toLowerCase().includes(term.toLowerCase());
