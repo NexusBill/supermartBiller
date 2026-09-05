@@ -995,7 +995,7 @@ margin-bottom: 5px;
   <!-- FOOTER -->
   <div class="center bold">
     Thank you! Visit again 😊<br>
-    Contact us: 9994305384
+    
   </div>
 
 </body>
