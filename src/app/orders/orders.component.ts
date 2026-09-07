@@ -9,6 +9,7 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatCheckbox } from "@angular/material/checkbox";
 import { HttpClient } from '@angular/common/http';
 import { SelectionModel } from '@angular/cdk/collections';
+import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-orders',
   imports: [MatTableModule, MatPaginatorModule, MatSortModule, MatFormFieldModule, MatInputModule,CommonModule, FormsModule, MatCheckbox],
@@ -18,13 +19,14 @@ import { SelectionModel } from '@angular/cdk/collections';
 })
 export class OrdersComponent {
 
-  constructor(private httpClient: HttpClient) { }
-displayedColumns: string[] = ['orderId', 'customerName', 'orderDate', 'status', 'totalAmount', 'action'];
+  constructor(private httpClient: HttpClient,private toastr: ToastrService) { }
+displayedColumns: string[] = ['orderId', 'customerName', 'orderDate', 'status', 'totalAmount'];
 openSidebar: boolean = false;
   ngOnInit() {
     this.getOrders();
   }
  
+  phoneNumber: string = '';
   selectedStatus: any;
   selectedOrderId: number | null = null;
   selectedOrder:any;
@@ -36,6 +38,22 @@ openSidebar: boolean = false;
   this.openSidebar = false;
 }
 
+searchByPhone(){
+  if(this.phoneNumber.trim() === ''){
+    this.getOrders();
+    return;
+  }
+  else{
+    this.httpClient.get(`/orders/search-by-mobile?mobile=${this.phoneNumber}`).subscribe((data:any) => {
+      if(data.status === 'fail'){
+        this.toastr.error('No orders found for this phone number.');
+        return;
+      }
+      this.toastr.success('Orders found!', 'Success');
+      this.dataSource.data = data;
+    });
+  }
+}
 onRejectOrder() {
     // Logic to reject the order
     this.selectedOrder.status = 'cancelled';
@@ -72,9 +90,7 @@ pagedProducts: any[] = [];
 isAllSelected() {
   
   const numSelected = this.selection.selected.length;
-  console.log("numSelected------------->"+numSelected);
   this.selectedProducts = this.selection.selected;
-  console.log("selected------------->"+this.selectedProducts);
   const numRows = this.pagedProducts.length;
   return numSelected === numRows;
 }
@@ -104,77 +120,16 @@ checkboxLabel(row?: any): string {
   ];
       widgetWidth: number=0;
 
-products: any[] = [
-    { name: 'Product 1', quantity: 2 },
-    { name: 'Product 2', quantity: 1 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-    { name: 'Product 3', quantity: 5 },
-  ];
       openEditPanel(order: any) {
         debugger
         this.selectedOrder = order;
         this.openSidebar = true;
       }
+
+  openOrderDetails(order: any) {
+    this.selectedOrder = order;
+    this.openSidebar = true;
+  }
  @ViewChild(MatPaginator) paginator!: MatPaginator;
    dataSource = new MatTableDataSource<any>([]);
 

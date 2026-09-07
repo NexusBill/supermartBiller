@@ -206,11 +206,11 @@ export class BillingComponent {
       unPaid: this.unpaidAmount,
       products: this.selectedProducts,
       savings: this.savedAmount,
-      status: 'completed',
+      status: this.unpaidAmount > 0 ? 'pending' : 'completed',
+      paymentMode: this.paymentMethod || 'Cash',
       date: new Date().toISOString()
     };
     this.http.post("/orders", body).subscribe((data: any) => {
-      this.openSnackBar(data.message, 'Close');
       this.selectedProducts = [];
       this.scannedId = '';
       this.totalAmount = 0;
@@ -352,7 +352,7 @@ export class BillingComponent {
       this.scannedInputRef.nativeElement.focus(); // Reset focus to the scanned input
       //  this.openSnackBar('F5 is clicked', 'Close');
     }
-    if (event.key === 'F6' || event.keyCode === 117 || event.key === ' ' || event.code === 'Space') {
+    if (event.key === 'F6' || event.keyCode === 117) {
       event.preventDefault(); // Stops the browser from refreshing
       //  this.downloadPDF();
       this.printThermalBill();
@@ -793,7 +793,6 @@ export class BillingComponent {
   editCustomer(customer: any) {
     this.selectedCustomeretails.points += this.pointsEarned;
     this.selectedCustomeretails.balance += this.unpaidAmount;
-this.pointsEarned = this.unpaidAmount=0; // Reset points earned after updating the customer
     this.http.put(`/customers/${this.selectedCustomeretails._id}`, {
       address:this.selectedCustomeretails.address || "please provide address",
       email: this.selectedCustomeretails.email || "please provide email",
@@ -854,7 +853,9 @@ this.pointsEarned = this.unpaidAmount=0; // Reset points earned after updating t
 
     .center { text-align: center; }
     .bold { font-weight: bold; }
-
+    .cl-name{
+    font-size: 15px; 
+    }
     .row {
       display: flex;
       justify-content: space-between;
@@ -911,9 +912,9 @@ margin-bottom: 5px;
 <body>
 
   <!-- HEADER -->
-  <div class="center bold">${this.clientName}</div>
-  <div class="center bold">${this.clientAddress}</div>
-  <div class="center bold" style="font-size:12px;">${this.contactInfo}</div>
+  <div class="center bold" style="font-size:20px;">${this.clientName}</div>
+  <div class="center bold" style="font-size:15px;">${this.clientAddress}</div>
+  <div class="center bold" style="font-size:13px;">${this.contactInfo}</div>
 
   <hr>
 
@@ -982,13 +983,11 @@ margin-bottom: 5px;
   <!-- PAYMENT -->
   <div class="row bold">
     <span>Paid Amt:</span>
-    <span>₹${this.paidAmount.toFixed(2)}</span>
+    <span>₹${(this.paidAmount > 0 ? this.paidAmount :0).toFixed(2)}</span>
+    <span>Unpaid Amt:</span>
+    <span>₹${(this.unpaidAmount > 0 ? this.unpaidAmount :0).toFixed(2)}</span>
   </div>
 
-  <div class="row">
-    <span>Returned Amt:</span>
-    <span>₹0.00</span>
-  </div>
 
   <hr>
 

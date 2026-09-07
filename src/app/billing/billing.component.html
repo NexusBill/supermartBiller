@@ -237,20 +237,7 @@
 
 
 
-            <!-- Discount Section -->
-            <div style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 8px; margin-bottom: 15px;">
-                <p style="margin: 0 0 8px 0; font-size: 12px; opacity: 0.8; font-weight: 500;">DISCOUNT</p>
-                <div style="display: flex; gap: 8px;">
-                    <input type="number" placeholder="Amount" [(ngModel)]="discountValue"
-                        (keydown.enter)="applyDiscount()"
-                        style="flex: 1; padding: 8px; border: none; border-radius: 6px; background: rgba(15, 15, 15, 0.2); color: rgb(15, 15, 15); font-size: 14px;" />
-                    <select [(ngModel)]="discountType" (ngModelChange)="applyDiscount()"
-                        style="width: 50px; background: rgba(255,255,255,0.2); color: rgb(14, 13, 13); border-radius: 6px; padding: 8px; border: none; font-size: 14px; cursor: pointer;">
-                        <option value="Rs" style="color: #333;">Rs</option>
-                        <option value="%" style="color: #333;">%</option>
-                    </select>
-                </div>
-            </div>
+          
 
 
 
@@ -306,6 +293,20 @@
                         <input type="number"  (keydown.enter)="upPaidAmountChange()" [(ngModel)]="unpaidAmount" placeholder="Enter unpaid amount"
                             style="width: 100%; padding: 8px; border: none; border-radius: 6px; background: rgba(15, 15, 15, 0.2); color: rgb(15, 15, 15); font-size: 14px;" />
                     </div>
+                </div>
+            </div>
+              <!-- Discount Section -->
+            <div style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 8px; margin-bottom: 15px;">
+                <p style="margin: 0 0 8px 0; font-size: 12px; opacity: 0.8; font-weight: 500;">DISCOUNT</p>
+                <div style="display: flex; gap: 8px;">
+                    <input type="number" placeholder="Amount" [(ngModel)]="discountValue"
+                        (keydown.enter)="applyDiscount()"
+                        style="flex: 1; padding: 8px; border: none; border-radius: 6px; background: rgba(15, 15, 15, 0.2); color: rgb(15, 15, 15); font-size: 14px;" />
+                    <select [(ngModel)]="discountType" (ngModelChange)="applyDiscount()"
+                        style="width: 50px; background: rgba(255,255,255,0.2); color: rgb(14, 13, 13); border-radius: 6px; padding: 8px; border: none; font-size: 14px; cursor: pointer;">
+                        <option value="Rs" style="color: #333;">Rs</option>
+                        <option value="%" style="color: #333;">%</option>
+                    </select>
                 </div>
             </div>
 

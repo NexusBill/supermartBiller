@@ -25,6 +25,7 @@ export class CustomerComponent {
   customerAddress: string = '';
   customerCity: string = '';
   customerPoints: number = 0;
+  customerBalance: number = 0;
   showEditModal = false;
   editingCustomer: any = null;
 
@@ -42,7 +43,8 @@ export class CustomerComponent {
         type: this.customertype,
         address: this.customerAddress,
         city: this.customerCity,
-        points: this.customerPoints
+        points: this.customerPoints,
+        balance: 0
       }).subscribe((response) => {
         this.toasterService.success("Customer Added Successfully")
       this.getCustomers(); // Refresh the customer list after successful update
@@ -57,6 +59,8 @@ export class CustomerComponent {
     this.customerName = '';
     this.customerEmail = '';
     this.customerPhone = '';
+    this.customerPoints = 0;
+    this.customerBalance = 0;
     this.customertype = '';
     this.customerAddress = '';
     this.customerCity = '';
@@ -71,6 +75,7 @@ editCustomer(customer: any) {
     this.customerAddress = customer.address;
     this.customerCity = customer.city;
     this.customerPoints = customer.points;
+    this.customerBalance = customer.balance;
     this.http.put(`/customers/${customer.id}`, {
       name: this.customerName,
       email: this.customerEmail,
@@ -78,7 +83,8 @@ editCustomer(customer: any) {
       type: this.customertype,
       address: this.customerAddress,
       city: this.customerCity,
-      points: this.customerPoints
+      points: this.customerPoints,
+      balance: this.customerBalance
     }).subscribe((response) => {
       this.toasterService.success("Customer updated successfully");
     }, (error) => {
@@ -102,6 +108,7 @@ editCustomer(customer: any) {
         customer.address = customer.address || 'Please provide address';
         customer.city = customer.city || 'please provide city';
         customer.points = customer.points || 0;
+        customer.balance = customer.balance || 0;
       }
     )}, (error) => {
       console.error('Error fetching customers', error);
@@ -132,7 +139,8 @@ editCustomer(customer: any) {
       type: this.editingCustomer.type,
       address: this.editingCustomer.address,
       city: this.editingCustomer.city,
-      points: this.editingCustomer.points
+      points: this.editingCustomer.points,
+      balance: this.editingCustomer.balance
     }).subscribe((response) => {
       const index = this.customerData.findIndex((c: any) => c.id === customerId);
       if (index !== -1) {
@@ -155,6 +163,6 @@ editCustomer(customer: any) {
   }
 
   customerData :any[]= [];
-  ColumnHeaders = ['Customer Name', 'Email', 'Mobile number', 'Type', 'Address', 'City', 'Points', 'Actions'];
-  displayedColumns = ['name', 'email', 'mobile', 'type', 'address', 'city', 'points', 'actions'];
+  ColumnHeaders = ['Customer Name', 'Email', 'Mobile number', 'Type', 'Address', 'City', 'Points', 'Balance', 'Actions'];
+  displayedColumns = ['name', 'email', 'mobile', 'type', 'address', 'city', 'points', 'balance', 'actions'];
 }
